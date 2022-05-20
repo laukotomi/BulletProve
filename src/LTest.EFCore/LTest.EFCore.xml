@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LTest.EFCore</name>
+    </assembly>
+    <members>
+        <member name="T:LTest.EFCore.Behaviors.CleanDatabaseBehavior`1">
+            <summary>
+            Cleans database using EF features.
+            </summary>
+        </member>
+        <member name="M:LTest.EFCore.Behaviors.CleanDatabaseBehavior`1.#ctor(System.IServiceProvider,LTest.EFCore.Services.DatabaseCleanupService,LTest.Logging.ITestLogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.EFCore.Behaviors.CleanDatabaseBehavior`1"/> class.
+            </summary>
+            <param name="serviceProvider">Service provider.</param>
+            <param name="databaseCleanupService">Database cleanup service.</param>
+            <param name="testLogger">Logger.</param>
+        </member>
+        <member name="M:LTest.EFCore.Behaviors.CleanDatabaseBehavior`1.BeforeTestAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:LTest.EFCore.Services.DatabaseCleanupService">
+            <summary>
+            Cleans up database.
+            </summary>
+        </member>
+        <member name="M:LTest.EFCore.Services.DatabaseCleanupService.#ctor(LTest.EFCore.Services.TopologicalSortService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.EFCore.Services.DatabaseCleanupService"/> class.
+            </summary>
+            <param name="topologicalSortService"></param>
+        </member>
+        <member name="M:LTest.EFCore.Services.DatabaseCleanupService.CleanupAsync(Microsoft.EntityFrameworkCore.DbContext)">
+            <summary>
+            Cleans up database.
+            </summary>
+            <param name="context">DbContext.</param>
+        </member>
+        <member name="M:LTest.EFCore.Services.DatabaseCleanupService.GenerateCleaningSql(Microsoft.EntityFrameworkCore.DbContext)">
+            <summary>
+            Generates the cleaning sql.
+            </summary>
+            <param name="context">The context.</param>
+            <returns>A string.</returns>
+        </member>
+        <member name="M:LTest.EFCore.Services.DatabaseCleanupService.GetTableNameFromEntityType(Microsoft.EntityFrameworkCore.Metadata.IEntityType)">
+            <summary>
+            Gets the table name from entity type.
+            </summary>
+            <param name="entityType">The entity type.</param>
+            <returns>An object.</returns>
+        </member>
+        <member name="T:LTest.EFCore.Services.TopologicalSortService">
+            <summary>
+            Topoligical sort service.
+            </summary>
+        </member>
+        <member name="M:LTest.EFCore.Services.TopologicalSortService.Sort``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Collections.Generic.IEnumerable{``0}})">
+            <summary>
+            Sorts a collection topoligically.
+            </summary>
+            <typeparam name="T">Type of the objects.</typeparam>
+            <param name="source">Source collection.</param>
+            <param name="getDependencies">Function to get dependencies of an object.</param>
+        </member>
+        <member name="M:LTest.EFCore.Services.TopologicalSortService.Visit``1(``0,System.Func{``0,System.Collections.Generic.IEnumerable{``0}},System.Collections.Generic.List{``0},System.Collections.Generic.Dictionary{``0,System.Boolean})">
+            <summary>
+            Visitor.
+            </summary>
+            <param name="item">The item.</param>
+            <param name="getDependencies">The get dependencies.</param>
+            <param name="sorted">The sorted.</param>
+            <param name="visited">The visited.</param>
+        </member>
+        <member name="T:LTest.ServiceCollectionExtensions">
+            <summary>
+            ServiceCollectionExtensions.
+            </summary>
+        </member>
+        <member name="M:LTest.ServiceCollectionExtensions.AddTestEFCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds services for EFCore testing.
+            </summary>
+            <param name="services">IServiceCollection.</param>
+        </member>
+        <member name="M:LTest.ServiceCollectionExtensions.AddCleanDatabaseBehavior``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds clean database behavior for a DbContext.
+            </summary>
+            <param name="services">IServiceCollection.</param>
+        </member>
+    </members>
+</doc>

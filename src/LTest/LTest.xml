@@ -1,0 +1,891 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LTest</name>
+    </assembly>
+    <members>
+        <member name="T:LTest.DefaultTestServerAttribute">
+            <summary>
+            Default test server attribute.
+            </summary>
+        </member>
+        <member name="T:LTest.TestServerAttribute">
+            <summary>
+            Test server attribute. Specifies the type of the server to use for a specific test method or test class.
+            </summary>
+        </member>
+        <member name="M:LTest.TestServerAttribute.#ctor(System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.TestServerAttribute"/> class.
+            </summary>
+            <param name="testServerType">Test server type.</param>
+        </member>
+        <member name="P:LTest.TestServerAttribute.TestServerType">
+            <summary>
+            Test server type.
+            </summary>
+        </member>
+        <member name="T:LTest.Configuration.LogSnifferConfiguration">
+            <summary>
+            The log sniffer configuration.
+            </summary>
+        </member>
+        <member name="P:LTest.Configuration.LogSnifferConfiguration.DefaultExpectedEvents">
+            <summary>
+            Decide whether a server log event is expected or the test should fail. By default only log levels of information or smaller are allowed.
+            </summary>
+        </member>
+        <member name="T:LTest.Configuration.LTestConfiguration">
+            <summary>
+            The LTest configuration.
+            </summary>
+        </member>
+        <member name="M:LTest.Configuration.LTestConfiguration.#ctor(LTest.Logging.LogFilter{System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Configuration.LTestConfiguration"/> class.
+            </summary>
+            <param name="defaultLogFilter">The default log filter.</param>
+        </member>
+        <member name="P:LTest.Configuration.LTestConfiguration.PreserveLoggerProviders">
+            <summary>
+            Turns off LTestLogger registration to preserve the default logger. Also disables those features.
+            </summary>
+        </member>
+        <member name="P:LTest.Configuration.LTestConfiguration.DisableLogScoping">
+            <summary>
+            Gets or sets a value indicating whether disable log scoping.
+            </summary>
+        </member>
+        <member name="P:LTest.Configuration.LTestConfiguration.MinimumLogLevel">
+            <summary>
+            Minimum log level to log on debug window.
+            </summary>
+        </member>
+        <member name="P:LTest.Configuration.LTestConfiguration.ConfigurationFiles">
+            <summary>
+            Configuration files to merge.
+            </summary>
+        </member>
+        <member name="P:LTest.Configuration.LTestConfiguration.LogSniffer">
+            <summary>
+            Gets the log sniffer configuration.
+            </summary>
+        </member>
+        <member name="P:LTest.Configuration.LTestConfiguration.ServerLogFilter">
+            <summary>
+            Filters the logs that will be written into the output window. The input is the logger category name.
+            </summary>
+        </member>
+        <member name="T:LTest.ExtensionMethods.StringExtensionMethods">
+            <summary>
+            Extension methods.
+            </summary>
+        </member>
+        <member name="M:LTest.ExtensionMethods.StringExtensionMethods.TrimEnd(System.String,System.String,System.StringComparison)">
+            <summary>
+            If a string ends with the specified value then removes it.
+            </summary>
+            <param name="input">The string that should be trimmed.</param>
+            <param name="suffixToRemove">String that should be removed.</param>
+            <param name="comparisonType"><see cref="T:System.StringComparison"/>.</param>
+        </member>
+        <member name="M:LTest.ExtensionMethods.StringExtensionMethods.Truncate(System.String,System.Int32)">
+            <summary>
+            Truncates a string if it is too long.
+            </summary>
+            <param name="value">The string.</param>
+            <param name="maxChars">Maximum length.</param>
+        </member>
+        <member name="T:LTest.Helpers.HookHelper">
+            <summary>
+            Hook helper.
+            </summary>
+        </member>
+        <member name="M:LTest.Helpers.HookHelper.RunHooksAsync``1(System.IServiceProvider,System.Func{``0,System.Threading.Tasks.Task})">
+            <summary>
+            Runs the hooks.
+            </summary>
+            <param name="services">The services.</param>
+            <param name="methodToRun">The method to run.</param>
+            <returns>A Task.</returns>
+        </member>
+        <member name="T:LTest.Helpers.StopwatchHelper">
+            <summary>
+            Stopwatch helper.
+            </summary>
+        </member>
+        <member name="M:LTest.Helpers.StopwatchHelper.Measure(System.Action)">
+            <summary>
+            Measures the execution of the action.
+            </summary>
+            <param name="action">The action.</param>
+            <returns>The elapsed milliseconds.</returns>
+        </member>
+        <member name="M:LTest.Helpers.StopwatchHelper.Measure``1(System.Func{``0})">
+            <summary>
+            Measures the execution of the action.
+            </summary>
+            <param name="action">The action.</param>
+            <returns>A StopwachHelperResult.</returns>
+        </member>
+        <member name="M:LTest.Helpers.StopwatchHelper.MeasureAsync(System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            Measures the execution of the action.
+            </summary>
+            <param name="action">The action.</param>
+            <returns>The elapsed milliseconds.</returns>
+        </member>
+        <member name="M:LTest.Helpers.StopwatchHelper.MeasureAsync``1(System.Func{System.Threading.Tasks.Task{``0}})">
+            <summary>
+            Measures the execution of the action.
+            </summary>
+            <param name="action">The action.</param>
+            <returns>A StopwachHelperResult.</returns>
+        </member>
+        <member name="T:LTest.Helpers.StopwachHelperResult`1">
+            <summary>
+            The stopwach helper result.
+            </summary>
+        </member>
+        <member name="P:LTest.Helpers.StopwachHelperResult`1.ResultObject">
+            <summary>
+            Gets the result object.
+            </summary>
+        </member>
+        <member name="P:LTest.Helpers.StopwachHelperResult`1.ElapsedMilliseconds">
+            <summary>
+            Gets the elapsed milliseconds.
+            </summary>
+        </member>
+        <member name="T:LTest.Helpers.XunitReflectionHelper">
+            <summary>
+            The xunit reflection helper.
+            </summary>
+        </member>
+        <member name="M:LTest.Helpers.XunitReflectionHelper.GetTestContext(Xunit.Abstractions.ITestOutputHelper)">
+            <summary>
+            Gets the test context.
+            </summary>
+            <param name="output">The output.</param>
+            <returns>An ITest object.</returns>
+        </member>
+        <member name="M:LTest.Helpers.XunitReflectionHelper.TryGetTestServerType(Xunit.Abstractions.ITest)">
+            <summary>
+            Tries the get test server type.
+            </summary>
+            <param name="testContext">The test context.</param>
+            <returns>A Type.</returns>
+        </member>
+        <member name="M:LTest.Helpers.XunitReflectionHelper.GetTypeFromAttribute(Xunit.Abstractions.IAttributeInfo)">
+            <summary>
+            Gets the type object from attribute.
+            </summary>
+            <param name="attribute">The attribute.</param>
+            <returns>A Type.</returns>
+        </member>
+        <member name="T:LTest.Hooks.IAfterServerStartedHook">
+            <summary>
+            A service that will be run after server started. Because server instances are cached, it will be called only when a new test server is created.
+            </summary>
+        </member>
+        <member name="M:LTest.Hooks.IAfterServerStartedHook.AfterServerStartedAsync">
+            <summary>
+            Will be called after the test server started in the same order as the service was registered.
+            </summary>
+            <returns>A Task.</returns>
+        </member>
+        <member name="T:LTest.Hooks.IAfterTestHook">
+            <summary>
+            A service that will be run after all tests. The services will be run in the same order as they were registered into DI.
+            </summary>
+        </member>
+        <member name="M:LTest.Hooks.IAfterTestHook.AfterTestAsync">
+            <summary>
+            Will be called at the end of each test in the same order as the service was registered.
+            </summary>
+            <returns>A Task.</returns>
+        </member>
+        <member name="T:LTest.Hooks.IBeforeTestHook">
+            <summary>
+            A service that will be run before all tests. The services will be run in the same order as they were registered into DI.
+            </summary>
+        </member>
+        <member name="M:LTest.Hooks.IBeforeTestHook.BeforeTestAsync">
+            <summary>
+            Will be called at the beginning of each test in the same order as the service was registered.
+            </summary>
+            <returns>A Task.</returns>
+        </member>
+        <member name="T:LTest.Hooks.IResetSingletonHook">
+            <summary>
+            A helper hook to reset singletons when the test starts. It won't run when the test server was just started.
+            </summary>
+        </member>
+        <member name="M:LTest.Hooks.IResetSingletonHook.ResetAsync">
+            <summary>
+            Runs before every test in case the server was already running to clean singletons (usually mocks).
+            </summary>
+            <returns>A Task.</returns>
+        </member>
+        <member name="T:LTest.Http.LTestHttpClientAccessor">
+            <summary>
+            Contains the <see cref="T:System.Net.Http.HttpClient"/> that can be used for integration tests.
+            </summary>
+        </member>
+        <member name="P:LTest.Http.LTestHttpClientAccessor.Client">
+            <summary>
+            <see cref="T:System.Net.Http.HttpClient"/> for integration tests.
+            </summary>
+        </member>
+        <member name="T:LTest.IntegrationTestServiceProvider">
+            <summary>
+            Service provider extensions for integration tests.
+            </summary>
+        </member>
+        <member name="M:LTest.IntegrationTestServiceProvider.#ctor(System.IServiceProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.IntegrationTestServiceProvider"/> class.
+            </summary>
+            <param name="services">Service provider</param>
+        </member>
+        <member name="P:LTest.IntegrationTestServiceProvider.Logger">
+            <summary>
+            Gets logger service.
+            </summary>
+        </member>
+        <member name="P:LTest.IntegrationTestServiceProvider.LogSniffer">
+            <summary>
+            Gets log sniffer service.
+            </summary>
+        </member>
+        <member name="P:LTest.IntegrationTestServiceProvider.HttpClient">
+            <summary>
+            Gets the http client.
+            </summary>
+        </member>
+        <member name="P:LTest.IntegrationTestServiceProvider.Configuration">
+            <summary>
+            Gets the configuration object.
+            </summary>
+        </member>
+        <member name="M:LTest.IntegrationTestServiceProvider.GetService(System.Type)">
+            <summary>
+            Returns the service.
+            </summary>
+            <param name="serviceType">Service type.</param>
+        </member>
+        <member name="T:LTest.Logging.ITestLogger">
+            <summary>
+            Test logger interface.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.ITestLogger.LogError(System.String)">
+            <summary>
+            Logs an error message.
+            </summary>
+            <param name="message">Log message.</param>
+        </member>
+        <member name="M:LTest.Logging.ITestLogger.LogWarning(System.String)">
+            <summary>
+            Logs a warning message.
+            </summary>
+            <param name="message">Log message.</param>
+        </member>
+        <member name="M:LTest.Logging.ITestLogger.LogInformation(System.String)">
+            <summary>
+            Logs an information message.
+            </summary>
+            <param name="message">Log message.</param>
+        </member>
+        <member name="M:LTest.Logging.ITestLogger.Log(Microsoft.Extensions.Logging.LogLevel,System.String)">
+            <summary>
+            Logs a message.
+            </summary>
+            <param name="level">Log level.</param>
+            <param name="message">Log message.</param>
+        </member>
+        <member name="M:LTest.Logging.ITestLogger.Scope(System.Action{LTest.Logging.ITestLogger})">
+            <summary>
+            Creates scope (indenting) in the logger.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.ITestLogger.LogEmptyLine">
+            <summary>
+            Writes empty line.
+            </summary>
+        </member>
+        <member name="T:LTest.Logging.LogFilter`1">
+            <summary>
+            The log filter.
+            </summary>
+        </member>
+        <member name="P:LTest.Logging.LogFilter`1.Filters">
+            <summary>
+            Gets the filters.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.LogFilter`1.#ctor(System.Collections.Generic.IEnumerable{LTest.Logging.LogEventFilter{`0}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Logging.LogFilter`1"/> class.
+            </summary>
+            <param name="defaultExpectedEvents">The default expected events.</param>
+        </member>
+        <member name="M:LTest.Logging.LogFilter`1.Clear">
+            <summary>
+            Clears the filters.
+            </summary>
+            <returns>A LogFilter.</returns>
+        </member>
+        <member name="M:LTest.Logging.LogFilter`1.Reset">
+            <summary>
+            Resets the default filters.
+            </summary>
+            <returns>A LogFilter.</returns>
+        </member>
+        <member name="M:LTest.Logging.LogFilter`1.Add(LTest.Logging.LogEventFilter{`0})">
+            <summary>
+            Adds a new filter.
+            </summary>
+            <param name="expectedEvent">The expected event.</param>
+            <returns>A LogFilter.</returns>
+        </member>
+        <member name="M:LTest.Logging.LogFilter`1.Remove(System.String)">
+            <summary>
+            Removes a filter by name.
+            </summary>
+            <param name="name">The name.</param>
+            <returns>A LogFilter.</returns>
+        </member>
+        <member name="T:LTest.Logging.LogEventFilter`1">
+            <summary>
+            The log event filter.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.LogEventFilter`1.#ctor(System.String,System.Func{`0,System.Boolean})">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Logging.LogEventFilter`1"/> class.
+            </summary>
+            <param name="filterName">The filter name.</param>
+            <param name="action">The action.</param>
+        </member>
+        <member name="P:LTest.Logging.LogEventFilter`1.FilterName">
+            <summary>
+            Gets the filter name.
+            </summary>
+        </member>
+        <member name="P:LTest.Logging.LogEventFilter`1.Action">
+            <summary>
+            Gets the filter action.
+            </summary>
+        </member>
+        <member name="T:LTest.Logging.LTestLogEvent">
+            <summary>
+            Log event.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.LTestLogEvent.#ctor(Microsoft.Extensions.Logging.LogLevel,System.Int32,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Logging.LTestLogEvent"/> class.
+            </summary>
+            <param name="level">Log level.</param>
+            <param name="scopeLevel">Scope level</param>
+            <param name="message">Log message.</param>
+        </member>
+        <member name="P:LTest.Logging.LTestLogEvent.Level">
+            <summary>
+            Log level.
+            </summary>
+        </member>
+        <member name="P:LTest.Logging.LTestLogEvent.ScopeLevel">
+            <summary>
+            Scope level.
+            </summary>
+        </member>
+        <member name="P:LTest.Logging.LTestLogEvent.Message">
+            <summary>
+            Log message.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.LTestLogEvent.ToString">
+            <summary>
+            ToString() override.
+            </summary>
+        </member>
+        <member name="T:LTest.Logging.LTestLogger">
+            <summary>
+            The LTest logger.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.LTestLogger.#ctor(System.String,LTest.LogSniffer.ILogSnifferService,LTest.Configuration.LTestConfiguration,LTest.Logging.ITestLogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Logging.LTestLogger"/> class.
+            </summary>
+            <param name="categoryName">The category name for messages produced by the logger.</param>
+            <param name="logSniffer">LogSniffer service.</param>
+            <param name="configuration">Configuration.</param>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="M:LTest.Logging.LTestLogger.Log``1(Microsoft.Extensions.Logging.LogLevel,Microsoft.Extensions.Logging.EventId,``0,System.Exception,System.Func{``0,System.Exception,System.String})">
+            <summary>
+            Writes a log entry.
+            </summary>
+            <typeparam name="TState">The type of the object to be written.</typeparam>
+            <param name="logLevel">Entry will be written on this level.</param>
+            <param name="eventId">Id of the event.</param>
+            <param name="state">The entry to be written. Can be also an object.</param>
+            <param name="exception">The exception related to this entry.</param>
+            <param name="formatter">Function to create a System.String message of the state and exception.</param>
+        </member>
+        <member name="M:LTest.Logging.LTestLogger.BeginScope``1(``0)">
+            <summary>
+            Begins a logical operation scope.
+            </summary>
+            <typeparam name="TState">The type of the state to begin scope for.</typeparam>
+            <param name="state">The identifier for the scope.</param>
+            <returns>An System.IDisposable that ends the logical operation scope on dispose.</returns>
+        </member>
+        <member name="M:LTest.Logging.LTestLogger.IsEnabled(Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Checks if the given <paramref name="logLevel"/> is enabled.
+            </summary>
+            <param name="logLevel">level to be checked.</param>
+            <returns>true if enabled.</returns>
+        </member>
+        <member name="T:LTest.Logging.LTestLogger.LoggerScope">
+            <summary>
+            Helper class for BeginScope method.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.LTestLogger.LoggerScope.#ctor(LTest.Logging.TestLoggerScope)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Logging.LTestLogger.LoggerScope"/> class.
+            </summary>
+            <param name="scope">The scope.</param>
+        </member>
+        <member name="M:LTest.Logging.LTestLogger.LoggerScope.Dispose">
+            <summary>
+            IDisposable implementation.
+            </summary>
+        </member>
+        <member name="T:LTest.Logging.LTestLoggerFactory">
+            <summary>
+            Logger factory for LogSniffer.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.LTestLoggerFactory.#ctor(LTest.LogSniffer.ILogSnifferService,LTest.Configuration.LTestConfiguration,LTest.Logging.ITestLogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Logging.LTestLoggerFactory"/> class.
+            </summary>
+            <param name="logSnifferService">LogSniffer service.</param>
+            <param name="configuration">Configuration.</param>
+            <param name="testLogger">Logger.</param>
+        </member>
+        <member name="M:LTest.Logging.LTestLoggerFactory.AddProvider(Microsoft.Extensions.Logging.ILoggerProvider)">
+            <summary>
+            Not in use.
+            </summary>
+            <param name="provider">Logger provider.</param>
+        </member>
+        <member name="M:LTest.Logging.LTestLoggerFactory.CreateLogger(System.String)">
+            <summary>
+            Creates logger for category.
+            </summary>
+            <param name="categoryName">Category name.</param>
+        </member>
+        <member name="M:LTest.Logging.LTestLoggerFactory.Dispose">
+            <summary>
+            IDisposable implementation.
+            </summary>
+        </member>
+        <member name="T:LTest.Logging.ServerLogEvent">
+            <summary>
+            Class for a log event.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.ServerLogEvent.#ctor(System.String,Microsoft.Extensions.Logging.LogLevel,Microsoft.Extensions.Logging.EventId,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Logging.ServerLogEvent"/> class.
+            </summary>
+            <param name="categoryName">Category name.</param>
+            <param name="level">Log level.</param>
+            <param name="eventId">Event id.</param>
+            <param name="message">Log message.</param>
+            <param name="exception">Exception attached to the log.</param>
+        </member>
+        <member name="P:LTest.Logging.ServerLogEvent.CategoryName">
+            <summary>
+            Category name.
+            </summary>
+        </member>
+        <member name="P:LTest.Logging.ServerLogEvent.EventId">
+            <summary>
+            Event Id.
+            </summary>
+        </member>
+        <member name="P:LTest.Logging.ServerLogEvent.Level">
+            <summary>
+            Log level.
+            </summary>
+        </member>
+        <member name="P:LTest.Logging.ServerLogEvent.Message">
+            <summary>
+            Log message.
+            </summary>
+        </member>
+        <member name="P:LTest.Logging.ServerLogEvent.Exception">
+            <summary>
+            Exception attached to the log event.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.ServerLogEvent.ToString">
+            <summary>
+            ToString() override.
+            </summary>
+        </member>
+        <member name="T:LTest.Logging.TestLogger">
+            <summary>
+            Test logger implementation.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.TestLogger.#ctor(LTest.Configuration.LTestConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Logging.TestLogger"/> class.
+            </summary>
+            <param name="configuration">The configuration.</param>
+        </member>
+        <member name="M:LTest.Logging.TestLogger.LogError(System.String)">
+            <summary>
+            Logs an error message.
+            </summary>
+            <param name="message">Log message.</param>
+        </member>
+        <member name="M:LTest.Logging.TestLogger.LogWarning(System.String)">
+            <summary>
+            Logs a warning message.
+            </summary>
+            <param name="message">Log message.</param>
+        </member>
+        <member name="M:LTest.Logging.TestLogger.LogInformation(System.String)">
+            <summary>
+            Logs an information message.
+            </summary>
+            <param name="message">Log message.</param>
+        </member>
+        <member name="M:LTest.Logging.TestLogger.Log(Microsoft.Extensions.Logging.LogLevel,System.String)">
+            <summary>
+            Logs a message.
+            </summary>
+            <param name="level">Log level.</param>
+            <param name="message">Log message.</param>
+        </member>
+        <member name="M:LTest.Logging.TestLogger.GetSnapshot">
+            <summary>
+            Retrieves all log events.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.TestLogger.Scope(System.Action{LTest.Logging.ITestLogger})">
+            <summary>
+            Creates scope (indenting) in the logger.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.TestLogger.LogEmptyLine">
+            <summary>
+            Writes empty line.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.TestLogger.ResetAsync">
+            <summary>
+            Resets the service.
+            </summary>
+            <returns>A Task.</returns>
+        </member>
+        <member name="T:LTest.Logging.TestLoggerScope">
+            <summary>
+            Test logger scope.
+            </summary>
+        </member>
+        <member name="P:LTest.Logging.TestLoggerScope.Level">
+            <summary>
+            Scope level.
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.TestLoggerScope.#ctor(LTest.Logging.ITestLogger,System.Int32,System.Action{LTest.Logging.TestLoggerScope})">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Logging.TestLoggerScope"/> class.
+            </summary>
+            <param name="logger">Test logger.</param>
+            <param name="level">Scope level</param>
+            <param name="finishAction">Finish action.</param>
+        </member>
+        <member name="M:LTest.Logging.TestLoggerScope.Finish(System.Action{LTest.Logging.ITestLogger})">
+            <summary>
+            Finish action (same as Dispose, but enables logging).
+            </summary>
+        </member>
+        <member name="M:LTest.Logging.TestLoggerScope.Dispose">
+            <summary>
+            Dispose action.
+            </summary>
+        </member>
+        <member name="T:LTest.LogSniffer.ILogSnifferService">
+            <summary>
+            LogSniffer service.
+            </summary>
+        </member>
+        <member name="P:LTest.LogSniffer.ILogSnifferService.UnexpectedLogOccured">
+            <summary>
+            Check whether unexpected log event occured.
+            </summary>
+        </member>
+        <member name="M:LTest.LogSniffer.ILogSnifferService.GetServerLogs">
+            <summary>
+            Returns the actual snapshot of the events.
+            </summary>
+        </member>
+        <member name="M:LTest.LogSniffer.ILogSnifferService.CheckLogEvent(LTest.Logging.ServerLogEvent)">
+            <summary>
+            Saves log event into memory and checks wheter it was unexpected.
+            </summary>
+            <param name="logEvent">Log event.</param>
+        </member>
+        <member name="M:LTest.LogSniffer.ILogSnifferService.ModifyExpectedLogEvents(System.Action{LTest.Logging.LogFilter{LTest.Logging.ServerLogEvent}})">
+            <summary>
+            Modifies expected log filters.
+            </summary>
+            <param name="action">Action.</param>
+        </member>
+        <member name="T:LTest.LogSniffer.LogSnifferService">
+            <summary>
+            Log sniffer service implementation.
+            </summary>
+        </member>
+        <member name="F:LTest.LogSniffer.LogSnifferService._nrOfEventsToLogOnError">
+            <summary>
+            The nr of events to log on error.
+            </summary>
+        </member>
+        <member name="M:LTest.LogSniffer.LogSnifferService.#ctor(LTest.Logging.ITestLogger,LTest.Configuration.LTestConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.LogSniffer.LogSnifferService"/> class.
+            </summary>
+            <param name="logger">Logger.</param>
+            <param name="configuration">Configuration.</param>
+        </member>
+        <member name="P:LTest.LogSniffer.LogSnifferService.UnexpectedLogOccured">
+            <summary>
+            Check whether unexpected log event occured.
+            </summary>
+        </member>
+        <member name="M:LTest.LogSniffer.LogSnifferService.ModifyExpectedLogEvents(System.Action{LTest.Logging.LogFilter{LTest.Logging.ServerLogEvent}})">
+            <summary>
+            Overrides the is expected event action. It lasts only for the actual test.
+            </summary>
+            <param name="action">Action.</param>
+        </member>
+        <member name="M:LTest.LogSniffer.LogSnifferService.CheckLogEvent(LTest.Logging.ServerLogEvent)">
+            <summary>
+            Saves log event into memory and checks whether it was unexpected.
+            </summary>
+            <param name="logEvent">Log event.</param>
+        </member>
+        <member name="M:LTest.LogSniffer.LogSnifferService.GetServerLogs">
+            <summary>
+            Returns the actual snapshot of the events.
+            </summary>
+        </member>
+        <member name="M:LTest.LogSniffer.LogSnifferService.ResetAsync">
+            <summary>
+            Resets the service.
+            </summary>
+        </member>
+        <member name="M:LTest.LogSniffer.LogSnifferService.LogLastElements">
+            <summary>
+            Logs last server messages.
+            </summary>
+        </member>
+        <member name="T:LTest.LogSniffer.ResetExpectedServerLogs">
+            <summary>
+            Helper class to reset LogSniffer expected log event action.
+            </summary>
+        </member>
+        <member name="M:LTest.LogSniffer.ResetExpectedServerLogs.#ctor(LTest.Logging.LogFilter{LTest.Logging.ServerLogEvent})">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.LogSniffer.ResetExpectedServerLogs"/> class.
+            </summary>
+            <param name="logEventStore">The log event store.</param>
+        </member>
+        <member name="M:LTest.LogSniffer.ResetExpectedServerLogs.Dispose">
+            <summary>
+            Resets log event store.
+            </summary>
+        </member>
+        <member name="T:LTest.LTestBase">
+            <summary>
+            Base class for integration tests.
+            </summary>
+        </member>
+        <member name="P:LTest.LTestBase.Services">
+            <summary>
+            Access services using this property.
+            </summary>
+        </member>
+        <member name="P:LTest.LTestBase.TestContext">
+            <summary>
+            Test context.
+            </summary>
+        </member>
+        <member name="P:LTest.LTestBase.Logger">
+            <summary>
+            Test logger.
+            </summary>
+        </member>
+        <member name="M:LTest.LTestBase.#ctor(LTest.TestServerManager,Xunit.Abstractions.ITestOutputHelper)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.LTestBase"/> class.
+            </summary>
+            <param name="serverManager">Test server manager.</param>
+            <param name="output"><see cref="T:Xunit.Abstractions.ITestOutputHelper"/> object.</param>
+        </member>
+        <member name="M:LTest.LTestBase.InitializeAsync">
+            <summary>
+            Initializes the framework.
+            </summary>
+            <returns>A Task.</returns>
+        </member>
+        <member name="M:LTest.LTestBase.DisposeAsync">
+            <summary>
+            Disposes the framework.
+            </summary>
+            <returns>A Task.</returns>
+        </member>
+        <member name="M:LTest.LTestBase.FlushLogger">
+            <summary>
+            Flushes the logger.
+            </summary>
+        </member>
+        <member name="T:LTest.Mocks.MockSender`1">
+            <summary>
+            Mock sender.
+            </summary>
+            <typeparam name="T">Model to store.</typeparam>
+        </member>
+        <member name="F:LTest.Mocks.MockSender`1.Messages">
+            <summary>
+            Sent messages;
+            </summary>
+        </member>
+        <member name="P:LTest.Mocks.MockSender`1.SentMessages">
+            <summary>
+            Access sent messages.
+            </summary>
+        </member>
+        <member name="M:LTest.Mocks.MockSender`1.ResetAsync">
+            <summary>
+            Resets the class.
+            </summary>
+            <returns>A Task.</returns>
+        </member>
+        <member name="T:LTest.ITestServer">
+            <summary>
+            Test server configuration
+            </summary>
+        </member>
+        <member name="P:LTest.ITestServer.Services">
+            <summary>
+            Access service provider.
+            </summary>
+        </member>
+        <member name="T:LTest.TestServerBase`1">
+            <summary>
+            WebApplication factory base class for integration tests.
+            </summary>
+            <typeparam name="TStartup">Startup class.</typeparam>
+        </member>
+        <member name="M:LTest.TestServerBase`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.TestServerBase`1"/> class.
+            </summary>
+        </member>
+        <member name="M:LTest.TestServerBase`1.ConfigureTestServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configure test services in this method.
+            </summary>
+            <param name="services">Service collection.</param>
+        </member>
+        <member name="M:LTest.TestServerBase`1.Configure(LTest.Configuration.LTestConfiguration)">
+            <summary>
+            Configure parameters here.
+            </summary>
+            <param name="config">Configuration.</param>
+        </member>
+        <member name="M:LTest.TestServerBase`1.ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">
+            <summary>
+            ConfigureWebHost.
+            </summary>
+            <param name="builder">IWebHostBuilder.</param>
+        </member>
+        <member name="M:LTest.TestServerBase`1.InitConfiguration">
+            <summary>
+            Inits the configuration.
+            </summary>
+            <returns>An LTestConfiguration.</returns>
+        </member>
+        <member name="M:LTest.TestServerBase`1.RegisterLTestServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers the LTest services.
+            </summary>
+            <param name="services">The services.</param>
+        </member>
+        <member name="M:LTest.TestServerBase`1.RegisterResetSingletonHooks(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers the reset singleton hooks.
+            </summary>
+            <param name="services">The services.</param>
+        </member>
+        <member name="T:LTest.TestServerManager">
+            <summary>
+            Test server manager.
+            </summary>
+        </member>
+        <member name="M:LTest.TestServerManager.GetServer(Xunit.Abstractions.ITest,System.Type,System.Boolean@)">
+            <summary>
+            Gets the test server.
+            </summary>
+            <param name="testContext">The test context.</param>
+            <param name="testSuite">The test suite.</param>
+            <param name="created">Whether the server just created.</param>
+            <returns>An ITestServer.</returns>
+        </member>
+        <member name="M:LTest.TestServerManager.TryGetDefaultTestServer(System.Reflection.Assembly)">
+            <summary>
+            Tries to get the default test server using the <see cref="T:LTest.DefaultTestServerAttribute"/>.
+            </summary>
+            <param name="assembly">Assembly to scan.</param>
+        </member>
+        <member name="T:System.Net.Http.HttpRequestMessageExtensionMethods">
+            <summary>
+            Http request message extensions.
+            </summary>
+        </member>
+        <member name="M:System.Net.Http.HttpRequestMessageExtensionMethods.ToCurlAsync(System.Net.Http.HttpRequestMessage)">
+            <summary>
+            Generates curl from http request message.
+            </summary>
+            <param name="request">Request.</param>
+        </member>
+        <member name="M:System.Net.Http.HttpRequestMessageExtensionMethods.AddHeaders(System.Text.StringBuilder,System.Net.Http.Headers.HttpHeaders)">
+            <summary>
+            Adds the headers.
+            </summary>
+            <param name="sb">The string builder.</param>
+            <param name="headers">The headers.</param>
+        </member>
+        <member name="M:System.Net.Http.HttpRequestMessageExtensionMethods.Escape(System.String)">
+            <summary>
+            Escapes the string.
+            </summary>
+            <param name="str">The str.</param>
+            <returns>A string.</returns>
+        </member>
+    </members>
+</doc>
