@@ -6,7 +6,7 @@ namespace LTest.Mocks
     /// Mock sender.
     /// </summary>
     /// <typeparam name="T">Model to store.</typeparam>
-    public abstract class MockSender<T> : IResetSingletonHook
+    public abstract class LTestMockSender<T> : IResetSingletonHook
     {
         /// <summary>
         /// Sent messages;

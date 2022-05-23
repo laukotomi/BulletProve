@@ -61,6 +61,16 @@
         /// <summary>
         /// Adds a new filter.
         /// </summary>
+        /// <returns>A LogFilter.</returns>
+        public LogFilter<TInput> Add(Func<TInput, bool> action, string? name = null)
+        {
+            _expectedEvents.Add(new LogEventFilter<TInput>(name, action));
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a new filter.
+        /// </summary>
         /// <param name="expectedEvent">The expected event.</param>
         /// <returns>A LogFilter.</returns>
         public LogFilter<TInput> Add(LogEventFilter<TInput> expectedEvent)
@@ -77,7 +87,7 @@
         public LogFilter<TInput> Remove(string name)
         {
             var toRemove = _expectedEvents
-                .Where(x => x.FilterName.Equals(name, StringComparison.OrdinalIgnoreCase))
+                .Where(x => x.FilterName?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false)
                 .ToList();
 
             foreach (var expectedEvent in toRemove)
@@ -100,7 +110,7 @@
         /// </summary>
         /// <param name="filterName">The filter name.</param>
         /// <param name="action">The action.</param>
-        public LogEventFilter(string filterName, Func<TInput, bool> action)
+        public LogEventFilter(string? filterName, Func<TInput, bool> action)
         {
             FilterName = filterName;
             Action = action;
@@ -109,7 +119,7 @@
         /// <summary>
         /// Gets the filter name.
         /// </summary>
-        public string FilterName { get; }
+        public string? FilterName { get; }
 
         /// <summary>
         /// Gets the filter action.

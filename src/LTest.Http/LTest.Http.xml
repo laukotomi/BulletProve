@@ -94,6 +94,36 @@
             A helper model for empty http body.
             </summary>
         </member>
+        <member name="T:LTest.Http.Models.LTestProblemDetails">
+            <summary>
+            The problem details. Basic implementation of Microsoft's ProblemDetails to deserialize.
+            </summary>
+        </member>
+        <member name="P:LTest.Http.Models.LTestProblemDetails.Type">
+            <summary>
+            Gets the type.
+            </summary>
+        </member>
+        <member name="P:LTest.Http.Models.LTestProblemDetails.Title">
+            <summary>
+            Gets the title.
+            </summary>
+        </member>
+        <member name="P:LTest.Http.Models.LTestProblemDetails.Status">
+            <summary>
+            Gets the status.
+            </summary>
+        </member>
+        <member name="P:LTest.Http.Models.LTestProblemDetails.TraceId">
+            <summary>
+            Gets the trace id.
+            </summary>
+        </member>
+        <member name="P:LTest.Http.Models.LTestProblemDetails.Errors">
+            <summary>
+            Gets the errors.
+            </summary>
+        </member>
         <member name="T:LTest.Http.Services.AssertBuilder`1">
             <summary>
             A helper class for json http response.
@@ -282,14 +312,80 @@
             <param name="label"></param>
             <returns></returns>
         </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ShouldSuccess">
+            <summary>
+            Starts asserting with success status code.
+            </summary>
+            <returns>An AssertBuilder.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ShouldSuccess``1">
+            <summary>
+            Starts asserting with success status code.
+            </summary>
+            <returns>An AssertBuilder.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ShouldBeStatus(System.Net.HttpStatusCode)">
+            <summary>
+            Starts asserting with specified status code.
+            </summary>
+            <param name="statusCode">The status code.</param>
+            <returns>An AssertBuilder.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ShouldBeStatus``1(System.Net.HttpStatusCode)">
+            <summary>
+            Starts asserting with specified status code.
+            </summary>
+            <param name="statusCode">The status code.</param>
+            <returns>An AssertBuilder.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ShouldBeProblemWithStatus``1(System.Net.HttpStatusCode)">
+            <summary>
+            Starts asserting problem details with specified status code.
+            </summary>
+            <param name="statusCode">The status code.</param>
+            <returns>An AssertBuilder.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ExecuteSuccessAsync">
+            <summary>
+            Executes the request asserting success status code.
+            </summary>
+            <returns>An AssertBuilder.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ExecuteSuccessAsync``1">
+            <summary>
+            Executes the request asserting success status code.
+            </summary>
+            <returns>An AssertBuilder.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ExecuteAssertingStatusAsync(System.Net.HttpStatusCode)">
+            <summary>
+            Executes the request asserting specified status code.
+            </summary>
+            <param name="statusCode">The status code.</param>
+            <returns>An AssertBuilder.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ExecuteAssertingStatusAsync``1(System.Net.HttpStatusCode)">
+            <summary>
+            Executes the request asserting specified status code.
+            </summary>
+            <param name="statusCode">The status code.</param>
+            <returns>An AssertBuilder.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestService.ExecuteAssertingProblemAndStatusAsync``1(System.Net.HttpStatusCode)">
+            <summary>
+            Starts asserting problem details with specified status code.
+            </summary>
+            <param name="statusCode">The status code.</param>
+            <returns>An AssertBuilder.</returns>
+        </member>
         <member name="M:LTest.Http.Services.HttpRequestService.Assert">
             <summary>
-            Starts assertion builder phase.
+            Create assert builder.
             </summary>
         </member>
         <member name="M:LTest.Http.Services.HttpRequestService.Assert``1">
             <summary>
-            Starts assertion builder phase.
+            Create assert builder.
             </summary>
         </member>
         <member name="T:LTest.Http.Services.LabelGeneratorService">

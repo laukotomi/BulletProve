@@ -342,6 +342,12 @@
             </summary>
             <returns>A LogFilter.</returns>
         </member>
+        <member name="M:LTest.Logging.LogFilter`1.Add(System.Func{`0,System.Boolean},System.String)">
+            <summary>
+            Adds a new filter.
+            </summary>
+            <returns>A LogFilter.</returns>
+        </member>
         <member name="M:LTest.Logging.LogFilter`1.Add(LTest.Logging.LogEventFilter{`0})">
             <summary>
             Adds a new filter.
@@ -763,23 +769,37 @@
             Flushes the logger.
             </summary>
         </member>
-        <member name="T:LTest.Mocks.MockSender`1">
+        <member name="T:LTest.Mocks.LTestHttpMessageHandlerBase">
+            <summary>
+            The LTest http message handler base.
+            </summary>
+        </member>
+        <member name="M:LTest.Mocks.LTestHttpMessageHandlerBase.CreateJsonResponseMessage(System.Net.Http.HttpRequestMessage,System.Net.HttpStatusCode,System.Object)">
+            <summary>
+            Creates the json response message.
+            </summary>
+            <param name="request">The request.</param>
+            <param name="statusCode">The status code.</param>
+            <param name="content">The content.</param>
+            <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="T:LTest.Mocks.LTestMockSender`1">
             <summary>
             Mock sender.
             </summary>
             <typeparam name="T">Model to store.</typeparam>
         </member>
-        <member name="F:LTest.Mocks.MockSender`1.Messages">
+        <member name="F:LTest.Mocks.LTestMockSender`1.Messages">
             <summary>
             Sent messages;
             </summary>
         </member>
-        <member name="P:LTest.Mocks.MockSender`1.SentMessages">
+        <member name="P:LTest.Mocks.LTestMockSender`1.SentMessages">
             <summary>
             Access sent messages.
             </summary>
         </member>
-        <member name="M:LTest.Mocks.MockSender`1.ResetAsync">
+        <member name="M:LTest.Mocks.LTestMockSender`1.ResetAsync">
             <summary>
             Resets the class.
             </summary>

@@ -1,7 +1,6 @@
+using LTest.Http.Models;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
@@ -113,8 +112,120 @@ namespace LTest.Http.Services
             return this;
         }
 
+        #region Start assering with status methods
         /// <summary>
-        /// Starts assertion builder phase.
+        /// Starts asserting with success status code.
+        /// </summary>
+        /// <returns>An AssertBuilder.</returns>
+        public AssertBuilder<HttpResponseMessage> ShouldSuccess()
+        {
+            return ShouldSuccess<HttpResponseMessage>();
+        }
+
+        /// <summary>
+        /// Starts asserting with success status code.
+        /// </summary>
+        /// <returns>An AssertBuilder.</returns>
+        public AssertBuilder<TResponse> ShouldSuccess<TResponse>()
+            where TResponse : class
+        {
+            return Assert<TResponse>()
+                .EnsureSuccessStatusCode();
+        }
+
+        /// <summary>
+        /// Starts asserting with specified status code.
+        /// </summary>
+        /// <param name="statusCode">The status code.</param>
+        /// <returns>An AssertBuilder.</returns>
+        public AssertBuilder<HttpResponseMessage> ShouldBeStatus(HttpStatusCode statusCode)
+        {
+            return ShouldBeStatus<HttpResponseMessage>(statusCode);
+        }
+
+        /// <summary>
+        /// Starts asserting with specified status code.
+        /// </summary>
+        /// <param name="statusCode">The status code.</param>
+        /// <returns>An AssertBuilder.</returns>
+        public AssertBuilder<TResponse> ShouldBeStatus<TResponse>(HttpStatusCode statusCode)
+            where TResponse : class
+        {
+            return Assert<TResponse>()
+                .AssertStatusCode(statusCode);
+        }
+
+        /// <summary>
+        /// Starts asserting problem details with specified status code.
+        /// </summary>
+        /// <param name="statusCode">The status code.</param>
+        /// <returns>An AssertBuilder.</returns>
+        public AssertBuilder<LTestProblemDetails> ShouldBeProblemWithStatus<TResponse>(HttpStatusCode statusCode)
+            where TResponse : class
+        {
+            return ShouldBeStatus<LTestProblemDetails>(statusCode);
+        }
+        #endregion
+
+        #region Execute with status assertion methods
+        /// <summary>
+        /// Executes the request asserting success status code.
+        /// </summary>
+        /// <returns>An AssertBuilder.</returns>
+        public Task<HttpResponseMessage> ExecuteSuccessAsync()
+        {
+            return ExecuteSuccessAsync<HttpResponseMessage>();
+        }
+
+        /// <summary>
+        /// Executes the request asserting success status code.
+        /// </summary>
+        /// <returns>An AssertBuilder.</returns>
+        public Task<TResponse> ExecuteSuccessAsync<TResponse>()
+            where TResponse : class
+        {
+            return Assert<TResponse>()
+                .EnsureSuccessStatusCode()
+                .ExecuteAsync();
+        }
+
+        /// <summary>
+        /// Executes the request asserting specified status code.
+        /// </summary>
+        /// <param name="statusCode">The status code.</param>
+        /// <returns>An AssertBuilder.</returns>
+        public Task<HttpResponseMessage> ExecuteAssertingStatusAsync(HttpStatusCode statusCode)
+        {
+            return ExecuteAssertingStatusAsync<HttpResponseMessage>(statusCode);
+        }
+
+        /// <summary>
+        /// Executes the request asserting specified status code.
+        /// </summary>
+        /// <param name="statusCode">The status code.</param>
+        /// <returns>An AssertBuilder.</returns>
+        public Task<TResponse> ExecuteAssertingStatusAsync<TResponse>(HttpStatusCode statusCode)
+            where TResponse : class
+        {
+            return Assert<TResponse>()
+                .AssertStatusCode(statusCode)
+                .ExecuteAsync();
+        }
+
+        /// <summary>
+        /// Starts asserting problem details with specified status code.
+        /// </summary>
+        /// <param name="statusCode">The status code.</param>
+        /// <returns>An AssertBuilder.</returns>
+        public Task<LTestProblemDetails> ExecuteAssertingProblemAndStatusAsync<TResponse>(HttpStatusCode statusCode)
+            where TResponse : class
+        {
+            return ExecuteAssertingStatusAsync<LTestProblemDetails>(statusCode);
+        }
+        #endregion
+
+        /// <summary>
+        /// Create assert builder.
         /// </summary>
         public AssertBuilder<HttpResponseMessage> Assert()
         {
@@ -122,7 +233,7 @@ namespace LTest.Http.Services
         }
 
         /// <summary>
-        /// Starts assertion builder phase.
+        /// Create assert builder.
         /// </summary>
         public AssertBuilder<TResponse> Assert<TResponse>()
             where TResponse : class
