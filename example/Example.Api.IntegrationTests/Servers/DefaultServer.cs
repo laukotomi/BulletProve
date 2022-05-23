@@ -25,7 +25,7 @@ namespace IntegrationTests.Servers
         protected override void ConfigureTestServices(IServiceCollection services)
         {
             // Behaviors
-            services.AddCleanDatabaseBehavior<AppDbContext>();
+            services.AddCleanDatabaseHook<AppDbContext>();
             services.AddSingleton<IBeforeTestHook, SeedDatabaseHook>();
 
             // Mocks

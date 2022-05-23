@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DA23EBEE-667
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LTest", "src\LTest\LTest.csproj", "{42F5E3B0-CFC6-4FCF-B88B-E0D1016A4EE4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LTest.EFCore", "src\LTest.EFCore\LTest.EFCore.csproj", "{30893686-F130-4803-B7C3-AB5A056205A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LTest.EfCore", "src\LTest.EfCore\LTest.EfCore.csproj", "{30893686-F130-4803-B7C3-AB5A056205A1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LTest.Http", "src\LTest.Http\LTest.Http.csproj", "{1127DB45-539B-451A-B47D-C185895F90EC}"
 EndProject

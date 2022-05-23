@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using System;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LTest.EFCore.Services
 {

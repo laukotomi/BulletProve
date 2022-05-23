@@ -24,13 +24,13 @@ namespace LTest
         }
 
         /// <summary>
-        /// Adds clean database behavior for a DbContext.
+        /// Adds clean database hook for a DbContext.
         /// </summary>
         /// <param name="services">IServiceCollection.</param>
-        public static IServiceCollection AddCleanDatabaseBehavior<TDbContext>(this IServiceCollection services)
+        public static IServiceCollection AddCleanDatabaseHook<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
-            services.AddSingleton<IBeforeTestHook, CleanDatabaseBehavior<TDbContext>>();
+            services.AddSingleton<IBeforeTestHook, CleanDatabaseHook<TDbContext>>();
 
             return services;
         }

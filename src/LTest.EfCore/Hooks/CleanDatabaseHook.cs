@@ -4,15 +4,13 @@ using LTest.Hooks;
 using LTest.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 
 namespace LTest.EFCore.Behaviors
 {
     /// <summary>
     /// Cleans database using EF features.
     /// </summary>
-    public class CleanDatabaseBehavior<TDbContext> : IBeforeTestHook
+    public class CleanDatabaseHook<TDbContext> : IBeforeTestHook
         where TDbContext : DbContext
     {
         private readonly IServiceProvider _serviceProvider;
@@ -20,12 +18,12 @@ namespace LTest.EFCore.Behaviors
         private readonly ITestLogger _testLogger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CleanDatabaseBehavior{TDbContext}"/> class.
+        /// Initializes a new instance of the <see cref="CleanDatabaseHook{TDbContext}"/> class.
         /// </summary>
         /// <param name="serviceProvider">Service provider.</param>
         /// <param name="databaseCleanupService">Database cleanup service.</param>
         /// <param name="testLogger">Logger.</param>
-        public CleanDatabaseBehavior(
+        public CleanDatabaseHook(
             IServiceProvider serviceProvider,
             DatabaseCleanupService databaseCleanupService,
             ITestLogger testLogger)
