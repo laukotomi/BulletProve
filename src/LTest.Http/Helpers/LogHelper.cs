@@ -1,9 +1,5 @@
 using LTest.ExtensionMethods;
 using LTest.Http.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
 
 namespace LTest.Http.Helpers
@@ -57,7 +53,7 @@ namespace LTest.Http.Helpers
         /// <param name="configuration">The configuration.</param>
         private static void LogContent(StringBuilder builder, HttpContent content, HttpConfiguration configuration)
         {
-            if (content.Headers.ContentType != null && IsLoggableMediaType(content.Headers.ContentType.MediaType))
+            if (content.Headers.ContentType != null && IsLoggableMediaType(content.Headers.ContentType?.MediaType))
             {
                 var responseMessage = content.ReadAsStringAsync().GetAwaiter().GetResult();
 
@@ -73,8 +69,13 @@ namespace LTest.Http.Helpers
         /// </summary>
         /// <param name="mediaType">The media type.</param>
         /// <returns>A bool.</returns>
-        private static bool IsLoggableMediaType(string mediaType)
+        private static bool IsLoggableMediaType(string? mediaType)
         {
+            if (string.IsNullOrEmpty(mediaType))
+            {
+                return false;
+            }
+
             return mediaType.StartsWith("text", StringComparison.OrdinalIgnoreCase)
                 || mediaType.EndsWith("json", StringComparison.OrdinalIgnoreCase)
                 || mediaType.EndsWith("xml", StringComparison.OrdinalIgnoreCase);

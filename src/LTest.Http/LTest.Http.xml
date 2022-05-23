@@ -9,43 +9,14 @@
             Configuration.
             </summary>
         </member>
-        <member name="M:LTest.Http.Configuration.HttpConfiguration.#ctor(System.Int32,System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:LTest.Http.Configuration.HttpConfiguration"/> class.
-            </summary>
-            <param name="httpHeaderLogMaxLength">The maximum length of a http header content to log.</param>
-            <param name="httpContentLogMaxLength">The maximum length of a http message content to log.</param>
-        </member>
         <member name="P:LTest.Http.Configuration.HttpConfiguration.HttpHeaderLogMaxLength">
             <summary>
-            The maximum length of a http header content to log.
+            The maximum length of a http header content to log. Default is <see cref="F:LTest.Http.Configuration.HttpConfiguration._httpHeaderLogMaxLength"/>.
             </summary>
         </member>
         <member name="P:LTest.Http.Configuration.HttpConfiguration.HttpContentLogMaxLength">
             <summary>
-            The maximum length of a http message content to log.
-            </summary>
-        </member>
-        <member name="T:LTest.Http.Configuration.HttpConfigurationBuilder">
-            <summary>
-            Configuration builder.
-            </summary>
-        </member>
-        <member name="M:LTest.Http.Configuration.HttpConfigurationBuilder.SetHttpHeaderLogMaxLength(System.Int32)">
-            <summary>
-            Sets the max length of the http header log. Default is 50.
-            </summary>
-            <param name="value">The new value.</param>
-        </member>
-        <member name="M:LTest.Http.Configuration.HttpConfigurationBuilder.SetHttpContentLogMaxLength(System.Int32)">
-            <summary>
-            Sets the max length of the request / response content log. Default is 1000.
-            </summary>
-            <param name="value">The new value.</param>
-        </member>
-        <member name="M:LTest.Http.Configuration.HttpConfigurationBuilder.Build">
-            <summary>
-            Returns a new <see cref="T:LTest.Http.Configuration.HttpConfiguration"/> instance.
+            The maximum length of a http message content to log. Default is <see cref="F:LTest.Http.Configuration.HttpConfiguration._httpContentLogMaxLength"/>.
             </summary>
         </member>
         <member name="T:LTest.Http.Helpers.LogHelper">
@@ -183,18 +154,19 @@
             </summary>
             <param name="statusCode">The status code.</param>
         </member>
-        <member name="M:LTest.Http.Services.AssertBuilder`1.GetResponseObject(System.Net.Http.HttpResponseMessage)">
+        <member name="M:LTest.Http.Services.AssertBuilder`1.GetResponseObjectAsync(System.Net.Http.HttpResponseMessage)">
             <summary>
             Gets the response object.
             </summary>
             <param name="response">The response.</param>
             <returns>A TResponse.</returns>
         </member>
-        <member name="M:LTest.Http.Services.AssertBuilder`1.TryDeserializeReponseMessage(System.String)">
+        <member name="M:LTest.Http.Services.AssertBuilder`1.TryDeserializeReponseMessage(System.String,System.Type)">
             <summary>
             Tries the deserialize reponse message.
             </summary>
             <param name="responseMessage">The response message.</param>
+            <param name="responseType">The response type.</param>
             <returns>A TResponse.</returns>
         </member>
         <member name="M:LTest.Http.Services.AssertBuilder`1.RunAssertions``1(System.Collections.Generic.List{System.Action{``0}},``0,System.String)">
@@ -379,7 +351,7 @@
             ServiceCollectionExtensions.
             </summary>
         </member>
-        <member name="M:LTest.ServiceCollectionExtensions.AddTestHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{LTest.Http.Configuration.HttpConfigurationBuilder})">
+        <member name="M:LTest.ServiceCollectionExtensions.AddTestHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{LTest.Http.Configuration.HttpConfiguration})">
             <summary>
             Adds services for Http testing.
             </summary>

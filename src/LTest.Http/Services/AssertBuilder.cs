@@ -7,11 +7,7 @@ using LTest.Logging;
 using LTest.LogSniffer;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace LTest.Http.Services
 {
@@ -33,7 +29,7 @@ namespace LTest.Http.Services
         private readonly List<Action<HttpResponseMessage>> _responseMessageAssertions = new();
         private readonly List<Action<IReadOnlyCollection<ServerLogEvent>>> _serverLogAssertions = new();
 
-        private Action<HttpStatusCode> _statusCodeAssert;
+        private Action<HttpStatusCode>? _statusCodeAssert;
 
         /// <summary>
         /// Gets the request.
@@ -144,7 +140,7 @@ namespace LTest.Http.Services
             RunAssertions(_responseMessageAssertions, response, "reponse message");
             RunAssertions(_serverLogAssertions, _logSniffer.GetServerLogs(), "LogSniffer");
 
-            var responseObject = GetResponseObject(response);
+            var responseObject = await GetResponseObjectAsync(response);
             RunAssertions(_responseObjectAssertions, responseObject, "reponse object");
 
             loggerScope.Finish(logger => logger.LogInformation($"Request '{_label}' executed"));
@@ -174,15 +170,16 @@ namespace LTest.Http.Services
         /// </summary>
         /// <param name="response">The response.</param>
         /// <returns>A TResponse.</returns>
-        private static TResponse GetResponseObject(HttpResponseMessage response)
+        private static async Task<TResponse> GetResponseObjectAsync(HttpResponseMessage response)
         {
-            if (typeof(TResponse) == typeof(HttpResponseMessage))
+            var responseType = typeof(TResponse);
+            if (responseType == typeof(HttpResponseMessage))
             {
-                return response as TResponse;
+                return (response as TResponse)!;
             }
 
-            var responseMessage = response.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
-            var responseObject = TryDeserializeReponseMessage(responseMessage);
+            var responseMessage = await response.Content.ReadAsStringAsync();
+            var responseObject = TryDeserializeReponseMessage(responseMessage, responseType);
             response.Dispose();
 
             return responseObject;
@@ -192,16 +189,17 @@ namespace LTest.Http.Services
         /// Tries the deserialize reponse message.
         /// </summary>
         /// <param name="responseMessage">The response message.</param>
+        /// <param name="responseType">The response type.</param>
         /// <returns>A TResponse.</returns>
-        private static TResponse TryDeserializeReponseMessage(string responseMessage)
+        private static TResponse TryDeserializeReponseMessage(string responseMessage, Type responseType)
         {
-            if (typeof(TResponse) == typeof(EmptyResponse) && string.IsNullOrWhiteSpace(responseMessage))
+            if (responseType == typeof(EmptyResponse) && string.IsNullOrWhiteSpace(responseMessage))
             {
-                return JsonConvert.DeserializeObject<TResponse>("{}");
+                return JsonConvert.DeserializeObject<TResponse>("{}")!;
             }
-            else if (typeof(TResponse) == typeof(string))
+            else if (responseType == typeof(string))
             {
-                return responseMessage as TResponse;
+                return (responseMessage as TResponse)!;
             }
 
             try
@@ -209,7 +207,7 @@ namespace LTest.Http.Services
                 return JsonConvert.DeserializeObject<TResponse>(responseMessage, new JsonSerializerSettings
                 {
                     MissingMemberHandling = MissingMemberHandling.Error
-                });
+                })!;
             }
             catch (Exception ex)
             {

@@ -5,25 +5,17 @@ namespace LTest.Http.Configuration
     /// </summary>
     public class HttpConfiguration
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HttpConfiguration"/> class.
-        /// </summary>
-        /// <param name="httpHeaderLogMaxLength">The maximum length of a http header content to log.</param>
-        /// <param name="httpContentLogMaxLength">The maximum length of a http message content to log.</param>
-        public HttpConfiguration(int httpHeaderLogMaxLength, int httpContentLogMaxLength)
-        {
-            HttpHeaderLogMaxLength = httpHeaderLogMaxLength;
-            HttpContentLogMaxLength = httpContentLogMaxLength;
-        }
+        private static readonly int _httpHeaderLogMaxLength = 50;
+        private static readonly int _httpContentLogMaxLength = 1000;
 
         /// <summary>
-        /// The maximum length of a http header content to log.
+        /// The maximum length of a http header content to log. Default is <see cref="_httpHeaderLogMaxLength"/>.
         /// </summary>
-        public int HttpHeaderLogMaxLength { get; }
+        public int HttpHeaderLogMaxLength { get; } = _httpHeaderLogMaxLength;
 
         /// <summary>
-        /// The maximum length of a http message content to log.
+        /// The maximum length of a http message content to log. Default is <see cref="_httpContentLogMaxLength"/>.
         /// </summary>
-        public int HttpContentLogMaxLength { get; }
+        public int HttpContentLogMaxLength { get; } = _httpContentLogMaxLength;
     }
 }

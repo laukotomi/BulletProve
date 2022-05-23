@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace LTest.Http.Services
 {
@@ -29,12 +28,17 @@ namespace LTest.Http.Services
         /// </summary>
         /// <typeparam name="TController">Type of the controller.</typeparam>
         /// <param name="actionNameSelector">A lambda that returns the nameof(Action).</param>
-        public HttpRequestService CreateFor<TController>(Func<TController, string> actionNameSelector)
+        public HttpRequestService CreateFor<TController>(Func<TController?, string> actionNameSelector)
             where TController : ControllerBase
         {
             var controllerType = typeof(TController);
             var actionName = actionNameSelector(null);
             var action = controllerType.GetMethod(actionName);
+            if (action == null)
+            {
+                throw new InvalidOperationException($"Action '{actionName} in controller '{controllerType.Name}' can not be found!");
+            }
+
             var method = _httpMethodService.GetHttpMethodForAction(action);
 
             return new HttpRequestService(controllerType.Name, actionName, method, _serviceProvider);
@@ -64,7 +68,7 @@ namespace LTest.Http.Services
         /// Creates a HTTP request object for a controller's action.
         /// </summary>
         /// <param name="actionNameSelector">A lambda that returns the nameof(Action).</param>
-        public HttpRequestService CreateFor(Func<TController, string> actionNameSelector)
+        public HttpRequestService CreateFor(Func<TController?, string> actionNameSelector)
         {
             return CreateFor<TController>(actionNameSelector);
         }

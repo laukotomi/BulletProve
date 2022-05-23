@@ -1,6 +1,5 @@
 using LTest.ExtensionMethods;
 using Microsoft.AspNetCore.Routing;
-using System;
 using System.Text.Json;
 
 namespace LTest.Http.Services
@@ -27,7 +26,7 @@ namespace LTest.Http.Services
         /// <param name="actionName">The name of the controller action.</param>
         /// <param name="controllerName">The name of the controller.</param>
         /// <param name="values">Uri values if there are any.</param>
-        public Uri GetRequestUri(string actionName, string controllerName, object values = null)
+        public Uri GetRequestUri(string actionName, string controllerName, object? values = null)
         {
             actionName = actionName.TrimEnd("Async");
             controllerName = controllerName.TrimEnd("Controller");

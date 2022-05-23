@@ -1,7 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace LTest.Http.Interfaces
+﻿namespace LTest.Http.Interfaces
 {
     /// <summary>
     /// A service that will be run after server Http request was sent.

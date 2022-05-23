@@ -20,7 +20,7 @@ namespace IntegrationTests.Common
         /// <param name="actionNameSelector">The action name selector.</param>
         /// <param name="token">The token.</param>
         /// <returns>A HttpRequestService.</returns>
-        public static HttpRequestService CreateRequest<TController>(this HttpRequestBuilder builder, Func<TController, string> actionNameSelector, string? token = null)
+        public static HttpRequestService CreateRequest<TController>(this HttpRequestBuilder builder, Func<TController?, string> actionNameSelector, string? token = null)
             where TController : ControllerBase
         {
             var request = builder.CreateFor(actionNameSelector);
@@ -43,7 +43,7 @@ namespace IntegrationTests.Common
         /// <param name="actionNameSelector">The action name selector.</param>
         /// <param name="token">The token.</param>
         /// <returns>A HttpRequestService.</returns>
-        public static HttpRequestService CreateRequest<TController>(this HttpRequestBuilder<TController> builder, Func<TController, string> actionNameSelector, string? token = null)
+        public static HttpRequestService CreateRequest<TController>(this HttpRequestBuilder<TController> builder, Func<TController?, string> actionNameSelector, string? token = null)
             where TController : ControllerBase
         {
             return CreateRequest(builder as HttpRequestBuilder, actionNameSelector, token);
