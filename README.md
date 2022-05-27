@@ -289,6 +289,8 @@ The first two attributes makes your tests look nicer in the Test Explorer window
 - Create your first test server with the [DefaultTestServer] attribute as shown in the first section.
 - Write your integration tests. Don't forget to inherit from LTestBase and generate the constructor.
 
+Example: 
+
     public class UserControllerTests : LTestBase
     {
         private readonly HttpRequestBuilder<UserController> _userController;
