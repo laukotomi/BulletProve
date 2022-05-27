@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace LTest.Http.Services
 {
@@ -8,19 +10,19 @@ namespace LTest.Http.Services
     public class HttpRequestBuilder
     {
         private readonly HttpMethodService _httpMethodService;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly LTestFacade _facade;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpRequestBuilder"/> class.
         /// </summary>
         /// <param name="httpMethodService"><see cref="HttpMethodService"/> object.</param>
-        /// <param name="serviceProvider">Service provider.</param>
+        /// <param name="facade">Service provider.</param>
         public HttpRequestBuilder(
             HttpMethodService httpMethodService,
-            IServiceProvider serviceProvider)
+            LTestFacade facade)
         {
             _httpMethodService = httpMethodService;
-            _serviceProvider = serviceProvider;
+            _facade = facade;
         }
 
         /// <summary>
@@ -31,8 +33,30 @@ namespace LTest.Http.Services
         public HttpRequestService CreateFor<TController>(Func<TController?, string> actionNameSelector)
             where TController : ControllerBase
         {
-            var controllerType = typeof(TController);
             var actionName = actionNameSelector(null);
+            return CreateHttpRequestService(typeof(TController), actionName);
+        }
+
+        /// <summary>
+        /// Creates a HTTP request object for a controller's action.
+        /// </summary>
+        /// <typeparam name="TController">Type of the controller.</typeparam>
+        /// <param name="actionSelector">A lambda that returns the action.</param>
+        public HttpRequestService CreateFor<TController>(Expression<Func<TController, Delegate>> actionSelector)
+            where TController : ControllerBase
+        {
+            var actionName = GetActionName(actionSelector);
+            return CreateHttpRequestService(typeof(TController), actionName);
+        }
+
+        /// <summary>
+        /// Creates the http request service.
+        /// </summary>
+        /// <param name="controllerType">The controller type.</param>
+        /// <param name="actionName">The action name.</param>
+        /// <returns>A HttpRequestService.</returns>
+        private HttpRequestService CreateHttpRequestService(Type controllerType, string actionName)
+        {
             var action = controllerType.GetMethod(actionName);
             if (action == null)
             {
@@ -41,7 +65,25 @@ namespace LTest.Http.Services
 
             var method = _httpMethodService.GetHttpMethodForAction(action);
 
-            return new HttpRequestService(controllerType.Name, actionName, method, _serviceProvider);
+            return new HttpRequestService(controllerType.Name, actionName, method, _facade);
+        }
+
+        /// <summary>
+        /// Gets the action name.
+        /// </summary>
+        /// <param name="lambda">The lambda.</param>
+        /// <returns>A string.</returns>
+        private static string GetActionName(LambdaExpression lambda)
+        {
+            if (lambda.Body is UnaryExpression unary &&
+                unary.Operand is MethodCallExpression call &&
+                call.Object is ConstantExpression expression &&
+                expression.Value is MethodInfo method)
+            {
+                return method.Name;
+            }
+
+            throw new InvalidOperationException("Invalid action selector used. Use like this: x => x.Action");
         }
     }
 
@@ -56,12 +98,21 @@ namespace LTest.Http.Services
         /// Initializes a new instance of the <see cref="HttpRequestBuilder{TController>"/> class.
         /// </summary>
         /// <param name="httpMethodService"><see cref="HttpMethodService"/> object.</param>
-        /// <param name="serviceProvider">Service provider.</param>
+        /// <param name="facade">Service provider.</param>
         public HttpRequestBuilder(
             HttpMethodService httpMethodService,
-            IServiceProvider serviceProvider)
-            : base(httpMethodService, serviceProvider)
+            LTestFacade facade)
+            : base(httpMethodService, facade)
         {
+        }
+
+        /// <summary>
+        /// Creates a HTTP request object for a controller's action.
+        /// </summary>
+        /// <param name="actionSelector">A lambda that returns the action.</param>
+        public HttpRequestService CreateFor(Expression<Func<TController, Delegate>> actionSelector)
+        {
+            return CreateFor<TController>(actionSelector);
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ using LTest.Http.Services;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
-namespace IntegrationTests.Controllers
+namespace Example.Api.IntegrationTests.Controllers
 {
     /// <summary>
     /// The user controller tests.
@@ -23,7 +23,7 @@ namespace IntegrationTests.Controllers
         public UserControllerTests(TestServerManager serverManager, ITestOutputHelper output)
             : base(serverManager, output)
         {
-            _userController = Services.GetHttpRequestBuilder<UserController>();
+            _userController = LTestServices.GetHttpRequestBuilder<UserController>();
         }
 
         /// <summary>
@@ -32,14 +32,12 @@ namespace IntegrationTests.Controllers
         [Fact]
         public async Task WhenUserIsLoggedIn_ThenItsDataReturned()
         {
-            var token = await _userController.LoginAsAdminAndGetTokenAsync(Services);
+            var token = await _userController.LoginAsAdminAndGetTokenAsync();
 
             var userData = await _userController
-                .CreateFor(x => nameof(x.GetUserDataAsync))
+                .CreateFor(x => x.GetUserDataAsync)
                 .SetHeaders(x => x.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(token))
-                .Assert<UserController.UserDto>()
-                .EnsureSuccessStatusCode()
-                .ExecuteAsync();
+                .ExecuteSuccessAsync<UserController.UserDto>();
 
             userData.Username.Should().Be(TestConstants.AdminUsername);
         }
@@ -51,43 +49,40 @@ namespace IntegrationTests.Controllers
         [Fact]
         public async Task WhenUserIsRegistered_ThenItCanLogin()
         {
-            var authController = Services.GetHttpRequestBuilder<AuthController>();
-            var adminToken = await _userController.LoginAsAdminAndGetTokenAsync(Services);
+            var authController = LTestServices.GetHttpRequestBuilder<AuthController>();
+            var adminToken = await _userController.LoginAsAdminAndGetTokenAsync();
             var username = "NewUser";
             var password = "Password";
 
-            await authController
-                .CreateFor(x => nameof(x.LoginAsync))
-                .SetJsonContent(new AuthController.LoginCommand
-                {
-                    Username = username,
-                    Password = password
-                })
-                .Assert<string>()
-                .AssertStatusCode(System.Net.HttpStatusCode.Unauthorized)
-                .ExecuteAsync();
+            using (LTestServices.LogSniffer.ExpectedLogs.Add(x => x.Message == "Wrong username or password"))
+            {
+                using var response1 = await authController
+                    .CreateFor(x => x.LoginAsync)
+                    .SetJsonContent(new AuthController.LoginCommand
+                    {
+                        Username = username,
+                        Password = password
+                    })
+                    .ExecuteAssertingStatusAsync(System.Net.HttpStatusCode.Unauthorized);
+            }
 
-            await _userController
-                .CreateRequest(x => nameof(x.RegisterUserAsync), adminToken)
+            using var response2 = await _userController
+                .CreateRequest(x => x.RegisterUserAsync, adminToken)
                 .SetJsonContent(new UserController.RegisterUserCommand
                 {
                     UserName = username,
                     Password = password
                 })
-                .Assert()
-                .EnsureSuccessStatusCode()
-                .ExecuteAsync();
+                .ExecuteSuccessAsync();
 
             var token = await authController
-                .CreateFor(x => nameof(x.LoginAsync))
+                .CreateFor(x => x.LoginAsync)
                 .SetJsonContent(new AuthController.LoginCommand
                 {
                     Username = username,
                     Password = password
                 })
-                .Assert<string>()
-                .EnsureSuccessStatusCode()
-                .ExecuteAsync();
+                .ExecuteSuccessAsync<string>();
 
             token.Should().NotBeNullOrEmpty();
         }

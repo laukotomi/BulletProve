@@ -4,6 +4,7 @@ using LTest.Hooks;
 using LTest.Http;
 using LTest.Logging;
 using LTest.LogSniffer;
+using LTest.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -103,14 +104,15 @@ namespace LTest
         /// <returns>An LTestConfiguration.</returns>
         private static LTestConfiguration InitConfiguration()
         {
-            var @namespace = typeof(TStartup).Namespace;
+            var startupType = typeof(TStartup);
             LogFilter<string> logFilter;
 
-            if (!string.IsNullOrEmpty(@namespace))
-            {
-                @namespace = @namespace.Split('.')[0];
+            var appName = startupType.Namespace?.Split('.')[0]
+                ?? startupType.Assembly.FullName?.Split(',')[0].Split('.')[0];
 
-                var filter = new LogEventFilter<string>("", x => x.StartsWith(@namespace, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrEmpty(appName))
+            {
+                var filter = new LogEventFilter<string>("AppName", x => x.StartsWith(appName, StringComparison.OrdinalIgnoreCase));
                 logFilter = new LogFilter<string>(new[] { filter });
             }
             else
@@ -138,6 +140,12 @@ namespace LTest
 
             // LogSniffer
             services.AddSingleton<ILogSnifferService, LogSnifferService>();
+
+            // DisposableCollector
+            services.AddScoped<DisposableCollertor>();
+
+            // Facade
+            services.AddScoped<LTestFacade>();
         }
 
         /// <summary>

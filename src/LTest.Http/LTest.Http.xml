@@ -135,12 +135,12 @@
             Gets the request.
             </summary>
         </member>
-        <member name="M:LTest.Http.Services.AssertBuilder`1.#ctor(System.Net.Http.HttpRequestMessage,System.IServiceProvider,System.String)">
+        <member name="M:LTest.Http.Services.AssertBuilder`1.#ctor(System.Net.Http.HttpRequestMessage,LTest.LTestFacade,System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:LTest.Http.Services.AssertBuilder`1"/> class.
             </summary>
             <param name="request">Http request message.</param>
-            <param name="serviceProvider">Service provider.</param>
+            <param name="facade">Service provider.</param>
             <param name="label">Label to be logged.</param>
         </member>
         <member name="M:LTest.Http.Services.AssertBuilder`1.EnsureSuccessStatusCode">
@@ -223,12 +223,12 @@
             Builder for HTTP requests.
             </summary>
         </member>
-        <member name="M:LTest.Http.Services.HttpRequestBuilder.#ctor(LTest.Http.Services.HttpMethodService,System.IServiceProvider)">
+        <member name="M:LTest.Http.Services.HttpRequestBuilder.#ctor(LTest.Http.Services.HttpMethodService,LTest.LTestFacade)">
             <summary>
             Initializes a new instance of the <see cref="T:LTest.Http.Services.HttpRequestBuilder"/> class.
             </summary>
             <param name="httpMethodService"><see cref="T:LTest.Http.Services.HttpMethodService"/> object.</param>
-            <param name="serviceProvider">Service provider.</param>
+            <param name="facade">Service provider.</param>
         </member>
         <member name="M:LTest.Http.Services.HttpRequestBuilder.CreateFor``1(System.Func{``0,System.String})">
             <summary>
@@ -237,18 +237,46 @@
             <typeparam name="TController">Type of the controller.</typeparam>
             <param name="actionNameSelector">A lambda that returns the nameof(Action).</param>
         </member>
+        <member name="M:LTest.Http.Services.HttpRequestBuilder.CreateFor``1(System.Linq.Expressions.Expression{System.Func{``0,System.Delegate}})">
+            <summary>
+            Creates a HTTP request object for a controller's action.
+            </summary>
+            <typeparam name="TController">Type of the controller.</typeparam>
+            <param name="actionSelector">A lambda that returns the action.</param>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestBuilder.CreateHttpRequestService(System.Type,System.String)">
+            <summary>
+            Creates the http request service.
+            </summary>
+            <param name="controllerType">The controller type.</param>
+            <param name="actionName">The action name.</param>
+            <returns>A HttpRequestService.</returns>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestBuilder.GetActionName(System.Linq.Expressions.LambdaExpression)">
+            <summary>
+            Gets the action name.
+            </summary>
+            <param name="lambda">The lambda.</param>
+            <returns>A string.</returns>
+        </member>
         <member name="T:LTest.Http.Services.HttpRequestBuilder`1">
             <summary>
             Builder for HTTP requests.
             </summary>
             <typeparam name="TController">Type of the controller.</typeparam>
         </member>
-        <member name="M:LTest.Http.Services.HttpRequestBuilder`1.#ctor(LTest.Http.Services.HttpMethodService,System.IServiceProvider)">
+        <member name="M:LTest.Http.Services.HttpRequestBuilder`1.#ctor(LTest.Http.Services.HttpMethodService,LTest.LTestFacade)">
             <summary>
             Initializes a new instance of the <see cref="T:LTest.Http.Services.HttpRequestBuilder`1"/> class.
             </summary>
             <param name="httpMethodService"><see cref="T:LTest.Http.Services.HttpMethodService"/> object.</param>
-            <param name="serviceProvider">Service provider.</param>
+            <param name="facade">Service provider.</param>
+        </member>
+        <member name="M:LTest.Http.Services.HttpRequestBuilder`1.CreateFor(System.Linq.Expressions.Expression{System.Func{`0,System.Delegate}})">
+            <summary>
+            Creates a HTTP request object for a controller's action.
+            </summary>
+            <param name="actionSelector">A lambda that returns the action.</param>
         </member>
         <member name="M:LTest.Http.Services.HttpRequestBuilder`1.CreateFor(System.Func{`0,System.String})">
             <summary>
@@ -266,14 +294,14 @@
             Gets the request.
             </summary>
         </member>
-        <member name="M:LTest.Http.Services.HttpRequestService.#ctor(System.String,System.String,System.Net.Http.HttpMethod,System.IServiceProvider)">
+        <member name="M:LTest.Http.Services.HttpRequestService.#ctor(System.String,System.String,System.Net.Http.HttpMethod,LTest.LTestFacade)">
             <summary>
             Initializes a new instance of the <see cref="T:LTest.Http.Services.HttpRequestService"/> class.
             </summary>
             <param name="controllerName">Controller name.</param>
             <param name="actionName">Action name.</param>
             <param name="method">Http method.</param>
-            <param name="serviceProvider">Service provider.</param>
+            <param name="facade"></param>
         </member>
         <member name="M:LTest.Http.Services.HttpRequestService.SetHeaders(System.Action{System.Net.Http.Headers.HttpRequestHeaders})">
             <summary>
@@ -399,12 +427,6 @@
             </summary>
             <returns>A string.</returns>
         </member>
-        <member name="M:LTest.Http.Services.LabelGeneratorService.ResetAsync">
-            <summary>
-            Resets the counter.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:LTest.Http.Services.LinkGeneratorService">
             <summary>
             A service that can return request uri for a controller action.
@@ -424,35 +446,35 @@
             <param name="controllerName">The name of the controller.</param>
             <param name="values">Uri values if there are any.</param>
         </member>
-        <member name="T:LTest.IntegrationTestServiceProviderExtensions">
-            <summary>
-            Extensions for integration test service provider.
-            </summary>
-        </member>
-        <member name="M:LTest.IntegrationTestServiceProviderExtensions.GetHttpRequestBuilder(LTest.IntegrationTestServiceProvider)">
-            <summary>
-            Returns the http request builder.
-            </summary>
-            <param name="serviceProvider">Integration test service provider.</param>
-        </member>
-        <member name="M:LTest.IntegrationTestServiceProviderExtensions.GetHttpRequestBuilder``1(LTest.IntegrationTestServiceProvider)">
-            <summary>
-            Returns the http request builder.
-            </summary>
-            <param name="serviceProvider">Integration test service provider.</param>
-            <typeparam name="TController">Type of the controller.</typeparam>
-        </member>
-        <member name="T:LTest.ServiceCollectionExtensions">
+        <member name="T:LTest.DependencyInjection">
             <summary>
             ServiceCollectionExtensions.
             </summary>
         </member>
-        <member name="M:LTest.ServiceCollectionExtensions.AddTestHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{LTest.Http.Configuration.HttpConfiguration})">
+        <member name="M:LTest.DependencyInjection.AddLTestHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{LTest.Http.Configuration.HttpConfiguration})">
             <summary>
             Adds services for Http testing.
             </summary>
             <param name="services">IServiceCollection.</param>
             <param name="configAction">Configuration action.</param>
+        </member>
+        <member name="T:LTest.LTestFacadeExtensions">
+            <summary>
+            Extensions for integration test service provider.
+            </summary>
+        </member>
+        <member name="M:LTest.LTestFacadeExtensions.GetHttpRequestBuilder(LTest.LTestFacade)">
+            <summary>
+            Returns the http request builder.
+            </summary>
+            <param name="serviceProvider">Integration test service provider.</param>
+        </member>
+        <member name="M:LTest.LTestFacadeExtensions.GetHttpRequestBuilder``1(LTest.LTestFacade)">
+            <summary>
+            Returns the http request builder.
+            </summary>
+            <param name="serviceProvider">Integration test service provider.</param>
+            <typeparam name="TController">Type of the controller.</typeparam>
         </member>
     </members>
 </doc>

@@ -35,7 +35,26 @@ Hook interfaces:
 - IAfterHttpRequestHook (for LTest.Http): runs after every http requests.
 
 ### Logging
-Using 
+
+While the test is running you have the ability to log useful information in the Test Explorer's output using a wrapper about xUnit's ITestOutputHelper. Also the server logs can be added to the output so you can see exactly what happened. 
 
 ### LogSniffer
 
+LogSniffer is a feature that can read the application logs and decide if that log was intented or not. The idea of this feature come up when an application that used Entity Framework logged many warning messages, because the queries were not correctly formatted. By default when LogSniffer is enabled only log levels of information and below are accepted. The rule is that you have to add expected logs before sending the request to the server (ex. warnings when you test bad logins or validation). This can be done in an easy way.
+
+### Http request builder
+
+In the LTest.Http package there is a http request builder feature with which you can create requests easily. You don't have to bother with urls, because the built-in ASP.NET link generator will generate it using the action name.
+
+
+## Installation
+
+- Create a new 'xUnit Test Project' in Visual Studio.
+- Add LTest or LTest.* nuget packages (LTest.Http includes LTest)
+
+
+After addding the LTest nuget packages there are some small things to do before writing the first unit test.
+
+### Add xunit.runner.json
+
+In order to prevent running integration tests in parallel create xunit.runner.json file in the root folder of the integration test project

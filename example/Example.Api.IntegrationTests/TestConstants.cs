@@ -1,4 +1,4 @@
-﻿namespace IntegrationTests
+﻿namespace Example.Api.IntegrationTests
 {
     /// <summary>
     /// The test constants.

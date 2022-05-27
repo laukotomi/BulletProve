@@ -2,6 +2,7 @@ using LTest.Configuration;
 using LTest.Http;
 using LTest.Logging;
 using LTest.LogSniffer;
+using LTest.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LTest
@@ -9,17 +10,18 @@ namespace LTest
     /// <summary>
     /// Service provider extensions for integration tests.
     /// </summary>
-    public class IntegrationTestServiceProvider : IServiceProvider
+    public class LTestFacade : IServiceProvider
     {
         private readonly IServiceProvider _services;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntegrationTestServiceProvider"/> class.
+        /// Initializes a new instance of the <see cref="LTestFacade"/> class.
         /// </summary>
         /// <param name="services">Service provider</param>
-        public IntegrationTestServiceProvider(IServiceProvider services)
+        public LTestFacade(IServiceProvider services)
         {
             _services = services;
+            DisposableCollertor = _services.GetRequiredService<DisposableCollertor>();
         }
 
         /// <summary>
@@ -42,6 +44,11 @@ namespace LTest
         /// Gets the configuration object.
         /// </summary>
         public LTestConfiguration Configuration => _services.GetRequiredService<LTestConfiguration>();
+
+        /// <summary>
+        /// Gets the disposable collertor.
+        /// </summary>
+        public DisposableCollertor DisposableCollertor { get; }
 
         /// <summary>
         /// Returns the service.

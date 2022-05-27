@@ -48,7 +48,7 @@ namespace Example.Api
 
             var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
 
-            seeder.Seed();
+            seeder.SeedAsync().GetAwaiter().GetResult();
 
             return host;
         }

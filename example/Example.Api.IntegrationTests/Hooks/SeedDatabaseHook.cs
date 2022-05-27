@@ -30,18 +30,17 @@ namespace Example.Api.IntegrationTests.Hooks
         }
 
         /// <inheritdoc/>
-        public Task BeforeTestAsync()
+        public async Task BeforeTestAsync()
         {
-            var elapsedMs = StopwatchHelper.Measure(() =>
+            var elapsedMs = await StopwatchHelper.MeasureAsync(async () =>
             {
                 using var scope = _serviceProvider.CreateScope();
                 var services = scope.ServiceProvider;
                 var seeder = services.GetRequiredService<Seeder>();
-                seeder.Seed();
+                await seeder.SeedAsync();
             });
 
             _testLogger.LogInformation($"Seed done ({elapsedMs} ms)");
-            return Task.CompletedTask;
         }
     }
 }

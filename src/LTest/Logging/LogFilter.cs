@@ -3,7 +3,7 @@
     /// <summary>
     /// The log filter.
     /// </summary>
-    public class LogFilter<TInput>
+    public sealed class LogFilter<TInput> : IDisposable
         where TInput : class
     {
         private readonly IReadOnlyCollection<LogEventFilter<TInput>> _defaultExpectedEvents;
@@ -49,11 +49,7 @@
         public LogFilter<TInput> Reset()
         {
             Clear();
-
-            foreach (var expectedEvent in _defaultExpectedEvents)
-            {
-                Add(expectedEvent);
-            }
+            _expectedEvents.AddRange(_defaultExpectedEvents);
 
             return this;
         }
@@ -96,6 +92,14 @@
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// Disposes the object.
+        /// </summary>
+        public void Dispose()
+        {
+            Reset();
         }
     }
 

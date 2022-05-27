@@ -30,7 +30,7 @@ namespace LTest
         public static IServiceCollection AddCleanDatabaseHook<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
-            services.AddSingleton<IBeforeTestHook, CleanDatabaseHook<TDbContext>>();
+            services.AddScoped<IBeforeTestHook, CleanDatabaseHook<TDbContext>>();
 
             return services;
         }

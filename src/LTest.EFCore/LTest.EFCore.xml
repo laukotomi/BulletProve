@@ -9,11 +9,11 @@
             Cleans database using EF features.
             </summary>
         </member>
-        <member name="M:LTest.EFCore.Behaviors.CleanDatabaseHook`1.#ctor(System.IServiceProvider,LTest.EFCore.Services.DatabaseCleanupService,LTest.Logging.ITestLogger)">
+        <member name="M:LTest.EFCore.Behaviors.CleanDatabaseHook`1.#ctor(`0,LTest.EFCore.Services.DatabaseCleanupService,LTest.Logging.ITestLogger)">
             <summary>
             Initializes a new instance of the <see cref="T:LTest.EFCore.Behaviors.CleanDatabaseHook`1"/> class.
             </summary>
-            <param name="serviceProvider">Service provider.</param>
+            <param name="dbContext">The db context.</param>
             <param name="databaseCleanupService">Database cleanup service.</param>
             <param name="testLogger">Logger.</param>
         </member>

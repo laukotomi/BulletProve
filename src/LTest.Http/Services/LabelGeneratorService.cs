@@ -1,13 +1,9 @@
-﻿using LTest.Hooks;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace LTest.Http.Services
+﻿namespace LTest.Http.Services
 {
     /// <summary>
     /// The label generator service.
     /// </summary>
-    internal class LabelGeneratorService : IResetSingletonHook
+    internal class LabelGeneratorService
     {
         private int _counter = 0;
 
@@ -18,16 +14,6 @@ namespace LTest.Http.Services
         public string GetLabel()
         {
             return $"#{Interlocked.Increment(ref _counter)}";
-        }
-
-        /// <summary>
-        /// Resets the counter.
-        /// </summary>
-        /// <returns></returns>
-        public Task ResetAsync()
-        {
-            _counter = 0;
-            return Task.CompletedTask;
         }
     }
 }

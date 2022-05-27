@@ -76,6 +76,17 @@
             Filters the logs that will be written into the output window. The input is the logger category name.
             </summary>
         </member>
+        <member name="T:LTest.Exceptions.LogSnifferException">
+            <summary>
+            The log sniffer exception.
+            </summary>
+        </member>
+        <member name="M:LTest.Exceptions.LogSnifferException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Exceptions.LogSnifferException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
         <member name="T:LTest.ExtensionMethods.StringExtensionMethods">
             <summary>
             Extension methods.
@@ -237,43 +248,6 @@
             <see cref="T:System.Net.Http.HttpClient"/> for integration tests.
             </summary>
         </member>
-        <member name="T:LTest.IntegrationTestServiceProvider">
-            <summary>
-            Service provider extensions for integration tests.
-            </summary>
-        </member>
-        <member name="M:LTest.IntegrationTestServiceProvider.#ctor(System.IServiceProvider)">
-            <summary>
-            Initializes a new instance of the <see cref="T:LTest.IntegrationTestServiceProvider"/> class.
-            </summary>
-            <param name="services">Service provider</param>
-        </member>
-        <member name="P:LTest.IntegrationTestServiceProvider.Logger">
-            <summary>
-            Gets logger service.
-            </summary>
-        </member>
-        <member name="P:LTest.IntegrationTestServiceProvider.LogSniffer">
-            <summary>
-            Gets log sniffer service.
-            </summary>
-        </member>
-        <member name="P:LTest.IntegrationTestServiceProvider.HttpClient">
-            <summary>
-            Gets the http client.
-            </summary>
-        </member>
-        <member name="P:LTest.IntegrationTestServiceProvider.Configuration">
-            <summary>
-            Gets the configuration object.
-            </summary>
-        </member>
-        <member name="M:LTest.IntegrationTestServiceProvider.GetService(System.Type)">
-            <summary>
-            Returns the service.
-            </summary>
-            <param name="serviceType">Service type.</param>
-        </member>
         <member name="T:LTest.Logging.ITestLogger">
             <summary>
             Test logger interface.
@@ -361,6 +335,11 @@
             </summary>
             <param name="name">The name.</param>
             <returns>A LogFilter.</returns>
+        </member>
+        <member name="M:LTest.Logging.LogFilter`1.Dispose">
+            <summary>
+            Disposes the object.
+            </summary>
         </member>
         <member name="T:LTest.Logging.LogEventFilter`1">
             <summary>
@@ -654,39 +633,31 @@
             </summary>
             <param name="logEvent">Log event.</param>
         </member>
-        <member name="M:LTest.LogSniffer.ILogSnifferService.ModifyExpectedLogEvents(System.Action{LTest.Logging.LogFilter{LTest.Logging.ServerLogEvent}})">
+        <member name="P:LTest.LogSniffer.ILogSnifferService.ExpectedLogs">
             <summary>
-            Modifies expected log filters.
+            Gets the expected logs.
             </summary>
-            <param name="action">Action.</param>
         </member>
         <member name="T:LTest.LogSniffer.LogSnifferService">
             <summary>
             Log sniffer service implementation.
             </summary>
         </member>
-        <member name="F:LTest.LogSniffer.LogSnifferService._nrOfEventsToLogOnError">
+        <member name="P:LTest.LogSniffer.LogSnifferService.ExpectedLogs">
             <summary>
-            The nr of events to log on error.
+            Gets the expected logs.
             </summary>
-        </member>
-        <member name="M:LTest.LogSniffer.LogSnifferService.#ctor(LTest.Logging.ITestLogger,LTest.Configuration.LTestConfiguration)">
-            <summary>
-            Initializes a new instance of the <see cref="T:LTest.LogSniffer.LogSnifferService"/> class.
-            </summary>
-            <param name="logger">Logger.</param>
-            <param name="configuration">Configuration.</param>
         </member>
         <member name="P:LTest.LogSniffer.LogSnifferService.UnexpectedLogOccured">
             <summary>
             Check whether unexpected log event occured.
             </summary>
         </member>
-        <member name="M:LTest.LogSniffer.LogSnifferService.ModifyExpectedLogEvents(System.Action{LTest.Logging.LogFilter{LTest.Logging.ServerLogEvent}})">
+        <member name="M:LTest.LogSniffer.LogSnifferService.#ctor(LTest.Configuration.LTestConfiguration)">
             <summary>
-            Overrides the is expected event action. It lasts only for the actual test.
+            Initializes a new instance of the <see cref="T:LTest.LogSniffer.LogSnifferService"/> class.
             </summary>
-            <param name="action">Action.</param>
+            <param name="configuration">Configuration.</param>
         </member>
         <member name="M:LTest.LogSniffer.LogSnifferService.CheckLogEvent(LTest.Logging.ServerLogEvent)">
             <summary>
@@ -704,33 +675,12 @@
             Resets the service.
             </summary>
         </member>
-        <member name="M:LTest.LogSniffer.LogSnifferService.LogLastElements">
-            <summary>
-            Logs last server messages.
-            </summary>
-        </member>
-        <member name="T:LTest.LogSniffer.ResetExpectedServerLogs">
-            <summary>
-            Helper class to reset LogSniffer expected log event action.
-            </summary>
-        </member>
-        <member name="M:LTest.LogSniffer.ResetExpectedServerLogs.#ctor(LTest.Logging.LogFilter{LTest.Logging.ServerLogEvent})">
-            <summary>
-            Initializes a new instance of the <see cref="T:LTest.LogSniffer.ResetExpectedServerLogs"/> class.
-            </summary>
-            <param name="logEventStore">The log event store.</param>
-        </member>
-        <member name="M:LTest.LogSniffer.ResetExpectedServerLogs.Dispose">
-            <summary>
-            Resets log event store.
-            </summary>
-        </member>
         <member name="T:LTest.LTestBase">
             <summary>
             Base class for integration tests.
             </summary>
         </member>
-        <member name="P:LTest.LTestBase.Services">
+        <member name="P:LTest.LTestBase.LTestServices">
             <summary>
             Access services using this property.
             </summary>
@@ -769,6 +719,48 @@
             Flushes the logger.
             </summary>
         </member>
+        <member name="T:LTest.LTestFacade">
+            <summary>
+            Service provider extensions for integration tests.
+            </summary>
+        </member>
+        <member name="M:LTest.LTestFacade.#ctor(System.IServiceProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.LTestFacade"/> class.
+            </summary>
+            <param name="services">Service provider</param>
+        </member>
+        <member name="P:LTest.LTestFacade.Logger">
+            <summary>
+            Gets logger service.
+            </summary>
+        </member>
+        <member name="P:LTest.LTestFacade.LogSniffer">
+            <summary>
+            Gets log sniffer service.
+            </summary>
+        </member>
+        <member name="P:LTest.LTestFacade.HttpClient">
+            <summary>
+            Gets the http client.
+            </summary>
+        </member>
+        <member name="P:LTest.LTestFacade.Configuration">
+            <summary>
+            Gets the configuration object.
+            </summary>
+        </member>
+        <member name="P:LTest.LTestFacade.DisposableCollertor">
+            <summary>
+            Gets the disposable collertor.
+            </summary>
+        </member>
+        <member name="M:LTest.LTestFacade.GetService(System.Type)">
+            <summary>
+            Returns the service.
+            </summary>
+            <param name="serviceType">Service type.</param>
+        </member>
         <member name="T:LTest.Mocks.LTestHttpMessageHandlerBase">
             <summary>
             The LTest http message handler base.
@@ -804,6 +796,34 @@
             Resets the class.
             </summary>
             <returns>A Task.</returns>
+        </member>
+        <member name="T:LTest.Services.DisposableCollertor">
+            <summary>
+            The disposable collertor.
+            </summary>
+        </member>
+        <member name="M:LTest.Services.DisposableCollertor.Add(System.IDisposable)">
+            <summary>
+            Adds the.
+            </summary>
+            <param name="disposable">The disposable.</param>
+        </member>
+        <member name="M:LTest.Services.DisposableCollertor.Add(System.IAsyncDisposable)">
+            <summary>
+            Adds the.
+            </summary>
+            <param name="disposable">The disposable.</param>
+        </member>
+        <member name="M:LTest.Services.DisposableCollertor.Dispose">
+            <summary>
+            Disposes the object.
+            </summary>
+        </member>
+        <member name="M:LTest.Services.DisposableCollertor.DisposeAsync">
+            <summary>
+            Disposes the object.
+            </summary>
+            <returns>A ValueTask.</returns>
         </member>
         <member name="T:LTest.ITestServer">
             <summary>

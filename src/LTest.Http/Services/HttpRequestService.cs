@@ -15,15 +15,14 @@ namespace LTest.Http.Services
     {
         private readonly string _controllerName;
         private readonly string _actionName;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly LTestFacade _facade;
         private readonly Dictionary<string, string> _uriValues = new();
-        private readonly LinkGeneratorService _linkGeneratorService;
-        private string _label;
+        private string? _label;
 
         /// <summary>
         /// Gets the request.
         /// </summary>
-        public HttpRequestMessage Request { get; } = new();
+        public HttpRequestMessage Request { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpRequestService"/> class.
@@ -31,21 +30,20 @@ namespace LTest.Http.Services
         /// <param name="controllerName">Controller name.</param>
         /// <param name="actionName">Action name.</param>
         /// <param name="method">Http method.</param>
-        /// <param name="serviceProvider">Service provider.</param>
+        /// <param name="facade"></param>
         public HttpRequestService(
             string controllerName,
             string actionName,
             HttpMethod method,
-            IServiceProvider serviceProvider)
+            LTestFacade facade)
         {
-            Request.Method = method;
             _controllerName = controllerName;
             _actionName = actionName;
-            _serviceProvider = serviceProvider;
-            _linkGeneratorService = serviceProvider.GetRequiredService<LinkGeneratorService>();
+            _facade = facade;
 
-            var labelGenerator = serviceProvider.GetRequiredService<LabelGeneratorService>();
-            _label = labelGenerator.GetLabel();
+            Request = new();
+            Request.Method = method;
+            _facade.DisposableCollertor.Add(Request);
         }
 
         /// <summary>
@@ -65,7 +63,9 @@ namespace LTest.Http.Services
         public HttpRequestService SetJsonContent(object content)
         {
             var json = JsonSerializer.Serialize(content);
-            Request.Content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
+            _facade.DisposableCollertor.Add(stringContent);
+            Request.Content = stringContent;
 
             return this;
         }
@@ -238,10 +238,17 @@ namespace LTest.Http.Services
         public AssertBuilder<TResponse> Assert<TResponse>()
             where TResponse : class
         {
-            var requestUri = _linkGeneratorService.GetRequestUri(_actionName, _controllerName, _uriValues);
+            if (string.IsNullOrEmpty(_label))
+            {
+                var labelGenerator = _facade.GetRequiredService<LabelGeneratorService>();
+                _label = labelGenerator.GetLabel();
+            }
+
+            var linkGeneratorService = _facade.GetRequiredService<LinkGeneratorService>();
+            var requestUri = linkGeneratorService.GetRequestUri(_actionName, _controllerName, _uriValues);
             Request.RequestUri = requestUri;
 
-            return new AssertBuilder<TResponse>(Request, _serviceProvider, _label);
+            return new AssertBuilder<TResponse>(Request, _facade, _label);
         }
     }
 }

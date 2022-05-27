@@ -1,5 +1,6 @@
 ﻿using Example.Api.Data;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Example.Api.Services
 {
@@ -22,9 +23,10 @@ namespace Example.Api.Services
         /// <summary>
         /// Seeds the DB.
         /// </summary>
-        public void Seed()
+        public async Task SeedAsync()
         {
-            if (!_dbContext.Users.Any(x => x.Username == "Admin"))
+            var hasAdminUser = await _dbContext.Users.AnyAsync(x => x.Username == "Admin");
+            if (!hasAdminUser)
             {
                 _dbContext.Users.Add(new User
                 {
@@ -32,7 +34,7 @@ namespace Example.Api.Services
                     Password = "Admin"
                 });
 
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
             }
         }
     }

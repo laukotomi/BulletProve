@@ -1,7 +1,42 @@
-﻿using LTest;
+param($installPath, $toolsPath, $package, $project)
+
+$directory = Split-Path -Path $project.FullName;
+
+$xUnitRunnerPath = Join-Path -Path $directory -ChildPath "xunit.runner.json";
+
+if (!(Test-Path $xUnitRunnerPath))
+{
+	$value = @'
+{
+  "parallelizeAssembly": false,
+  "parallelizeTestCollections": false
+}
+'@;
+
+	New-Item -Path $xUnitRunnerPath -ItemType "file" -Value $value
+}
+
+$settingsPath = Join-Path -Path $directory -ChildPath "integrationtestsettings.json";
+
+if (!(Test-Path $settingsPath))
+{
+	$value = @'
+{
+}
+'@;
+
+	New-Item -Path $settingsPath -ItemType "file" -Value $value
+}
+
+$xUnitHelpersPath = Join-Path -Path $directory -ChildPath "XunitHelpers.cs";
+
+if (!(Test-Path $xUnitHelpersPath))
+{
+		$value = @"
+using LTest;
 using System.Runtime.CompilerServices;
 
-namespace Example.Api.IntegrationTests
+namespace $($project.Name)
 {
     /// <summary>
     /// The theory attribute.
@@ -40,4 +75,8 @@ namespace Example.Api.IntegrationTests
     public class IntegrationTestCollection : Xunit.ICollectionFixture<TestServerManager>
     {
     }
+}
+"@;
+
+	New-Item -Path $xUnitHelpersPath -ItemType "file" -Value $value
 }

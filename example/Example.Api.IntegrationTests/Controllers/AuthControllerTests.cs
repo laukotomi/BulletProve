@@ -1,12 +1,13 @@
 ﻿using Example.Api.Controllers;
 using FluentAssertions;
+using IntegrationTests.Common;
 using LTest;
 using LTest.Http.Services;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
-namespace IntegrationTests.Controllers
+namespace Example.Api.IntegrationTests.Controllers
 {
     /// <summary>
     /// The auth controller tests.
@@ -14,6 +15,7 @@ namespace IntegrationTests.Controllers
     public class AuthControllerTests : LTestBase
     {
         private readonly HttpRequestBuilder<AuthController> _authController;
+        private readonly HttpRequestBuilder<UserController> _userController;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthControllerTests"/> class.
@@ -23,7 +25,8 @@ namespace IntegrationTests.Controllers
         public AuthControllerTests(TestServerManager serverManager, ITestOutputHelper output)
             : base(serverManager, output)
         {
-            _authController = Services.GetHttpRequestBuilder<AuthController>();
+            _authController = LTestServices.GetHttpRequestBuilder<AuthController>();
+            _userController = LTestServices.GetHttpRequestBuilder<UserController>();
         }
 
         /// <summary>
@@ -33,17 +36,19 @@ namespace IntegrationTests.Controllers
         public async Task WhenCredentialsAreOk_ThenTokenReturned()
         {
             var token = await _authController
-                .CreateFor(x => nameof(x.LoginAsync))
+                .CreateFor(x => x.LoginAsync)
                 .SetJsonContent(new AuthController.LoginCommand
                 {
                     Username = TestConstants.AdminUsername,
                     Password = TestConstants.AdminPassword,
                 })
-                .Assert<string>()
-                .EnsureSuccessStatusCode()
-                .ExecuteAsync();
+                .ExecuteSuccessAsync<string>();
 
             token.Should().NotBeNullOrEmpty();
+
+            using var response = await _userController
+                .CreateRequest(x => x.GetUserDataAsync, token)
+                .ExecuteSuccessAsync();
         }
 
         /// <summary>
@@ -52,16 +57,16 @@ namespace IntegrationTests.Controllers
         [Fact]
         public async Task WhenCredentialsAreBad_ThenUnauthorizedResult()
         {
-            await _authController
-                .CreateFor(x => nameof(x.LoginAsync))
+            LTestServices.LogSniffer.ExpectedLogs.Add(x => x.Message == "Wrong username or password");
+
+            using var response = await _authController
+                .CreateFor(x => x.LoginAsync)
                 .SetJsonContent(new AuthController.LoginCommand
                 {
                     Username = TestConstants.AdminUsername,
                     Password = "Badadd",
                 })
-                .Assert<string>()
-                .AssertStatusCode(HttpStatusCode.Unauthorized)
-                .ExecuteAsync();
+                .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -70,13 +75,9 @@ namespace IntegrationTests.Controllers
         [Fact]
         public async Task WhenUserIsNotLoggedIn_ThenUnauthorizedReturned()
         {
-            var userController = Services.GetHttpRequestBuilder<UserController>();
-
-            await userController
-                .CreateFor(x => nameof(x.GetUserDataAsync))
-                .Assert<string>()
-                .AssertStatusCode(HttpStatusCode.Unauthorized)
-                .ExecuteAsync();
+            using var response = await _userController
+                .CreateFor(x => x.GetUserDataAsync)
+                .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
         }
     }
 }

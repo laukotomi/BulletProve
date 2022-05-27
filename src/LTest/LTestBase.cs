@@ -1,6 +1,8 @@
+using LTest.Exceptions;
 using LTest.Helpers;
 using LTest.Hooks;
 using LTest.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,11 +16,12 @@ namespace LTest
     {
         private readonly ITestOutputHelper _output;
         private readonly bool _serverStarted;
+        private readonly AsyncServiceScope _serviceScope;
 
         /// <summary>
         /// Access services using this property.
         /// </summary>
-        protected IntegrationTestServiceProvider Services { get; }
+        protected LTestFacade LTestServices { get; }
 
         /// <summary>
         /// Test context.
@@ -42,8 +45,9 @@ namespace LTest
 
             var server = serverManager.GetServer(TestContext, GetType(), out _serverStarted);
 
-            Services = new IntegrationTestServiceProvider(server.Services);
-            Logger = Services.Logger;
+            _serviceScope = server.Services.CreateAsyncScope();
+            LTestServices = _serviceScope.ServiceProvider.GetRequiredService<LTestFacade>();
+            Logger = LTestServices.Logger;
         }
 
         /// <summary>
@@ -54,14 +58,14 @@ namespace LTest
         {
             if (_serverStarted)
             {
-                await HookHelper.RunHooksAsync<IAfterServerStartedHook>(Services, x => x.AfterServerStartedAsync());
+                await HookHelper.RunHooksAsync<IAfterServerStartedHook>(LTestServices, x => x.AfterServerStartedAsync());
             }
             else
             {
-                await HookHelper.RunHooksAsync<IResetSingletonHook>(Services, x => x.ResetAsync());
+                await HookHelper.RunHooksAsync<IResetSingletonHook>(LTestServices, x => x.ResetAsync());
             }
 
-            await HookHelper.RunHooksAsync<IBeforeTestHook>(Services, x => x.BeforeTestAsync());
+            await HookHelper.RunHooksAsync<IBeforeTestHook>(LTestServices, x => x.BeforeTestAsync());
         }
 
         /// <summary>
@@ -70,13 +74,20 @@ namespace LTest
         /// <returns>A Task.</returns>
         public virtual async Task DisposeAsync()
         {
-            await HookHelper.RunHooksAsync<IAfterTestHook>(Services, x => x.AfterTestAsync());
-
-            FlushLogger();
-
-            if (Services.LogSniffer.UnexpectedLogOccured)
+            try
             {
-                throw new InvalidOperationException($"Unexpected log occured on server side while sending the request. Check the logs!");
+                await HookHelper.RunHooksAsync<IAfterTestHook>(LTestServices, x => x.AfterTestAsync());
+
+                FlushLogger();
+
+                if (LTestServices.LogSniffer.UnexpectedLogOccured)
+                {
+                    throw new LogSnifferException("Unexpected log occured on server side. Check the logs!");
+                }
+            }
+            finally
+            {
+                await _serviceScope.DisposeAsync();
             }
         }
 

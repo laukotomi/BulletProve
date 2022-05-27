@@ -3,7 +3,6 @@ using LTest.Helpers;
 using LTest.Hooks;
 using LTest.Logging;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LTest.EFCore.Behaviors
 {
@@ -13,22 +12,22 @@ namespace LTest.EFCore.Behaviors
     public class CleanDatabaseHook<TDbContext> : IBeforeTestHook
         where TDbContext : DbContext
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly TDbContext _dbContext;
         private readonly DatabaseCleanupService _databaseCleanupService;
         private readonly ITestLogger _testLogger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CleanDatabaseHook{TDbContext}"/> class.
         /// </summary>
-        /// <param name="serviceProvider">Service provider.</param>
+        /// <param name="dbContext">The db context.</param>
         /// <param name="databaseCleanupService">Database cleanup service.</param>
         /// <param name="testLogger">Logger.</param>
         public CleanDatabaseHook(
-            IServiceProvider serviceProvider,
+            TDbContext dbContext,
             DatabaseCleanupService databaseCleanupService,
             ITestLogger testLogger)
         {
-            _serviceProvider = serviceProvider;
+            _dbContext = dbContext;
             _databaseCleanupService = databaseCleanupService;
             _testLogger = testLogger;
         }
@@ -38,10 +37,7 @@ namespace LTest.EFCore.Behaviors
         {
             var elapsedMs = await StopwatchHelper.MeasureAsync(async () =>
             {
-                using var scope = _serviceProvider.CreateScope();
-                var services = scope.ServiceProvider;
-                var dbContext = services.GetRequiredService<TDbContext>();
-                await _databaseCleanupService.CleanupAsync(dbContext);
+                await _databaseCleanupService.CleanupAsync(_dbContext);
             });
 
             _testLogger.LogInformation($"DB cleaned ({elapsedMs} ms)");

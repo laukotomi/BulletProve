@@ -50,16 +50,27 @@ namespace LTest.Logging
 
             var logEvent = new ServerLogEvent(_categoryName, logLevel, eventId, message, exception);
 
-            _logSniffer.CheckLogEvent(logEvent);
+            bool unexpected = _logSniffer.CheckLogEvent(logEvent);
+            if (unexpected)
+            {
+                message = "UNEXPECTED: " + message;
+            }
 
+            bool logged = false;
             if (_configuration.MinimumLogLevel <= logLevel)
             {
                 if (_configuration.ServerLogFilter.Filters.Any(x => x.Action(_categoryName)))
                 {
                     _logger.Log(logLevel, message);
+                    logged = true;
                 }
 
                 Debug.WriteLine(logEvent.ToString());
+            }
+
+            if (unexpected && !logged)
+            {
+                _logger.Log(logLevel, message);
             }
         }
 

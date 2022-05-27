@@ -3,6 +3,7 @@ using Example.Api.ExtensionMethods;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading;
@@ -16,14 +17,16 @@ namespace Example.Api.Controllers
     public class AuthController : ApiController
     {
         private readonly AppDbContext _dbContext;
+        private readonly ILogger<AuthController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthController"/> class.
         /// </summary>
         /// <param name="dbContext">The db context.</param>
-        public AuthController(AppDbContext dbContext)
+        public AuthController(AppDbContext dbContext, ILogger<AuthController> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         /// <summary>
@@ -43,6 +46,7 @@ namespace Example.Api.Controllers
 
             if (userId == default)
             {
+                _logger.LogWarning("Wrong username or password");
                 return Unauthorized();
             }
 

@@ -1,20 +1,19 @@
-﻿using Example.Api;
-using Example.Api.Data;
+﻿using Example.Api.Data;
 using Example.Api.IntegrationTests.Hooks;
+using Example.Api.IntegrationTests.Mocks;
 using Example.Api.Services;
-using IntegrationTests.Mocks;
 using LTest;
 using LTest.Configuration;
 using LTest.Hooks;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IntegrationTests.Servers
+namespace Example.Api.IntegrationTests
 {
     /// <summary>
     /// The default server.
     /// </summary>
     [DefaultTestServer]
-    public class DefaultServer : TestServerBase<Startup>
+    public class TestServer : TestServerBase<Startup>
     {
         /// <inheritdoc/>
         protected override void Configure(LTestConfiguration config)
@@ -32,7 +31,7 @@ namespace IntegrationTests.Servers
             services.AddTransient<IExternalService, ExternalServiceMock>();
 
             // Packages
-            services.AddTestHttp();
+            services.AddLTestHttp();
             services.AddTestEFCore();
         }
     }

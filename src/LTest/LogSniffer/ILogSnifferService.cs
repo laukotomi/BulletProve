@@ -21,12 +21,11 @@ namespace LTest.LogSniffer
         /// Saves log event into memory and checks wheter it was unexpected.
         /// </summary>
         /// <param name="logEvent">Log event.</param>
-        void CheckLogEvent(ServerLogEvent logEvent);
+        bool CheckLogEvent(ServerLogEvent logEvent);
 
         /// <summary>
-        /// Modifies expected log filters.
+        /// Gets the expected logs.
         /// </summary>
-        /// <param name="action">Action.</param>
-        ResetExpectedServerLogs ModifyExpectedLogEvents(Action<LogFilter<ServerLogEvent>> action);
+        LogFilter<ServerLogEvent> ExpectedLogs { get; }
     }
 }
