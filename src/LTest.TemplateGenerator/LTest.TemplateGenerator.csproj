@@ -1,9 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Description>LTest is an extension to the Microsoft's ASP.NET Core integration test package with useful features.</Description>
+		<Authors>laukotomi</Authors>
+		<Copyright>Copyright (c) laukotomi 2022</Copyright>
+		<Version>1.0.5</Version>
+		<PackageId>LTest.TemplateGenerator</PackageId>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<PackageProjectUrl>https://github.com/laukotomi/LTest</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/laukotomi/LTest</RepositoryUrl>
+		<PackageTags>aspnetcore;integrationtest</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>

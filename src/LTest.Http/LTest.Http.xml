@@ -340,33 +340,33 @@
             <param name="label"></param>
             <returns></returns>
         </member>
-        <member name="M:LTest.Http.Services.HttpRequestService.ShouldSuccess">
+        <member name="M:LTest.Http.Services.HttpRequestService.AssertSuccess">
             <summary>
             Starts asserting with success status code.
             </summary>
             <returns>An AssertBuilder.</returns>
         </member>
-        <member name="M:LTest.Http.Services.HttpRequestService.ShouldSuccess``1">
+        <member name="M:LTest.Http.Services.HttpRequestService.AssertSuccess``1">
             <summary>
             Starts asserting with success status code.
             </summary>
             <returns>An AssertBuilder.</returns>
         </member>
-        <member name="M:LTest.Http.Services.HttpRequestService.ShouldBeStatus(System.Net.HttpStatusCode)">
+        <member name="M:LTest.Http.Services.HttpRequestService.AssertStatus(System.Net.HttpStatusCode)">
             <summary>
             Starts asserting with specified status code.
             </summary>
             <param name="statusCode">The status code.</param>
             <returns>An AssertBuilder.</returns>
         </member>
-        <member name="M:LTest.Http.Services.HttpRequestService.ShouldBeStatus``1(System.Net.HttpStatusCode)">
+        <member name="M:LTest.Http.Services.HttpRequestService.AssertStatus``1(System.Net.HttpStatusCode)">
             <summary>
             Starts asserting with specified status code.
             </summary>
             <param name="statusCode">The status code.</param>
             <returns>An AssertBuilder.</returns>
         </member>
-        <member name="M:LTest.Http.Services.HttpRequestService.ShouldBeProblemWithStatus``1(System.Net.HttpStatusCode)">
+        <member name="M:LTest.Http.Services.HttpRequestService.AssertProblemWithStatus``1(System.Net.HttpStatusCode)">
             <summary>
             Starts asserting problem details with specified status code.
             </summary>

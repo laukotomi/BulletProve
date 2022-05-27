@@ -9,7 +9,7 @@ namespace LTest.LogSniffer
     /// </summary>
     public class LogSnifferService : ILogSnifferService, IResetSingletonHook
     {
-        private readonly LinkedList<ServerLogEvent> _serverLogs;
+        private readonly LinkedList<ServerLogEvent> _serverLogs = new();
         private readonly object _lock = new();
 
         /// <summary>
@@ -28,8 +28,7 @@ namespace LTest.LogSniffer
         /// <param name="configuration">Configuration.</param>
         public LogSnifferService(LTestConfiguration configuration)
         {
-            _serverLogs = new LinkedList<ServerLogEvent>();
-            ExpectedLogs = new LogFilter<ServerLogEvent>(configuration.LogSniffer.DefaultExpectedEvents);
+            ExpectedLogs = configuration.LogSniffer.DefaultExpectedEvents;
         }
 
         /// <summary>

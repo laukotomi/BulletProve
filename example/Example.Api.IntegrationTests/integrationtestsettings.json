@@ -1,2 +1,5 @@
 {
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=IntegTest;User Id=sa;Password=Pass@word"
+  }
 }

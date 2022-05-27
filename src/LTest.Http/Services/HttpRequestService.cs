@@ -117,16 +117,16 @@ namespace LTest.Http.Services
         /// Starts asserting with success status code.
         /// </summary>
         /// <returns>An AssertBuilder.</returns>
-        public AssertBuilder<HttpResponseMessage> ShouldSuccess()
+        public AssertBuilder<HttpResponseMessage> AssertSuccess()
         {
-            return ShouldSuccess<HttpResponseMessage>();
+            return AssertSuccess<HttpResponseMessage>();
         }
 
         /// <summary>
         /// Starts asserting with success status code.
         /// </summary>
         /// <returns>An AssertBuilder.</returns>
-        public AssertBuilder<TResponse> ShouldSuccess<TResponse>()
+        public AssertBuilder<TResponse> AssertSuccess<TResponse>()
             where TResponse : class
         {
             return Assert<TResponse>()
@@ -138,9 +138,9 @@ namespace LTest.Http.Services
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public AssertBuilder<HttpResponseMessage> ShouldBeStatus(HttpStatusCode statusCode)
+        public AssertBuilder<HttpResponseMessage> AssertStatus(HttpStatusCode statusCode)
         {
-            return ShouldBeStatus<HttpResponseMessage>(statusCode);
+            return AssertStatus<HttpResponseMessage>(statusCode);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace LTest.Http.Services
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public AssertBuilder<TResponse> ShouldBeStatus<TResponse>(HttpStatusCode statusCode)
+        public AssertBuilder<TResponse> AssertStatus<TResponse>(HttpStatusCode statusCode)
             where TResponse : class
         {
             return Assert<TResponse>()
@@ -160,10 +160,10 @@ namespace LTest.Http.Services
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public AssertBuilder<LTestProblemDetails> ShouldBeProblemWithStatus<TResponse>(HttpStatusCode statusCode)
+        public AssertBuilder<LTestProblemDetails> AssertProblemWithStatus<TResponse>(HttpStatusCode statusCode)
             where TResponse : class
         {
-            return ShouldBeStatus<LTestProblemDetails>(statusCode);
+            return AssertStatus<LTestProblemDetails>(statusCode);
         }
         #endregion
 

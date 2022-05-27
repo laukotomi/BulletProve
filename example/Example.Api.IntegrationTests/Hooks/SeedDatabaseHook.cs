@@ -2,8 +2,6 @@
 using LTest.Helpers;
 using LTest.Hooks;
 using LTest.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Threading.Tasks;
 
 namespace Example.Api.IntegrationTests.Hooks
@@ -13,19 +11,19 @@ namespace Example.Api.IntegrationTests.Hooks
     /// </summary>
     public class SeedDatabaseHook : IBeforeTestHook
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly Seeder _seeder;
         private readonly ITestLogger _testLogger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SeedDatabaseHook"/> class.
         /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="seeder">The service provider.</param>
         /// <param name="testLogger">The test logger.</param>
         public SeedDatabaseHook(
-            IServiceProvider serviceProvider,
+            Seeder seeder,
             ITestLogger testLogger)
         {
-            _serviceProvider = serviceProvider;
+            _seeder = seeder;
             _testLogger = testLogger;
         }
 
@@ -34,10 +32,7 @@ namespace Example.Api.IntegrationTests.Hooks
         {
             var elapsedMs = await StopwatchHelper.MeasureAsync(async () =>
             {
-                using var scope = _serviceProvider.CreateScope();
-                var services = scope.ServiceProvider;
-                var seeder = services.GetRequiredService<Seeder>();
-                await seeder.SeedAsync();
+                await _seeder.SeedAsync();
             });
 
             _testLogger.LogInformation($"Seed done ({elapsedMs} ms)");

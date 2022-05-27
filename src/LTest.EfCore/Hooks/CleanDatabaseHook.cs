@@ -4,7 +4,7 @@ using LTest.Hooks;
 using LTest.Logging;
 using Microsoft.EntityFrameworkCore;
 
-namespace LTest.EFCore.Behaviors
+namespace LTest.EFCore.Hooks
 {
     /// <summary>
     /// Cleans database using EF features.

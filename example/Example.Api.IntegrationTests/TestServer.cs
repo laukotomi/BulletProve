@@ -23,16 +23,16 @@ namespace Example.Api.IntegrationTests
         /// <inheritdoc/>
         protected override void ConfigureTestServices(IServiceCollection services)
         {
-            // Behaviors
+            // Hooks
             services.AddCleanDatabaseHook<AppDbContext>();
-            services.AddSingleton<IBeforeTestHook, SeedDatabaseHook>();
+            services.AddScoped<IBeforeTestHook, SeedDatabaseHook>();
 
             // Mocks
             services.AddTransient<IExternalService, ExternalServiceMock>();
 
             // Packages
             services.AddLTestHttp();
-            services.AddTestEFCore();
+            services.AddLTestEFCore();
         }
     }
 }

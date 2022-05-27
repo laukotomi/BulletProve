@@ -30,6 +30,11 @@
             The log sniffer configuration.
             </summary>
         </member>
+        <member name="M:LTest.Configuration.LogSnifferConfiguration.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:LTest.Configuration.LogSnifferConfiguration"/> class.
+            </summary>
+        </member>
         <member name="P:LTest.Configuration.LogSnifferConfiguration.DefaultExpectedEvents">
             <summary>
             Decide whether a server log event is expected or the test should fail. By default only log levels of information or smaller are allowed.

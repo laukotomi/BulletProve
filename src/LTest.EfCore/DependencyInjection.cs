@@ -1,4 +1,4 @@
-﻿using LTest.EFCore.Behaviors;
+﻿using LTest.EFCore.Hooks;
 using LTest.EFCore.Services;
 using LTest.Hooks;
 using Microsoft.EntityFrameworkCore;
@@ -9,13 +9,13 @@ namespace LTest
     /// <summary>
     /// ServiceCollectionExtensions.
     /// </summary>
-    public static class ServiceCollectionExtensions
+    public static class DependencyInjection
     {
         /// <summary>
         /// Adds services for EFCore testing.
         /// </summary>
         /// <param name="services">IServiceCollection.</param>
-        public static IServiceCollection AddTestEFCore(this IServiceCollection services)
+        public static IServiceCollection AddLTestEFCore(this IServiceCollection services)
         {
             services.AddSingleton<TopologicalSortService>();
             services.AddSingleton<DatabaseCleanupService>();

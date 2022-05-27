@@ -4,20 +4,37 @@
         <name>LTest.EfCore</name>
     </assembly>
     <members>
-        <member name="T:LTest.EFCore.Behaviors.CleanDatabaseHook`1">
+        <member name="T:LTest.DependencyInjection">
+            <summary>
+            ServiceCollectionExtensions.
+            </summary>
+        </member>
+        <member name="M:LTest.DependencyInjection.AddLTestEFCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds services for EFCore testing.
+            </summary>
+            <param name="services">IServiceCollection.</param>
+        </member>
+        <member name="M:LTest.DependencyInjection.AddCleanDatabaseHook``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds clean database hook for a DbContext.
+            </summary>
+            <param name="services">IServiceCollection.</param>
+        </member>
+        <member name="T:LTest.EFCore.Hooks.CleanDatabaseHook`1">
             <summary>
             Cleans database using EF features.
             </summary>
         </member>
-        <member name="M:LTest.EFCore.Behaviors.CleanDatabaseHook`1.#ctor(`0,LTest.EFCore.Services.DatabaseCleanupService,LTest.Logging.ITestLogger)">
+        <member name="M:LTest.EFCore.Hooks.CleanDatabaseHook`1.#ctor(`0,LTest.EFCore.Services.DatabaseCleanupService,LTest.Logging.ITestLogger)">
             <summary>
-            Initializes a new instance of the <see cref="T:LTest.EFCore.Behaviors.CleanDatabaseHook`1"/> class.
+            Initializes a new instance of the <see cref="T:LTest.EFCore.Hooks.CleanDatabaseHook`1"/> class.
             </summary>
             <param name="dbContext">The db context.</param>
             <param name="databaseCleanupService">Database cleanup service.</param>
             <param name="testLogger">Logger.</param>
         </member>
-        <member name="M:LTest.EFCore.Behaviors.CleanDatabaseHook`1.BeforeTestAsync">
+        <member name="M:LTest.EFCore.Hooks.CleanDatabaseHook`1.BeforeTestAsync">
             <inheritdoc/>
         </member>
         <member name="T:LTest.EFCore.Services.DatabaseCleanupService">
@@ -72,23 +89,6 @@
             <param name="getDependencies">The get dependencies.</param>
             <param name="sorted">The sorted.</param>
             <param name="visited">The visited.</param>
-        </member>
-        <member name="T:LTest.ServiceCollectionExtensions">
-            <summary>
-            ServiceCollectionExtensions.
-            </summary>
-        </member>
-        <member name="M:LTest.ServiceCollectionExtensions.AddTestEFCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Adds services for EFCore testing.
-            </summary>
-            <param name="services">IServiceCollection.</param>
-        </member>
-        <member name="M:LTest.ServiceCollectionExtensions.AddCleanDatabaseHook``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Adds clean database hook for a DbContext.
-            </summary>
-            <param name="services">IServiceCollection.</param>
         </member>
     </members>
 </doc>
