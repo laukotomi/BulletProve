@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IntegTest.Migrations
 {
@@ -12,6 +11,7 @@ namespace IntegTest.Migrations
     [Migration("20220112133723_Initial")]
     partial class Initial
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("DocumentationHeader", "MethodDocumentationHeader:The method must have a documentation header.", Justification = "<Pending>")]
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

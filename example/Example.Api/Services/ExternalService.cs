@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using Microsoft.Extensions.Configuration;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,14 +25,17 @@ namespace Example.Api.Services
     public class ExternalService : IExternalService
     {
         private readonly HttpClient _httpClient;
+        private readonly string _url;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExternalService"/> class.
         /// </summary>
         /// <param name="httpClient">The http client.</param>
-        public ExternalService(HttpClient httpClient)
+        /// <param name="configuration">The configuration object.</param>
+        public ExternalService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _url = configuration.GetValue<string>("ExternalServiceUrl");
         }
 
         /// <summary>
@@ -42,7 +46,7 @@ namespace Example.Api.Services
         /// <returns>A Task.</returns>
         public async Task<bool> IsUserCorrectAsync(string username, CancellationToken cancellationToken)
         {
-            var result = await _httpClient.GetAsync("https://google.com", cancellationToken);
+            var result = await _httpClient.GetAsync(_url, cancellationToken);
             if (result != null)
             {
                 return true;

@@ -67,6 +67,8 @@ namespace Example.Api.IntegrationTests.Controllers
                     Password = "Badadd",
                 })
                 .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
+
+            response.Should().NotBeNull();
         }
 
         /// <summary>
@@ -78,6 +80,8 @@ namespace Example.Api.IntegrationTests.Controllers
             using var response = await _userController
                 .CreateFor(x => x.GetUserDataAsync)
                 .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
+
+            response.Should().NotBeNull();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace LTest.Http.Services
         /// <summary>
         /// Gets the request.
         /// </summary>
-        public HttpRequestMessage Request { get; } = new();
+        public HttpRequestMessage Request { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssertBuilder{TResponse}"/> class.

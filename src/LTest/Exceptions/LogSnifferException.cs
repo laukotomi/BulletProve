@@ -3,7 +3,7 @@
     /// <summary>
     /// The log sniffer exception.
     /// </summary>
-    internal class LogSnifferException : Exception
+    public class LogSnifferException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LogSnifferException"/> class.

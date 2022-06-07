@@ -2,8 +2,10 @@
 
 namespace IntegTest.Migrations
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("DocumentationHeader", "ClassDocumentationHeader:The class must have a documentation header.", Justification = "<Pending>")]
     public partial class Initial : Migration
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("DocumentationHeader", "MethodDocumentationHeader:The method must have a documentation header.", Justification = "<Pending>")]
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -61,6 +63,7 @@ namespace IntegTest.Migrations
                 unique: true);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("DocumentationHeader", "MethodDocumentationHeader:The method must have a documentation header.", Justification = "<Pending>")]
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

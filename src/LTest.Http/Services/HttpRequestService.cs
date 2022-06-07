@@ -160,8 +160,7 @@ namespace LTest.Http.Services
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public AssertBuilder<LTestProblemDetails> AssertProblemWithStatus<TResponse>(HttpStatusCode statusCode)
-            where TResponse : class
+        public AssertBuilder<LTestProblemDetails> AssertProblemWithStatus(HttpStatusCode statusCode)
         {
             return AssertStatus<LTestProblemDetails>(statusCode);
         }
@@ -217,8 +216,7 @@ namespace LTest.Http.Services
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public Task<LTestProblemDetails> ExecuteAssertingProblemAndStatusAsync<TResponse>(HttpStatusCode statusCode)
-            where TResponse : class
+        public Task<LTestProblemDetails> ExecuteAssertingProblemAndStatusAsync(HttpStatusCode statusCode)
         {
             return ExecuteAssertingStatusAsync<LTestProblemDetails>(statusCode);
         }

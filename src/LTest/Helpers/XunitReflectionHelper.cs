@@ -17,12 +17,10 @@ namespace LTest.Helpers
         {
             var testOutputType = output.GetType();
             var testField = testOutputType.GetField("test", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (testField != null)
+
+            if (testField != null && testField.GetValue(output) is ITest context)
             {
-                if (testField.GetValue(output) is ITest context)
-                {
-                    return context;
-                }
+                return context;
             }
 
             throw new InvalidOperationException("Unable to get test context. Probably xunit library was updated.");

@@ -3,13 +3,14 @@ using Example.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IntegTest.Migrations
 {
     [DbContext(typeof(AppDbContext))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("DocumentationHeader", "ClassDocumentationHeader:The class must have a documentation header.", Justification = "<Pending>")]
     partial class AppDbContextModelSnapshot : ModelSnapshot
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("DocumentationHeader", "MethodDocumentationHeader:The method must have a documentation header.", Justification = "<Pending>")]
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

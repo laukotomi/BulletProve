@@ -11,6 +11,13 @@ namespace Example.Api
     public class Program
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="Program"/> class.
+        /// </summary>
+        protected Program()
+        {
+        }
+
+        /// <summary>
         /// Main method.
         /// </summary>
         /// <param name="args">The args.</param>

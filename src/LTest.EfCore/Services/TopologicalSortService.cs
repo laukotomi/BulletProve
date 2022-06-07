@@ -55,7 +55,10 @@
                     }
                 }
 
-                visited[item] = false;
+                if (visited[item])
+                {
+                    visited[item] = false;
+                }
                 sorted.Add(item);
             }
         }
