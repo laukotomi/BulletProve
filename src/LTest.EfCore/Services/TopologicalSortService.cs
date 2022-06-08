@@ -1,4 +1,4 @@
-﻿namespace LTest.EFCore.Services
+﻿namespace LTest.EfCore.Services
 {
     /// <summary>
     /// Topoligical sort service.

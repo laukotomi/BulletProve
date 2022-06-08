@@ -1,10 +1,10 @@
-﻿using LTest.EFCore.Services;
+﻿using LTest.EfCore.Services;
 using LTest.Helpers;
 using LTest.Hooks;
 using LTest.Logging;
 using Microsoft.EntityFrameworkCore;
 
-namespace LTest.EFCore.Hooks
+namespace LTest.EfCore.Hooks
 {
     /// <summary>
     /// Cleans database using EF features.

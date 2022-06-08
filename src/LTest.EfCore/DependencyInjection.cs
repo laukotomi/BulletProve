@@ -1,5 +1,5 @@
-﻿using LTest.EFCore.Hooks;
-using LTest.EFCore.Services;
+﻿using LTest.EfCore.Hooks;
+using LTest.EfCore.Services;
 using LTest.Hooks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

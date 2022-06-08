@@ -5,9 +5,6 @@
 		<Description>LTest is an extension to the Microsoft's ASP.NET Core integration test package with useful features.</Description>
 		<Authors>laukotomi</Authors>
 		<Copyright>Copyright (c) laukotomi 2022</Copyright>
-		<Version>1.0.5</Version>
-		<PackageId>LTest.TemplateGenerator</PackageId>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<PackageProjectUrl>https://github.com/laukotomi/LTest</PackageProjectUrl>
