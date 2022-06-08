@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Text;
 
-namespace LTest.EFCore.Services
+namespace LTest.EfCore.Services
 {
     /// <summary>
     /// Cleans up database.
