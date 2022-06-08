@@ -18,3 +18,14 @@ jobs:
           dotnet pack .\src\LTest.EfCore\LTest.EfCore.csproj -c Release -o nupkgs -p:Version=${{ github.event.inputs.version }}
           cd nupkgs
           nuget push *.nupkg ${{ secrets.NUGET_KEY }} -Source https://api.nuget.org/v3/index.json
+
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/v${{ github.event.inputs.version }}',
+              sha: context.sha
+            })
