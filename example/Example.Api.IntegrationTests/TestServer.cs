@@ -18,6 +18,7 @@ namespace Example.Api.IntegrationTests
         /// <inheritdoc/>
         protected override void Configure(LTestConfiguration config)
         {
+            config.MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Information;
         }
 
         /// <inheritdoc/>

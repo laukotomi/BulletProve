@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<Description>LTest is an extension to the Microsoft's ASP.NET Core integration test package with useful features.</Description>
 		<Authors>laukotomi</Authors>
 		<Copyright>Copyright (c) laukotomi 2022</Copyright>
@@ -22,9 +22,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FluentAssertions" Version="6.7.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="FluentAssertions" Version="6.11.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>

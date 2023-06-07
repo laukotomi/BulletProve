@@ -1,8 +1,5 @@
 using FluentAssertions;
-using LTest.Helpers;
-using LTest.Http.Configuration;
-using LTest.Http.Helpers;
-using LTest.Http.Interfaces;
+using LTest.Http.Models;
 using LTest.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -18,8 +15,7 @@ namespace LTest.Http.Services
         where TResponse : class
     {
         private readonly LTestFacade _facade;
-        private readonly string _label;
-        private readonly HttpConfiguration _httpConfiguration;
+        private readonly HttpRequestManager _httpRequestManager;
         private readonly ITestLogger _logger;
 
         private readonly List<Action<TResponse>> _responseObjectAssertions = new();
@@ -29,9 +25,9 @@ namespace LTest.Http.Services
         private Action<HttpStatusCode>? _statusCodeAssert;
 
         /// <summary>
-        /// Gets the request.
+        /// Gets the request context.
         /// </summary>
-        public HttpRequestMessage Request { get; }
+        public HttpRequestContext Context { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssertBuilder{TResponse}"/> class.
@@ -39,15 +35,11 @@ namespace LTest.Http.Services
         /// <param name="request">Http request message.</param>
         /// <param name="facade">Service provider.</param>
         /// <param name="label">Label to be logged.</param>
-        public AssertBuilder(
-            HttpRequestMessage request,
-            LTestFacade facade,
-            string label)
+        public AssertBuilder(HttpRequestContext context, LTestFacade facade)
         {
-            Request = request;
+            Context = context;
             _facade = facade;
-            _label = label;
-            _httpConfiguration = facade.GetRequiredService<HttpConfiguration>();
+            _httpRequestManager = facade.GetRequiredService<HttpRequestManager>();
             _logger = facade.Logger;
         }
 
@@ -119,19 +111,8 @@ namespace LTest.Http.Services
         /// <returns></returns>
         public async Task<TResponse> ExecuteAsync()
         {
-            await HookHelper.RunHooksAsync<IBeforeHttpRequestHook>(_facade, x => x.BeforeHttpRequestAsync(_label, Request));
-
-            var httpClient = _facade.HttpClient;
-            using var loggerScope = _logger.Scope(logger => logger.LogInformation(LogHelper.CreateRequestLog(Request, httpClient, _httpConfiguration)));
-            var result = await StopwatchHelper.MeasureAsync(() => httpClient.SendAsync(Request));
-            var response = result.ResultObject;
-            _facade.DisposableCollertor.Add(response);
-
-            await HookHelper.RunHooksAsync<IAfterHttpRequestHook>(_facade, x => x.AfterHttpRequestAsync(_label, response));
-
-            Request.Dispose();
-
-            _logger.LogInformation(LogHelper.CreateResponseLog(response, result.ElapsedMilliseconds, _httpConfiguration));
+            using var loggerScope = _facade.Logger.Scope(Context.Label);
+            var response = await _httpRequestManager.ExecuteRequestAsync(Context, _facade);
 
             RunStatusCodeAssert(response.StatusCode);
             RunAssertions(_responseMessageAssertions, response, "reponse message");
@@ -139,8 +120,6 @@ namespace LTest.Http.Services
 
             var responseObject = await GetResponseObjectAsync(response);
             RunAssertions(_responseObjectAssertions, responseObject, "reponse object");
-
-            loggerScope.Finish(logger => logger.LogInformation($"Request '{_label}' executed"));
 
             return responseObject;
         }
@@ -154,7 +133,6 @@ namespace LTest.Http.Services
             if (_statusCodeAssert != null)
             {
                 _statusCodeAssert(statusCode);
-                _logger.LogInformation($"{(int)statusCode} StatusCode checked");
             }
             else
             {

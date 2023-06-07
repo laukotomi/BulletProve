@@ -35,10 +35,7 @@ namespace LTest.EfCore.Hooks
         /// <inheritdoc/>
         public async Task BeforeTestAsync()
         {
-            var elapsedMs = await StopwatchHelper.MeasureAsync(async () =>
-            {
-                await _databaseCleanupService.CleanupAsync(_dbContext);
-            });
+            var elapsedMs = await StopwatchHelper.MeasureAsync(() => _databaseCleanupService.CleanupAsync(_dbContext));
 
             _testLogger.LogInformation($"DB cleaned ({elapsedMs} ms)");
         }

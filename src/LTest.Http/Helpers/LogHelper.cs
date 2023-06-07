@@ -18,7 +18,7 @@ namespace LTest.Http.Helpers
         public static string CreateRequestLog(HttpRequestMessage request, HttpClient client, HttpConfiguration configuration)
         {
             var builder = new StringBuilder($"{request.Method} {request.RequestUri}");
-            var headers = client.DefaultRequestHeaders.Concat(request.Headers);
+            var headers = client.DefaultRequestHeaders.Concat(request.Headers).Where(x => x.Key != Constants.BulletProveRequestID);
 
             LogHeaders(builder, headers, configuration);
             if (request.Content != null)

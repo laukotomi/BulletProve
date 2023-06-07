@@ -1,5 +1,4 @@
 using LTest.Configuration;
-using LTest.Http;
 using LTest.Logging;
 using LTest.LogSniffer;
 using LTest.Services;
@@ -10,40 +9,46 @@ namespace LTest
     /// <summary>
     /// Service provider extensions for integration tests.
     /// </summary>
-    public class LTestFacade : IServiceProvider
+    public class LTestFacade : IServiceProvider, IDisposable, IAsyncDisposable
     {
+        private readonly AsyncServiceScope _serviceScope;
         private readonly IServiceProvider _services;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LTestFacade"/> class.
         /// </summary>
         /// <param name="services">Service provider</param>
-        public LTestFacade(IServiceProvider services)
+        public LTestFacade(IServiceProvider services, HttpClient httpClient)
         {
-            _services = services;
+            _serviceScope = services.CreateAsyncScope();
+            _services = _serviceScope.ServiceProvider;
+
             DisposableCollertor = _services.GetRequiredService<DisposableCollertor>();
+            Logger = _services.GetRequiredService<ITestLogger>();
+            LogSniffer = _services.GetRequiredService<ILogSnifferService>();
+            HttpClient = httpClient;
+            Configuration = _services.GetRequiredService<LTestConfiguration>();
         }
 
         /// <summary>
         /// Gets logger service.
         /// </summary>
-        public ITestLogger Logger => _services.GetRequiredService<ITestLogger>();
-
+        public ITestLogger Logger { get; }
 
         /// <summary>
         /// Gets log sniffer service.
         /// </summary>
-        public ILogSnifferService LogSniffer => _services.GetRequiredService<ILogSnifferService>();
+        public ILogSnifferService LogSniffer { get; }
 
         /// <summary>
         /// Gets the http client.
         /// </summary>
-        public HttpClient HttpClient => _services.GetRequiredService<LTestHttpClientAccessor>().Client;
+        public HttpClient HttpClient { get; }
 
         /// <summary>
         /// Gets the configuration object.
         /// </summary>
-        public LTestConfiguration Configuration => _services.GetRequiredService<LTestConfiguration>();
+        public LTestConfiguration Configuration { get; }
 
         /// <summary>
         /// Gets the disposable collertor.
@@ -57,6 +62,25 @@ namespace LTest
         public object? GetService(Type serviceType)
         {
             return _services.GetService(serviceType);
+        }
+
+        /// <summary>
+        /// Disposes the object.
+        /// </summary>
+        public void Dispose()
+        {
+            _serviceScope.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the object.
+        /// </summary>
+        /// <returns>A ValueTask.</returns>
+        public async ValueTask DisposeAsync()
+        {
+            await _serviceScope.DisposeAsync();
+            GC.SuppressFinalize(this);
         }
     }
 }

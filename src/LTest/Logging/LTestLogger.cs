@@ -80,15 +80,15 @@ namespace LTest.Logging
         /// <typeparam name="TState">The type of the state to begin scope for.</typeparam>
         /// <param name="state">The identifier for the scope.</param>
         /// <returns>An System.IDisposable that ends the logical operation scope on dispose.</returns>
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull
         {
             if (_configuration.ServerLogFilter.Filters.Any(x => x.Action(_categoryName)))
             {
-                var loggerScope = _logger.Scope(logger => logger.LogInformation($"Scope: {JsonSerializer.Serialize(state)}"));
-                return new LoggerScope(loggerScope);
+                _logger.LogInformation($"Scope: {JsonSerializer.Serialize(state)}");
             }
 
-            return new LoggerScope();
+            return _logger.Scope(state);
         }
 
         /// <summary>
@@ -97,30 +97,5 @@ namespace LTest.Logging
         /// <param name="logLevel">level to be checked.</param>
         /// <returns>true if enabled.</returns>
         public bool IsEnabled(LogLevel logLevel) => true;
-
-        /// <summary>
-        /// Helper class for BeginScope method.
-        /// </summary>
-        private sealed class LoggerScope : IDisposable
-        {
-            private readonly TestLoggerScope? _scope;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="LoggerScope"/> class.
-            /// </summary>
-            /// <param name="scope">The scope.</param>
-            public LoggerScope(TestLoggerScope? scope = null)
-            {
-                _scope = scope;
-            }
-
-            /// <summary>
-            /// IDisposable implementation.
-            /// </summary>
-            public void Dispose()
-            {
-                _scope?.Dispose();
-            }
-        }
     }
 }

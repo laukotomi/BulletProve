@@ -1,4 +1,5 @@
 using LTest.Logging;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 
 namespace LTest.Configuration
@@ -16,6 +17,11 @@ namespace LTest.Configuration
         {
             ServerLogFilter = defaultLogFilter;
         }
+
+        public WebApplicationFactoryClientOptions WebApplicationFactoryClientOptions { get; set; } = new WebApplicationFactoryClientOptions
+        {
+            BaseAddress = new Uri("https://localhost")
+        };
 
         /// <summary>
         /// Turns off LTestLogger registration to preserve the default logger. Also disables those features.

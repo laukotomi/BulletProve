@@ -30,10 +30,7 @@ namespace Example.Api.IntegrationTests.Hooks
         /// <inheritdoc/>
         public async Task BeforeTestAsync()
         {
-            var elapsedMs = await StopwatchHelper.MeasureAsync(async () =>
-            {
-                await _seeder.SeedAsync();
-            });
+            var elapsedMs = await StopwatchHelper.MeasureAsync(_seeder.SeedAsync);
 
             _testLogger.LogInformation($"Seed done ({elapsedMs} ms)");
         }

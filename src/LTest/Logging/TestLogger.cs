@@ -1,27 +1,19 @@
-using LTest.Configuration;
-using LTest.Hooks;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 
 namespace LTest.Logging
 {
     /// <summary>
     /// Test logger implementation.
     /// </summary>
-    internal class TestLogger : ITestLogger, IResetSingletonHook
+    internal class TestLogger : ITestLogger
     {
         private readonly LinkedList<LTestLogEvent> _logs = new();
         private readonly object _lock = new();
-        private readonly LTestConfiguration _configuration;
-        private int _scopeLevel = 0;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestLogger"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration.</param>
-        public TestLogger(LTestConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        public AsyncLocal<Scope?> CurrentScope { get; private set; } = new();
+
+        public ConcurrentBag<Scope> Scopes { get; } = new();
 
         /// <summary>
         /// Logs an error message.
@@ -59,7 +51,7 @@ namespace LTest.Logging
         {
             lock (_lock)
             {
-                _logs.AddLast(new LTestLogEvent(level, _scopeLevel, message));
+                _logs.AddLast(new LTestLogEvent(level, message, CurrentScope.Value));
             }
         }
 
@@ -77,27 +69,14 @@ namespace LTest.Logging
         /// <summary>
         /// Creates scope (indenting) in the logger.
         /// </summary>
-        public TestLoggerScope Scope(Action<ITestLogger>? logAction = null)
+        public IDisposable Scope(object? state = null)
         {
-            logAction?.Invoke(this);
+            Scope? parent = CurrentScope.Value;
+            var newScope = new Scope(this, state, parent);
+            Scopes.Add(newScope);
+            CurrentScope.Value = newScope;
 
-            if (!_configuration.DisableLogScoping)
-            {
-                _scopeLevel++;
-            }
-
-            return new TestLoggerScope(this, _scopeLevel, (scope) =>
-            {
-                if (!_configuration.DisableLogScoping)
-                {
-                    _scopeLevel--;
-
-                    if (_scopeLevel != scope.Level - 1)
-                    {
-                        throw new InvalidOperationException($"Scope was created with level {scope.Level} but disposed to level {_scopeLevel}. Perhaps a previous scope was not properly disposed.");
-                    }
-                }
-            });
+            return newScope;
         }
 
         /// <summary>
@@ -105,24 +84,21 @@ namespace LTest.Logging
         /// </summary>
         public void LogEmptyLine()
         {
-            lock (_lock)
-            {
-                _logs.AddLast(new LTestLogEvent(LogLevel.None, _scopeLevel, string.Empty));
-            }
+            Log(LogLevel.None, string.Empty);
         }
 
         /// <summary>
         /// Resets the service.
         /// </summary>
         /// <returns>A Task.</returns>
-        public Task ResetAsync()
+        public void Clear()
         {
             lock (_lock)
             {
                 _logs.Clear();
-                _scopeLevel = 0;
+                CurrentScope = new();
+                Scopes.Clear();
             }
-            return Task.CompletedTask;
         }
     }
 }

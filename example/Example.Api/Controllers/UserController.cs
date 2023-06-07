@@ -5,6 +5,8 @@ using Example.Api.Mapping;
 using Example.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +22,7 @@ namespace Example.Api.Controllers
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IExternalService _externalService;
+        private readonly ILogger<UserController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController"/> class.
@@ -32,12 +35,14 @@ namespace Example.Api.Controllers
             ICurrentUserService currentUserService,
             AppDbContext dbContext,
             IMapper mapper,
-            IExternalService externalService)
+            IExternalService externalService,
+            ILogger<UserController> logger)
         {
             _currentUserService = currentUserService;
             _dbContext = dbContext;
             _mapper = mapper;
             _externalService = externalService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -49,10 +54,17 @@ namespace Example.Api.Controllers
         public async Task<ActionResult<UserDto?>> GetUserDataAsync(CancellationToken cancellationToken)
         {
             var userId = _currentUserService.UserId;
+            using var scope = _logger.BeginScope(new Dictionary<string, object> { { nameof(CurrentUserService.UserId), userId } });
+
             var dto = await _dbContext.Users
                 .Where(x => x.Id == userId)
                 .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken);
+
+            if (dto != null)
+            {
+                _logger.LogInformation("User data found");
+            }
 
             return dto;
         }

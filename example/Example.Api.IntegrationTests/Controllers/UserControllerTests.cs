@@ -1,8 +1,8 @@
 ﻿using Example.Api.Controllers;
+using Example.Api.IntegrationTests.Extensions;
 using FluentAssertions;
-using IntegrationTests.Common;
 using LTest;
-using LTest.Http.Services;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
@@ -11,10 +11,8 @@ namespace Example.Api.IntegrationTests.Controllers
     /// <summary>
     /// The user controller tests.
     /// </summary>
-    public class UserControllerTests : LTestBase
+    public class UserControllerTests : TestBase
     {
-        private readonly HttpRequestBuilder<UserController> _userController;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="UserControllerTests"/> class.
         /// </summary>
@@ -23,7 +21,6 @@ namespace Example.Api.IntegrationTests.Controllers
         public UserControllerTests(TestServerManager serverManager, ITestOutputHelper output)
             : base(serverManager, output)
         {
-            _userController = LTestServices.GetHttpRequestBuilder<UserController>();
         }
 
         /// <summary>
@@ -32,11 +29,11 @@ namespace Example.Api.IntegrationTests.Controllers
         [Fact]
         public async Task WhenUserIsLoggedIn_ThenItsDataReturned()
         {
-            var token = await _userController.LoginAsAdminAndGetTokenAsync();
+            var token = await LoginAsAdminAndGetTokenAsync(Server);
 
-            var userData = await _userController
-                .CreateFor(x => x.GetUserDataAsync)
-                .SetHeaders(x => x.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(token))
+            var userData = await Server
+                .HttpRequestFor<UserController>(x => x.GetUserDataAsync)
+                .WithToken(token)
                 .ExecuteSuccessAsync<UserController.UserDto>();
 
             userData.Username.Should().Be(TestConstants.AdminUsername);
@@ -49,25 +46,25 @@ namespace Example.Api.IntegrationTests.Controllers
         [Fact]
         public async Task WhenUserIsRegistered_ThenItCanLogin()
         {
-            var authController = LTestServices.GetHttpRequestBuilder<AuthController>();
-            var adminToken = await _userController.LoginAsAdminAndGetTokenAsync();
+            var adminToken = await LoginAsAdminAndGetTokenAsync(Server);
             var username = "NewUser";
             var password = "Password";
 
-            using (LTestServices.LogSniffer.ExpectedLogs.Add(x => x.Message == "Wrong username or password"))
+            using (Server.LogSniffer.ExpectedLogs.Add(x => x.Message == "Wrong username or password"))
             {
-                using var response1 = await authController
-                    .CreateFor(x => x.LoginAsync)
+                using var response1 = await Server
+                    .HttpRequestFor<AuthController>(x => x.LoginAsync)
                     .SetJsonContent(new AuthController.LoginCommand
                     {
                         Username = username,
                         Password = password
                     })
-                    .ExecuteAssertingStatusAsync(System.Net.HttpStatusCode.Unauthorized);
+                    .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
             }
 
-            using var response2 = await _userController
-                .CreateRequest(x => x.RegisterUserAsync, adminToken)
+            using var response2 = await Server
+                .HttpRequestFor<UserController>(x => x.RegisterUserAsync)
+                .WithToken(adminToken)
                 .SetJsonContent(new UserController.RegisterUserCommand
                 {
                     UserName = username,
@@ -75,8 +72,8 @@ namespace Example.Api.IntegrationTests.Controllers
                 })
                 .ExecuteSuccessAsync();
 
-            var token = await authController
-                .CreateFor(x => x.LoginAsync)
+            var token = await Server
+                .HttpRequestFor<AuthController>(x => x.LoginAsync)
                 .SetJsonContent(new AuthController.LoginCommand
                 {
                     Username = username,

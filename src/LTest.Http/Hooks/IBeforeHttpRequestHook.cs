@@ -1,4 +1,6 @@
-﻿namespace LTest.Http.Interfaces
+﻿using LTest.Http.Models;
+
+namespace LTest.Http.Interfaces
 {
     /// <summary>
     /// A service that will be run before server Http request.
@@ -11,6 +13,6 @@
         /// <param name="label">The label.</param>
         /// <param name="httpRequest">The http request.</param>
         /// <returns>A Task.</returns>
-        Task BeforeHttpRequestAsync(string label, HttpRequestMessage httpRequest);
+        Task BeforeHttpRequestAsync(HttpRequestContext context);
     }
 }

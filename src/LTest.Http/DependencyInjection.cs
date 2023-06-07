@@ -1,5 +1,7 @@
 using LTest.Http.Configuration;
+using LTest.Http.Filters;
 using LTest.Http.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LTest
@@ -22,9 +24,10 @@ namespace LTest
             services.AddSingleton(config);
             services.AddSingleton<HttpMethodService>();
             services.AddSingleton<LinkGeneratorService>();
-            services.AddScoped<HttpRequestBuilder>();
-            services.AddScoped(typeof(HttpRequestBuilder<>));
+            services.AddSingleton<HttpRequestManager>();
             services.AddScoped<LabelGeneratorService>();
+
+            services.AddTransient<IStartupFilter, HttpRequestFilter>();
 
             return services;
         }

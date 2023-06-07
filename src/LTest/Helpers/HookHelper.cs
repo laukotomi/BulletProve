@@ -1,3 +1,4 @@
+using LTest.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LTest.Helpers
@@ -16,6 +17,8 @@ namespace LTest.Helpers
         public static async Task RunHooksAsync<THook>(IServiceProvider services, Func<THook, Task> methodToRun)
         {
             var hooks = services.GetServices<THook>();
+            var logger = services.GetRequiredService<ITestLogger>();
+            using var scope = logger.Scope(typeof(THook).Name);
 
             if (hooks != null)
             {

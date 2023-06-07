@@ -1,5 +1,7 @@
 ﻿using Example.Api.Data;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -44,6 +46,12 @@ namespace Example.Api.Auth
         /// <inheritdoc/>
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
+            var endpoint = Context.GetEndpoint();
+            if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null)
+            {
+                return AuthenticateResult.NoResult();
+            }
+
             if (!Request.Headers.TryGetValue(HeaderNames.Authorization, out var authorization))
             {
                 return AuthenticateResult.Fail("No auth header!");

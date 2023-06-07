@@ -5,19 +5,14 @@ namespace LTest.Logging
     /// <summary>
     /// Log event.
     /// </summary>
-    internal class LTestLogEvent
+    public class LTestLogEvent
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LTestLogEvent"/> class.
-        /// </summary>
-        /// <param name="level">Log level.</param>
-        /// <param name="scopeLevel">Scope level</param>
-        /// <param name="message">Log message.</param>
-        public LTestLogEvent(LogLevel level, int scopeLevel, string message)
+        public LTestLogEvent(LogLevel level, string message, Scope? scope)
         {
             Level = level;
-            ScopeLevel = scopeLevel;
             Message = message;
+            Scope = scope;
+            CreatedAt = DateTime.Now;
         }
 
         /// <summary>
@@ -26,24 +21,15 @@ namespace LTest.Logging
         public LogLevel Level { get; }
 
         /// <summary>
-        /// Scope level.
-        /// </summary>
-        public int ScopeLevel { get; }
-
-        /// <summary>
         /// Log message.
         /// </summary>
         public string Message { get; }
 
         /// <summary>
-        /// ToString() override.
+        /// Gets the scope.
         /// </summary>
-        public override string ToString()
-        {
-            if (Level == LogLevel.None)
-                return string.Empty;
+        public Scope? Scope { get; }
 
-            return $"{Level.ToString()[0]}: {new string(' ', ScopeLevel * 2)}{Message}";
-        }
+        public DateTime CreatedAt { get; }
     }
 }

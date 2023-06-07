@@ -35,7 +35,7 @@ namespace LTest.Logging
         /// <summary>
         /// Creates scope (indenting) in the logger.
         /// </summary>
-        TestLoggerScope Scope(Action<ITestLogger>? logAction = null);
+        IDisposable Scope(object? state = null);
 
         /// <summary>
         /// Writes empty line.

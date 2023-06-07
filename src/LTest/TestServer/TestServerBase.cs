@@ -1,7 +1,7 @@
 using LTest.Configuration;
+using LTest.Exceptions;
 using LTest.Helpers;
 using LTest.Hooks;
-using LTest.Http;
 using LTest.Logging;
 using LTest.LogSniffer;
 using LTest.Services;
@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using Xunit.Abstractions;
 
 namespace LTest
 {
@@ -25,7 +27,11 @@ namespace LTest
         where TStartup : class
     {
         private readonly LTestConfiguration _configuration;
-        private readonly ITestLogger _logger;
+        private readonly TestLogger _logger;
+
+        private HttpClient _httpClient;
+        private LTestFacade _facade;
+        private string? _serverName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestServerBase{TStartup}"/> class.
@@ -34,14 +40,102 @@ namespace LTest
         {
             _configuration = InitConfiguration();
             Configure(_configuration);
-            _logger = new TestLogger(_configuration);
+            _logger = new TestLogger();
+        }
 
-            using var loggerScope = _logger.Scope(logger => logger.LogInformation($"Starting server '{GetType().Name}'"));
-            var result = StopwatchHelper.Measure(CreateClient);
-            loggerScope.Finish(logger => logger.LogInformation($"Server started ({result.ElapsedMilliseconds} ms)"));
+        private bool StartServer(string serverName)
+        {
+            if (_serverName != null)
+                return false;
 
-            var httpClientAccessor = Services.GetRequiredService<LTestHttpClientAccessor>();
-            httpClientAccessor.Client = result.ResultObject;
+            _serverName = serverName;
+
+            using var scope = _logger.Scope(serverName);
+            _logger.LogInformation($"Starting server '{GetType().Name}'");
+            var result = StopwatchHelper.Measure(() => CreateClient(_configuration.WebApplicationFactoryClientOptions));
+            _logger.LogInformation($"Server started ({result.ElapsedMilliseconds} ms)");
+
+            _httpClient = result.ResultObject;
+
+            return true;
+        }
+
+        public async Task<LTestFacade> InitScopeAsync(string serverName)
+        {
+            var started = StartServer(serverName);
+
+            _facade = new LTestFacade(Services, _httpClient);
+
+            if (started)
+            {
+                await HookHelper.RunHooksAsync<IAfterServerStartedHook>(_facade, x => x.AfterServerStartedAsync());
+            }
+            else
+            {
+                //await HookHelper.RunHooksAsync<IResetSingletonHook>(_facade, x => x.ResetAsync());
+                using var scope = _logger.Scope(serverName);
+                _logger.LogInformation("Server is already running");
+            }
+
+            await HookHelper.RunHooksAsync<IBeforeTestHook>(_facade, x => x.BeforeTestAsync());
+
+            return _facade;
+        }
+
+        public async Task CleanUpAsync(ITestOutputHelper output)
+        {
+            try
+            {
+                await HookHelper.RunHooksAsync<IAfterTestHook>(_facade, x => x.AfterTestAsync());
+
+                FlushLogger(output);
+
+                var openScopes = _logger.Scopes.Where(x => !x.IsDisposed).ToList();
+                if (openScopes.Count != 0)
+                {
+                    throw new InvalidOperationException($"These logger scopes were not disposed: {string.Join(", ", openScopes.Select(x => JsonSerializer.Serialize(x.State)))}");
+                }
+
+                _logger.Clear();
+
+                if (_facade.LogSniffer.UnexpectedLogOccured)
+                {
+                    throw new LogSnifferException("Unexpected log occured on server side. Check the logs!");
+                }
+            }
+            finally
+            {
+                await _facade.DisposeAsync();
+            }
+        }
+
+        private void FlushLogger(ITestOutputHelper output)
+        {
+            var defaultGroupId = Guid.NewGuid().ToString();
+
+            var groups = _logger.GetSnapshot()
+                .GroupBy(x => x.Scope == null ? defaultGroupId : x.Scope.GroupId)
+                .OrderBy(group => group.Min(log => log.CreatedAt));
+
+            foreach (var group in groups)
+            {
+                output.WriteLine($"({group.Key})");
+
+                foreach (var logEvent in group)
+                {
+                    if (logEvent.Level == LogLevel.None)
+                    {
+                        output.WriteLine(string.Empty);
+                    }
+                    else
+                    {
+                        var indent = logEvent.Scope == null ? 0 : logEvent.Scope.Level * 2;
+                        output.WriteLine($"{logEvent.Level.ToString()[0]}: {new string(' ', indent)}{logEvent.Message}");
+                    }
+                }
+
+                output.WriteLine(string.Empty);
+            }
         }
 
         /// <summary>
@@ -129,23 +223,17 @@ namespace LTest
         /// <param name="services">The services.</param>
         private void RegisterLTestServices(IServiceCollection services)
         {
-            // HttpClient
-            services.AddSingleton<LTestHttpClientAccessor>();
-
             // Configuration
             services.AddSingleton(_configuration);
 
             // Logger
-            services.AddSingleton(_logger);
+            services.AddSingleton<ITestLogger>(_logger);
 
             // LogSniffer
             services.AddSingleton<ILogSnifferService, LogSnifferService>();
 
             // DisposableCollector
             services.AddScoped<DisposableCollertor>();
-
-            // Facade
-            services.AddScoped<LTestFacade>();
         }
 
         /// <summary>
