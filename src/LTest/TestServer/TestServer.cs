@@ -1,10 +1,10 @@
-using LTest.Configuration;
 using LTest.Exceptions;
 using LTest.Helpers;
 using LTest.Hooks;
 using LTest.Logging;
 using LTest.LogSniffer;
 using LTest.Services;
+using LTest.TestServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Xunit.Abstractions;
@@ -23,24 +22,24 @@ namespace LTest
     /// WebApplication factory base class for integration tests.
     /// </summary>
     /// <typeparam name="TStartup">Startup class.</typeparam>
-    public abstract class TestServerBase<TStartup> : WebApplicationFactory<TStartup>, ITestServer
+    public class TestServer<TStartup> : WebApplicationFactory<TStartup>, ITestServer
         where TStartup : class
     {
-        private readonly LTestConfiguration _configuration;
-        private readonly TestLogger _logger;
+        private readonly TestLogger _logger = new();
+        private readonly Action<ServerConfigurator>? _configAction;
 
+        private string? _serverName;
+        private ServerConfigurator _configurator;
         private HttpClient _httpClient;
         private LTestFacade _facade;
-        private string? _serverName;
+        private HookRunner _hookRunner;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestServerBase{TStartup}"/> class.
+        /// Initializes a new instance of the <see cref="TestServer{TStartup}"/> class.
         /// </summary>
-        protected TestServerBase()
+        public TestServer(Action<ServerConfigurator>? configAction = null)
         {
-            _configuration = InitConfiguration();
-            Configure(_configuration);
-            _logger = new TestLogger();
+            _configAction = configAction;
         }
 
         private bool StartServer(string serverName)
@@ -49,10 +48,12 @@ namespace LTest
                 return false;
 
             _serverName = serverName;
+            _configurator = InitConfigurator();
+            _configAction?.Invoke(_configurator);
 
             using var scope = _logger.Scope(serverName);
             _logger.LogInformation($"Starting server '{GetType().Name}'");
-            var result = StopwatchHelper.Measure(() => CreateClient(_configuration.WebApplicationFactoryClientOptions));
+            var result = StopwatchHelper.Measure(() => CreateClient(_configurator.HttpClientOptions));
             _logger.LogInformation($"Server started ({result.ElapsedMilliseconds} ms)");
 
             _httpClient = result.ResultObject;
@@ -65,19 +66,20 @@ namespace LTest
             var started = StartServer(serverName);
 
             _facade = new LTestFacade(Services, _httpClient);
+            _hookRunner = _facade.GetRequiredService<HookRunner>();
 
             if (started)
             {
-                await HookHelper.RunHooksAsync<IAfterServerStartedHook>(_facade, x => x.AfterServerStartedAsync());
+                await _hookRunner.RunHooksAsync<IAfterServerStartedHook>(x => x.AfterServerStartedAsync());
             }
             else
             {
-                //await HookHelper.RunHooksAsync<IResetSingletonHook>(_facade, x => x.ResetAsync());
+                //await _hookHelper.RunHooksAsync<IResetSingletonHook>(x => x.ResetAsync());
                 using var scope = _logger.Scope(serverName);
                 _logger.LogInformation("Server is already running");
             }
 
-            await HookHelper.RunHooksAsync<IBeforeTestHook>(_facade, x => x.BeforeTestAsync());
+            await _hookRunner.RunHooksAsync<IBeforeTestHook>(x => x.BeforeTestAsync());
 
             return _facade;
         }
@@ -86,7 +88,7 @@ namespace LTest
         {
             try
             {
-                await HookHelper.RunHooksAsync<IAfterTestHook>(_facade, x => x.AfterTestAsync());
+                await _hookRunner.RunHooksAsync<IAfterTestHook>(x => x.AfterTestAsync());
 
                 FlushLogger(output);
 
@@ -98,9 +100,10 @@ namespace LTest
 
                 _logger.Clear();
 
-                if (_facade.LogSniffer.UnexpectedLogOccured)
+                var serverLogs = _facade.LogSniffer.GetServerLogs();
+                if (serverLogs.Any(x => x.IsUnexpected))
                 {
-                    throw new LogSnifferException("Unexpected log occured on server side. Check the logs!");
+                    throw new BulletProveException("Unexpected log occured on server side. Check the logs!");
                 }
             }
             finally
@@ -139,82 +142,44 @@ namespace LTest
         }
 
         /// <summary>
-        /// Configure test services in this method.
-        /// </summary>
-        /// <param name="services">Service collection.</param>
-        protected abstract void ConfigureTestServices(IServiceCollection services);
-
-        /// <summary>
-        /// Configure parameters here.
-        /// </summary>
-        /// <param name="config">Configuration.</param>
-        protected abstract void Configure(LTestConfiguration config);
-
-        /// <summary>
         /// ConfigureWebHost.
         /// </summary>
         /// <param name="builder">IWebHostBuilder.</param>
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.UseSetting("https_port", "443");
+            foreach (var (key, value) in _configurator.Settings)
+            {
+                builder.UseSetting(key, value);
+            }
 
-            builder
-                .ConfigureAppConfiguration((context, builder) =>
+            if (_configurator.JsonConfigurationFiles.Count > 0)
+            {
+                builder.ConfigureAppConfiguration((_, config) =>
                 {
                     var root = Directory.GetCurrentDirectory();
                     var fileProvider = new PhysicalFileProvider(root);
-                    builder.AddJsonFile(fileProvider, "integrationtestsettings.json", true, false);
-                    builder.AddJsonFile(fileProvider, "integrationtestsettings.Development.json", true, false);
 
-                    foreach (var file in _configuration.ConfigurationFiles)
+                    foreach (var file in _configurator.JsonConfigurationFiles)
                     {
-                        builder.AddJsonFile(fileProvider, file, false, false);
+                        config.AddJsonFile(fileProvider, file, false, false);
                     }
-                })
-                .ConfigureLogging((context, builder) =>
-                {
-                    if (!_configuration.PreserveLoggerProviders)
-                    {
-                        builder.Services.RemoveAll<ILoggerFactory>();
-                        builder.Services.RemoveAll<ILoggerProvider>();
-                        builder.Services.AddSingleton<ILoggerFactory, LTestLoggerFactory>();
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"{nameof(LTestLogger)} registration was skipped.");
-                    }
-                })
-                .ConfigureTestServices(services =>
-                {
-                    RegisterLTestServices(services);
-                    ConfigureTestServices(services);
-                    RegisterResetSingletonHooks(services);
                 });
-        }
-
-        /// <summary>
-        /// Inits the configuration.
-        /// </summary>
-        /// <returns>An LTestConfiguration.</returns>
-        private static LTestConfiguration InitConfiguration()
-        {
-            var startupType = typeof(TStartup);
-            LogFilter<string> logFilter;
-
-            var appName = startupType.Namespace?.Split('.')[0]
-                ?? startupType.Assembly.FullName?.Split(',')[0].Split('.')[0];
-
-            if (!string.IsNullOrEmpty(appName))
-            {
-                var filter = new LogEventFilter<string>("AppName", x => x.StartsWith(appName, StringComparison.OrdinalIgnoreCase));
-                logFilter = new LogFilter<string>(new[] { filter });
-            }
-            else
-            {
-                logFilter = new LogFilter<string>();
             }
 
-            return new LTestConfiguration(logFilter);
+            builder.ConfigureLogging((_, logging) =>
+            {
+                logging.Services.RemoveAll<ILoggerFactory>();
+                logging.Services.RemoveAll<ILoggerProvider>();
+                logging.Services.AddSingleton<ILoggerFactory, LTestLoggerFactory>();
+            });
+
+            builder.ConfigureTestServices(services =>
+            {
+                foreach (var serviceConfigurator in _configurator.ServiceConfigurators)
+                {
+                    serviceConfigurator(services);
+                }
+            });
         }
 
         /// <summary>
@@ -224,16 +189,20 @@ namespace LTest
         private void RegisterLTestServices(IServiceCollection services)
         {
             // Configuration
-            services.AddSingleton(_configuration);
+            services.AddSingleton(_configurator);
 
             // Logger
             services.AddSingleton<ITestLogger>(_logger);
 
             // LogSniffer
-            services.AddSingleton<ILogSnifferService, LogSnifferService>();
+            services.AddSingleton<ILogSnifferService, DefaultServerLogInspector>();
+            services.AddSingleton<IServerLogInspector>(sp => (DefaultServerLogInspector)sp.GetRequiredService<ILogSnifferService>());
 
             // DisposableCollector
             services.AddScoped<DisposableCollertor>();
+
+            // Hooks
+            services.AddTransient<HookRunner>();
         }
 
         /// <summary>
@@ -263,6 +232,47 @@ namespace LTest
                     services.AddSingleton(sp => (IResetSingletonHook)sp.GetRequiredService(service.ImplementationType!));
                 }
             }
+        }
+
+        private static string? GetAppName()
+        {
+            var startupType = typeof(TStartup);
+
+            var appName = startupType.Namespace?.Split('.')[0]
+                ?? startupType.Assembly.FullName?.Split(',')[0].Split('.')[0];
+
+            return appName;
+        }
+
+        /// <summary>
+        /// Inits the configuration.
+        /// </summary>
+        /// <returns>An LTestConfiguration.</returns>
+        private ServerConfigurator InitConfigurator()
+        {
+            var configurator = new ServerConfigurator()
+                .AddSetting("https_port", "443")
+                .ConfigureTestServices(services =>
+                {
+                    RegisterLTestServices(services);
+                    RegisterResetSingletonHooks(services);
+                });
+
+            var appName = GetAppName();
+            if (!string.IsNullOrWhiteSpace(appName))
+            {
+                configurator.ConfigureLoggerCategoryNameInspector(inspector =>
+                {
+                    inspector.AddDefaultAllowedAction(x => x.StartsWith(appName, StringComparison.OrdinalIgnoreCase), "AppName");
+                });
+            }
+
+            configurator.ConfigureServerLogInspector(inspector =>
+            {
+                inspector.AddDefaultAllowedAction(logEvent => logEvent.Level < LogLevel.Warning, "LogLevelBelowWarning");
+            });
+
+            return configurator;
         }
     }
 }

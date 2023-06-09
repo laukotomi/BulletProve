@@ -1,11 +1,12 @@
-﻿using LTest.Http.Models;
+﻿using LTest.Hooks;
+using LTest.Http.Models;
 
 namespace LTest.Http.Interfaces
 {
     /// <summary>
     /// A service that will be run before server Http request.
     /// </summary>
-    public interface IBeforeHttpRequestHook
+    public interface IBeforeHttpRequestHook : IHook
     {
         /// <summary>
         /// Will be run after server Http request was sent.

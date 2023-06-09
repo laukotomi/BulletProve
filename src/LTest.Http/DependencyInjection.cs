@@ -1,6 +1,7 @@
 using LTest.Http.Configuration;
 using LTest.Http.Filters;
 using LTest.Http.Services;
+using LTest.LogSniffer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +27,7 @@ namespace LTest
             services.AddSingleton<LinkGeneratorService>();
             services.AddSingleton<HttpRequestManager>();
             services.AddScoped<LabelGeneratorService>();
+            services.AddSingleton<IServerLogInspector, HttpRequestManager>(sp => sp.GetRequiredService<HttpRequestManager>());
 
             services.AddTransient<IStartupFilter, HttpRequestFilter>();
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Net.Http.Headers;
+﻿using LTest.Exceptions;
+using Microsoft.Net.Http.Headers;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Web;
@@ -42,7 +43,7 @@ namespace System.Net.Http
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Unsupported content type {request.Content.GetType().Name}");
+                    throw new BulletProveException($"Unsupported content type {request.Content.GetType().Name}");
                 }
             }
 
@@ -75,10 +76,6 @@ namespace System.Net.Http
         /// </summary>
         /// <param name="str">The str.</param>
         /// <returns>A string.</returns>
-        private static string Escape(this string str)
-        {
-            return str
-                .Replace("'", "'\\''");
-        }
+        private static string Escape(this string str) => str.Replace("'", "'\\''");
     }
 }

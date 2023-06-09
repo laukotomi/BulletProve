@@ -1,5 +1,5 @@
-using LTest.Configuration;
 using LTest.LogSniffer;
+using LTest.TestServer;
 using Microsoft.Extensions.Logging;
 
 namespace LTest.Logging
@@ -9,9 +9,9 @@ namespace LTest.Logging
     /// </summary>
     public sealed class LTestLoggerFactory : ILoggerFactory
     {
-        private readonly ILogSnifferService _logSnifferService;
-        private readonly LTestConfiguration _configuration;
+        private readonly ServerConfigurator _configurator;
         private readonly ITestLogger _testLogger;
+        private readonly IEnumerable<IServerLogInspector> _serverLogInspectors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LTestLoggerFactory"/> class.
@@ -20,13 +20,13 @@ namespace LTest.Logging
         /// <param name="configuration">Configuration.</param>
         /// <param name="testLogger">Logger.</param>
         public LTestLoggerFactory(
-            ILogSnifferService logSnifferService,
-            LTestConfiguration configuration,
-            ITestLogger testLogger)
+            ServerConfigurator configurator,
+            ITestLogger testLogger,
+            IEnumerable<IServerLogInspector> serverLogInspectors)
         {
-            _logSnifferService = logSnifferService;
-            _configuration = configuration;
+            _configurator = configurator;
             _testLogger = testLogger;
+            _serverLogInspectors = serverLogInspectors;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace LTest.Logging
         /// <param name="categoryName">Category name.</param>
         public ILogger CreateLogger(string categoryName)
         {
-            return new LTestLogger(categoryName, _logSnifferService, _configuration, _testLogger);
+            return new LTestLogger(categoryName, _serverLogInspectors, _configurator, _testLogger);
         }
 
         /// <summary>

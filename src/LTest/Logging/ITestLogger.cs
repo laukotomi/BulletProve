@@ -41,5 +41,6 @@ namespace LTest.Logging
         /// Writes empty line.
         /// </summary>
         void LogEmptyLine();
+        Scope? GetCurrentScope();
     }
 }

@@ -1,3 +1,4 @@
+using LTest.Exceptions;
 using LTest.TestServer;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,21 +16,6 @@ namespace LTest
         private readonly List<ITestServer> _usedServers = new();
 
         /// <summary>
-        /// Access services using this property.
-        /// </summary>
-        //protected LTestFacade Test { get; }
-
-        /// <summary>
-        /// Test context.
-        /// </summary>
-        //protected ITest TestContext { get; }
-
-        /// <summary>
-        /// Test logger.
-        /// </summary>
-        //protected ITestLogger Logger { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LTestBase"/> class.
         /// </summary>
         /// <param name="serverManager">Test server manager.</param>
@@ -38,34 +24,31 @@ namespace LTest
         {
             _serverManager = serverManager;
             _output = output;
-            //TestContext = XunitReflectionHelper.GetTestContext(output);
 
-            //var server = serverManager.GetServer(TestContext, GetType(), out _serverStarted);
-
-            //_serviceScope = server.Services.CreateAsyncScope();
-            //Test = _serviceScope.ServiceProvider.GetRequiredService<LTestFacade>();
-            //Logger = Test.Logger;
+            if (!_serverManager.HasServers)
+            {
+                RegisterServers(_serverManager);
+            }
         }
 
-        public abstract void RegisterServers(ServerRegistrator serverRegistrator);
+        public abstract void RegisterServers(IServerRegistrator serverRegistrator);
 
         public async Task<LTestFacade> GetServerAsync(string serverName)
         {
+            if (!_serverManager.HasServers)
+            {
+                throw new BulletProveException($"No servers have been registered. Please register servers in {nameof(RegisterServers)} method.");
+            }
+
             var server = _serverManager.GetServer(serverName);
             _usedServers.Add(server);
 
             var facade = await server.InitScopeAsync(serverName);
-
             return facade;
         }
 
         public virtual Task InitializeAsync()
         {
-            if (!_serverManager.HasServers)
-            {
-                RegisterServers(new ServerRegistrator(_serverManager));
-            }
-
             return Task.CompletedTask;
         }
 

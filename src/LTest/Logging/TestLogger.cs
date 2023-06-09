@@ -87,6 +87,8 @@ namespace LTest.Logging
             Log(LogLevel.None, string.Empty);
         }
 
+        public Scope? GetCurrentScope() => CurrentScope.Value;
+
         /// <summary>
         /// Resets the service.
         /// </summary>

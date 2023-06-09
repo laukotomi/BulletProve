@@ -1,24 +1,33 @@
 using LTest.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LTest.Helpers
+namespace LTest.Hooks
 {
     /// <summary>
     /// Hook helper.
     /// </summary>
-    public static class HookHelper
+    public class HookRunner
     {
+        private readonly IServiceProvider _services;
+        private readonly ITestLogger _logger;
+
+        public HookRunner(IServiceProvider services, ITestLogger logger)
+        {
+            _services = services;
+            _logger = logger;
+        }
+
         /// <summary>
         /// Runs the hooks.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="methodToRun">The method to run.</param>
         /// <returns>A Task.</returns>
-        public static async Task RunHooksAsync<THook>(IServiceProvider services, Func<THook, Task> methodToRun)
+        public async Task RunHooksAsync<THook>(Func<THook, Task> methodToRun)
+            where THook : IHook
         {
-            var hooks = services.GetServices<THook>();
-            var logger = services.GetRequiredService<ITestLogger>();
-            using var scope = logger.Scope(typeof(THook).Name);
+            using var scope = _logger.Scope(typeof(THook).Name);
+            var hooks = _services.GetServices<THook>();
 
             if (hooks != null)
             {

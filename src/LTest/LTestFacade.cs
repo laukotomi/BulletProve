@@ -1,7 +1,7 @@
-using LTest.Configuration;
 using LTest.Logging;
 using LTest.LogSniffer;
 using LTest.Services;
+using LTest.TestServer;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LTest
@@ -27,7 +27,7 @@ namespace LTest
             Logger = _services.GetRequiredService<ITestLogger>();
             LogSniffer = _services.GetRequiredService<ILogSnifferService>();
             HttpClient = httpClient;
-            Configuration = _services.GetRequiredService<LTestConfiguration>();
+            Configuration = _services.GetRequiredService<ServerConfigurator>();
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace LTest
         /// <summary>
         /// Gets the configuration object.
         /// </summary>
-        public LTestConfiguration Configuration { get; }
+        public ServerConfigurator Configuration { get; }
 
         /// <summary>
         /// Gets the disposable collertor.

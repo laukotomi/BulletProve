@@ -15,12 +15,13 @@ namespace LTest.Logging
         /// <param name="eventId">Event id.</param>
         /// <param name="message">Log message.</param>
         /// <param name="exception">Exception attached to the log.</param>
-        public ServerLogEvent(string categoryName, LogLevel level, EventId eventId, string message, Exception? exception)
+        public ServerLogEvent(string categoryName, LogLevel level, EventId eventId, string message, Scope? scope, Exception? exception)
         {
             CategoryName = categoryName;
             EventId = eventId;
             Level = level;
             Message = message;
+            Scope = scope;
             Exception = exception;
         }
 
@@ -43,11 +44,14 @@ namespace LTest.Logging
         /// Log message.
         /// </summary>
         public string Message { get; }
+        public Scope? Scope { get; }
 
         /// <summary>
         /// Exception attached to the log event.
         /// </summary>
         public Exception? Exception { get; }
+
+        public bool IsUnexpected { get; set; }
 
         /// <summary>
         /// ToString() override.

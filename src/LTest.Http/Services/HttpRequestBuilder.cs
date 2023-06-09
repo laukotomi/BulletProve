@@ -1,4 +1,5 @@
 using LTest.Http.Models;
+using LTest.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
@@ -108,6 +109,20 @@ namespace LTest.Http.Services
             }
 
             Context.Label = label;
+            return this;
+        }
+
+        public HttpRequestBuilder ExportToCurl(out string curl)
+        {
+            SetRequestUri();
+            curl = Context.Request.ToCurlAsync().GetAwaiter().GetResult();
+
+            return this;
+        }
+
+        public HttpRequestBuilder AddAllowedServerLogEventAction(Func<ServerLogEvent, bool> action, string? label = null)
+        {
+            Context.ServerLogInspector.AddAllowedAction(action, label);
             return this;
         }
 
@@ -235,14 +250,19 @@ namespace LTest.Http.Services
         public AssertBuilder<TResponse> Assert<TResponse>()
             where TResponse : class
         {
+            SetRequestUri();
+
+            return new AssertBuilder<TResponse>(Context, _facade);
+        }
+
+        private void SetRequestUri()
+        {
             var requestUri = _linkGeneratorService.GetRequestUri(
                 _linkGeneratorContext.ActionName,
                 _linkGeneratorContext.ControllerName,
                 _linkGeneratorContext.UriValues);
 
             Context.Request.RequestUri = requestUri;
-
-            return new AssertBuilder<TResponse>(Context, _facade);
         }
     }
 }

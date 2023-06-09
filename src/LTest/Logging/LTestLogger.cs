@@ -1,5 +1,5 @@
-using LTest.Configuration;
 using LTest.LogSniffer;
+using LTest.TestServer;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Text.Json;
@@ -12,8 +12,8 @@ namespace LTest.Logging
     internal class LTestLogger : ILogger
     {
         private readonly string _categoryName;
-        private readonly ILogSnifferService _logSniffer;
-        private readonly LTestConfiguration _configuration;
+        private readonly IEnumerable<IServerLogInspector> _serverLogInspectors;
+        private readonly ServerConfigurator _configurator;
         private readonly ITestLogger _logger;
 
         /// <summary>
@@ -23,11 +23,11 @@ namespace LTest.Logging
         /// <param name="logSniffer">LogSniffer service.</param>
         /// <param name="configuration">Configuration.</param>
         /// <param name="logger">Logger.</param>
-        public LTestLogger(string categoryName, ILogSnifferService logSniffer, LTestConfiguration configuration, ITestLogger logger)
+        public LTestLogger(string categoryName, IEnumerable<IServerLogInspector> serverLogInspectors, ServerConfigurator configurator, ITestLogger logger)
         {
             _categoryName = categoryName;
-            _logSniffer = logSniffer;
-            _configuration = configuration;
+            _serverLogInspectors = serverLogInspectors;
+            _configurator = configurator;
             _logger = logger;
         }
 
@@ -48,18 +48,19 @@ namespace LTest.Logging
                 message += $"{Environment.NewLine}{exception}";
             }
 
-            var logEvent = new ServerLogEvent(_categoryName, logLevel, eventId, message, exception);
+            var logEvent = new ServerLogEvent(_categoryName, logLevel, eventId, message, _logger.GetCurrentScope(), exception);
 
-            bool unexpected = _logSniffer.CheckLogEvent(logEvent);
-            if (unexpected)
+            var expected = _serverLogInspectors.Any(x => x.IsServerLogEventAllowed(logEvent));
+            if (!expected)
             {
+                logEvent.IsUnexpected = true;
                 message = "UNEXPECTED: " + message;
             }
 
             bool logged = false;
-            if (_configuration.MinimumLogLevel <= logLevel)
+            if (_configurator.MinimumLogLevel <= logLevel)
             {
-                if (_configuration.ServerLogFilter.Filters.Any(x => x.Action(_categoryName)))
+                if (_configurator.LoggerCategoryNameInspector.IsAllowed(_categoryName))
                 {
                     _logger.Log(logLevel, message);
                     logged = true;
@@ -68,7 +69,7 @@ namespace LTest.Logging
                 Debug.WriteLine(logEvent.ToString());
             }
 
-            if (unexpected && !logged)
+            if (!expected && !logged)
             {
                 _logger.Log(logLevel, message);
             }
@@ -83,7 +84,7 @@ namespace LTest.Logging
         public IDisposable? BeginScope<TState>(TState state)
             where TState : notnull
         {
-            if (_configuration.ServerLogFilter.Filters.Any(x => x.Action(_categoryName)))
+            if (_configurator.LoggerCategoryNameInspector.IsAllowed(_categoryName))
             {
                 _logger.LogInformation($"Scope: {JsonSerializer.Serialize(state)}");
             }

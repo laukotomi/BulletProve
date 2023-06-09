@@ -1,11 +1,12 @@
-﻿using LTest.Http.Models;
+﻿using LTest.Hooks;
+using LTest.Http.Models;
 
 namespace LTest.Http.Interfaces
 {
     /// <summary>
     /// A service that will be run after server Http request was sent.
     /// </summary>
-    public interface IAfterHttpRequestHook
+    public interface IAfterHttpRequestHook : IHook
     {
         /// <summary>
         /// Will be run after server Http request was sent.

@@ -1,5 +1,5 @@
 ﻿using LTest.Logging;
-using System.Collections.Concurrent;
+using LTest.Services;
 
 namespace LTest.Http.Models
 {
@@ -12,7 +12,8 @@ namespace LTest.Http.Models
 
         public HttpRequestMessage Request { get; } = new();
         public string Label { get; set; }
-        public ConcurrentQueue<LTestLogEvent> Logs { get; } = new();
+        public LinkedList<ServerLogEvent> Logs { get; } = new();
+        public Inspector<ServerLogEvent> ServerLogInspector { get; } = new();
 
         public void Dispose()
         {

@@ -1,6 +1,12 @@
 ﻿using Example.Api.Controllers;
+using Example.Api.Data;
+using Example.Api.IntegrationTests.Hooks;
+using Example.Api.IntegrationTests.Mocks;
+using Example.Api.Services;
 using LTest;
+using LTest.Hooks;
 using LTest.TestServer;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
@@ -16,9 +22,24 @@ namespace Example.Api.IntegrationTests
         {
         }
 
-        public override void RegisterServers(ServerRegistrator serverRegistrator)
+        public override void RegisterServers(IServerRegistrator serverRegistrator)
         {
-            serverRegistrator.RegisterServer<TestServer>(DefaultServer);
+            serverRegistrator.RegisterServer<Startup>(DefaultServer, config =>
+            {
+                config.ConfigureTestServices(services =>
+                {
+                    // Hooks
+                    services.AddCleanDatabaseHook<AppDbContext>();
+                    services.AddScoped<IBeforeTestHook, SeedDatabaseHook>();
+
+                    // Mocks
+                    services.AddTransient<IExternalService, ExternalServiceMock>();
+
+                    // Packages
+                    services.AddLTestHttp();
+                    services.AddLTestEFCore();
+                });
+            });
         }
 
         public override async Task InitializeAsync()

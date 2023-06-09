@@ -50,17 +50,15 @@ namespace Example.Api.IntegrationTests.Controllers
             var username = "NewUser";
             var password = "Password";
 
-            using (Server.LogSniffer.ExpectedLogs.Add(x => x.Message == "Wrong username or password"))
-            {
-                using var response1 = await Server
-                    .HttpRequestFor<AuthController>(x => x.LoginAsync)
-                    .SetJsonContent(new AuthController.LoginCommand
-                    {
-                        Username = username,
-                        Password = password
-                    })
-                    .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
-            }
+            using var response1 = await Server
+                .HttpRequestFor<AuthController>(x => x.LoginAsync)
+                .SetJsonContent(new AuthController.LoginCommand
+                {
+                    Username = username,
+                    Password = password
+                })
+                .AddAllowedServerLogEventAction(x => x.Message == "Wrong username or password")
+                .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
 
             using var response2 = await Server
                 .HttpRequestFor<UserController>(x => x.RegisterUserAsync)

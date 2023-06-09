@@ -3,13 +3,13 @@
     /// <summary>
     /// The log sniffer exception.
     /// </summary>
-    public class LogSnifferException : Exception
+    public class BulletProveException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LogSnifferException"/> class.
+        /// Initializes a new instance of the <see cref="BulletProveException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public LogSnifferException(string? message) : base(message)
+        public BulletProveException(string? message) : base(message)
         {
         }
     }

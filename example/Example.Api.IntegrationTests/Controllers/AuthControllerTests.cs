@@ -52,8 +52,6 @@ namespace Example.Api.IntegrationTests.Controllers
         [Fact]
         public async Task WhenCredentialsAreBad_ThenUnauthorizedResult()
         {
-            Server.LogSniffer.ExpectedLogs.Add(x => x.Message == "Wrong username or password");
-
             using var response = await Server
                 .HttpRequestFor<AuthController>(x => x.LoginAsync)
                 .SetJsonContent(new AuthController.LoginCommand
@@ -61,6 +59,7 @@ namespace Example.Api.IntegrationTests.Controllers
                     Username = TestConstants.AdminUsername,
                     Password = "Badadd",
                 })
+                .AddAllowedServerLogEventAction(x => x.Message == "Wrong username or password")
                 .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
 
             response.Should().NotBeNull();
