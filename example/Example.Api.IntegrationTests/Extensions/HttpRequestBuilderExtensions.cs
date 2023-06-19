@@ -1,4 +1,4 @@
-﻿using LTest.Http.Services;
+﻿using BulletProve.Http.Services;
 using Microsoft.Net.Http.Headers;
 
 namespace Example.Api.IntegrationTests.Extensions

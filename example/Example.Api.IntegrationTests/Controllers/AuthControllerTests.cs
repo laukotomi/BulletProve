@@ -1,7 +1,7 @@
-﻿using Example.Api.Controllers;
+﻿using BulletProve;
+using Example.Api.Controllers;
 using Example.Api.IntegrationTests.Extensions;
 using FluentAssertions;
-using LTest;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit.Abstractions;

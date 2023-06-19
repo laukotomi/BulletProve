@@ -1,4 +1,4 @@
-﻿using LTest;
+﻿using BulletProve;
 using System.Runtime.CompilerServices;
 
 namespace Example.Api.IntegrationTests

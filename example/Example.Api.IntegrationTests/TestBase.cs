@@ -1,11 +1,11 @@
-﻿using Example.Api.Controllers;
+﻿using BulletProve;
+using BulletProve.Hooks;
+using BulletProve.TestServer;
+using Example.Api.Controllers;
 using Example.Api.Data;
 using Example.Api.IntegrationTests.Hooks;
 using Example.Api.IntegrationTests.Mocks;
 using Example.Api.Services;
-using LTest;
-using LTest.Hooks;
-using LTest.TestServer;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Xunit;
@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Example.Api.IntegrationTests
 {
-    public abstract class TestBase : LTestBase, IAsyncLifetime
+    public abstract class TestBase : TestClass, IAsyncLifetime
     {
         protected const string DefaultServer = "Default";
 
@@ -37,8 +37,7 @@ namespace Example.Api.IntegrationTests
                     services.AddTransient<IExternalService, ExternalServiceMock>();
 
                     // Packages
-                    services.AddLTestHttp();
-                    services.AddLTestEFCore();
+                    services.AddTestHttp();
                 });
             });
         }

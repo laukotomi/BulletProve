@@ -1,7 +1,7 @@
-﻿using Example.Api.Services;
-using LTest.Helpers;
-using LTest.Hooks;
-using LTest.Logging;
+﻿using BulletProve.Helpers;
+using BulletProve.Hooks;
+using BulletProve.Logging;
+using Example.Api.Services;
 using System.Threading.Tasks;
 
 namespace Example.Api.IntegrationTests.Hooks
