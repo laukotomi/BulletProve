@@ -1,3 +1,4 @@
+using LTest.Hooks;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
@@ -6,7 +7,7 @@ namespace LTest.Logging
     /// <summary>
     /// Test logger implementation.
     /// </summary>
-    internal class TestLogger : ITestLogger
+    internal class TestLogger : ITestLogger, ICleanUpHook
     {
         private readonly LinkedList<LTestLogEvent> _logs = new();
         private readonly object _lock = new();
@@ -47,11 +48,11 @@ namespace LTest.Logging
         /// </summary>
         /// <param name="level">Log level.</param>
         /// <param name="message">Log message.</param>
-        public void Log(LogLevel level, string message)
+        public void Log(LogLevel level, string message, bool isUnexpected = false)
         {
             lock (_lock)
             {
-                _logs.AddLast(new LTestLogEvent(level, message, CurrentScope.Value));
+                _logs.AddLast(new LTestLogEvent(level, message, isUnexpected, CurrentScope.Value));
             }
         }
 
@@ -89,11 +90,7 @@ namespace LTest.Logging
 
         public Scope? GetCurrentScope() => CurrentScope.Value;
 
-        /// <summary>
-        /// Resets the service.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        public void Clear()
+        public Task CleanUpAsync()
         {
             lock (_lock)
             {
@@ -101,6 +98,8 @@ namespace LTest.Logging
                 CurrentScope = new();
                 Scopes.Clear();
             }
+
+            return Task.CompletedTask;
         }
     }
 }

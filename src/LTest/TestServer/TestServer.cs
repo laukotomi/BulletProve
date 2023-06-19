@@ -31,7 +31,7 @@ namespace LTest
         private string? _serverName;
         private ServerConfigurator _configurator;
         private HttpClient _httpClient;
-        private LTestFacade _facade;
+        private ServerScope _scope;
         private HookRunner _hookRunner;
 
         /// <summary>
@@ -61,12 +61,12 @@ namespace LTest
             return true;
         }
 
-        public async Task<LTestFacade> InitScopeAsync(string serverName)
+        public async Task<ServerScope> InitScopeAsync(string serverName)
         {
             var started = StartServer(serverName);
 
-            _facade = new LTestFacade(Services, _httpClient);
-            _hookRunner = _facade.GetRequiredService<HookRunner>();
+            _scope = new ServerScope(Services, _httpClient);
+            _hookRunner = _scope.GetRequiredService<HookRunner>();
 
             if (started)
             {
@@ -74,14 +74,13 @@ namespace LTest
             }
             else
             {
-                //await _hookHelper.RunHooksAsync<IResetSingletonHook>(x => x.ResetAsync());
                 using var scope = _logger.Scope(serverName);
                 _logger.LogInformation("Server is already running");
             }
 
             await _hookRunner.RunHooksAsync<IBeforeTestHook>(x => x.BeforeTestAsync());
 
-            return _facade;
+            return _scope;
         }
 
         public async Task CleanUpAsync(ITestOutputHelper output)
@@ -95,12 +94,10 @@ namespace LTest
                 var openScopes = _logger.Scopes.Where(x => !x.IsDisposed).ToList();
                 if (openScopes.Count != 0)
                 {
-                    throw new InvalidOperationException($"These logger scopes were not disposed: {string.Join(", ", openScopes.Select(x => JsonSerializer.Serialize(x.State)))}");
+                    throw new BulletProveException($"These logger scopes were not disposed: {string.Join(", ", openScopes.Select(x => JsonSerializer.Serialize(x.State)))}");
                 }
 
-                _logger.Clear();
-
-                var serverLogs = _facade.LogSniffer.GetServerLogs();
+                var serverLogs = _scope.LogSniffer.GetServerLogs();
                 if (serverLogs.Any(x => x.IsUnexpected))
                 {
                     throw new BulletProveException("Unexpected log occured on server side. Check the logs!");
@@ -108,7 +105,8 @@ namespace LTest
             }
             finally
             {
-                await _facade.DisposeAsync();
+                await _hookRunner.RunHooksAsync<ICleanUpHook>(x => x.CleanUpAsync());
+                await _scope.DisposeAsync();
             }
         }
 
@@ -133,7 +131,9 @@ namespace LTest
                     else
                     {
                         var indent = logEvent.Scope == null ? 0 : logEvent.Scope.Level * 2;
-                        output.WriteLine($"{logEvent.Level.ToString()[0]}: {new string(' ', indent)}{logEvent.Message}");
+                        var unexpected = logEvent.IsUnexpected ? "U" : string.Empty;
+                        var level = logEvent.Level.ToString()[0];
+                        output.WriteLine($"{unexpected}{level}: {new string(' ', indent)}{logEvent.Message}");
                     }
                 }
 
@@ -195,8 +195,8 @@ namespace LTest
             services.AddSingleton<ITestLogger>(_logger);
 
             // LogSniffer
-            services.AddSingleton<ILogSnifferService, DefaultServerLogInspector>();
-            services.AddSingleton<IServerLogInspector>(sp => (DefaultServerLogInspector)sp.GetRequiredService<ILogSnifferService>());
+            services.AddSingleton<IServerLogsService, ServerLogsService>();
+            services.AddSingleton<IServerLogInspector>(sp => (ServerLogsService)sp.GetRequiredService<IServerLogsService>());
 
             // DisposableCollector
             services.AddScoped<DisposableCollertor>();
@@ -211,7 +211,7 @@ namespace LTest
         /// <param name="services">The services.</param>
         private void RegisterResetSingletonHooks(IServiceCollection services)
         {
-            var type = typeof(IResetSingletonHook);
+            var type = typeof(ICleanUpHook);
             var resetHookServices = services
                 .Where(x => (x.ImplementationType?.IsAssignableTo(type) ?? false) || (x.ImplementationInstance?.GetType().IsAssignableTo(type) ?? false))
                 .ToList();
@@ -220,16 +220,16 @@ namespace LTest
             {
                 if (service.Lifetime != ServiceLifetime.Singleton)
                 {
-                    throw new InvalidOperationException($"{nameof(IResetSingletonHook)} can be used only with singletons, but {service.ImplementationType!.Name} was registered as {service.Lifetime}");
+                    throw new BulletProveException($"{nameof(ICleanUpHook)} can be used only with singletons, but {service.ImplementationType!.Name} was registered as {service.Lifetime}");
                 }
 
                 if (service.ServiceType != null)
                 {
-                    services.AddSingleton(sp => (IResetSingletonHook)sp.GetRequiredService(service.ServiceType));
+                    services.AddSingleton(sp => (ICleanUpHook)sp.GetRequiredService(service.ServiceType));
                 }
                 else if (service.ImplementationType != null)
                 {
-                    services.AddSingleton(sp => (IResetSingletonHook)sp.GetRequiredService(service.ImplementationType!));
+                    services.AddSingleton(sp => (ICleanUpHook)sp.GetRequiredService(service.ImplementationType!));
                 }
             }
         }

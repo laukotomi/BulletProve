@@ -1,7 +1,7 @@
 namespace LTest.ExtensionMethods
 {
     /// <summary>
-    /// Extension methods.
+    /// String extension methods.
     /// </summary>
     public static class StringExtensionMethods
     {

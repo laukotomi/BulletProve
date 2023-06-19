@@ -1,4 +1,4 @@
-using LTest.Logging;
+using LTest.ServerLog;
 using LTest.Services;
 
 namespace LTest.LogSniffer
@@ -6,7 +6,7 @@ namespace LTest.LogSniffer
     /// <summary>
     /// LogSniffer service.
     /// </summary>
-    public interface ILogSnifferService
+    public interface IServerLogsService
     {
         /// <summary>
         /// Returns the actual snapshot of the events.

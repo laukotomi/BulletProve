@@ -1,3 +1,4 @@
+using LTest.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 
@@ -33,7 +34,7 @@ namespace LTest.Http.Services
                 }
             }
 
-            throw new InvalidOperationException($"Could not determine {nameof(HttpMethod)} of action {action.Name}.");
+            throw new BulletProveException($"Could not determine {nameof(HttpMethod)} of action {action.Name}.");
         }
     }
 }

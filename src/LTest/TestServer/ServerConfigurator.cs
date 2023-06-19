@@ -1,4 +1,4 @@
-﻿using LTest.Logging;
+﻿using LTest.ServerLog;
 using LTest.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;

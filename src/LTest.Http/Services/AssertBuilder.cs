@@ -1,6 +1,8 @@
 using FluentAssertions;
+using LTest.Exceptions;
 using LTest.Http.Models;
 using LTest.Logging;
+using LTest.ServerLog;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Net;
@@ -14,7 +16,7 @@ namespace LTest.Http.Services
     public class AssertBuilder<TResponse>
         where TResponse : class
     {
-        private readonly LTestFacade _facade;
+        private readonly ServerScope _facade;
         private readonly HttpRequestManager _httpRequestManager;
         private readonly ITestLogger _logger;
 
@@ -35,7 +37,7 @@ namespace LTest.Http.Services
         /// <param name="request">Http request message.</param>
         /// <param name="facade">Service provider.</param>
         /// <param name="label">Label to be logged.</param>
-        public AssertBuilder(HttpRequestContext context, LTestFacade facade)
+        public AssertBuilder(HttpRequestContext context, ServerScope facade)
         {
             Context = context;
             _facade = facade;
@@ -186,7 +188,7 @@ namespace LTest.Http.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Could not deserialize response message to '{typeof(TResponse).Name}'!", ex);
+                throw new BulletProveException($"Could not deserialize response message to '{typeof(TResponse).Name}'!", ex);
             }
         }
 

@@ -7,7 +7,7 @@ namespace LTest
     /// </summary>
     public interface ITestServer : IDisposable
     {
-        Task<LTestFacade> InitScopeAsync(string serverName);
+        Task<ServerScope> InitScopeAsync(string serverName);
         Task CleanUpAsync(ITestOutputHelper output);
     }
 }

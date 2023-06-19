@@ -9,23 +9,23 @@ namespace LTest
     /// <summary>
     /// Service provider extensions for integration tests.
     /// </summary>
-    public class LTestFacade : IServiceProvider, IDisposable, IAsyncDisposable
+    public class ServerScope : IServiceProvider, IDisposable, IAsyncDisposable
     {
         private readonly AsyncServiceScope _serviceScope;
         private readonly IServiceProvider _services;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LTestFacade"/> class.
+        /// Initializes a new instance of the <see cref="ServerScope"/> class.
         /// </summary>
         /// <param name="services">Service provider</param>
-        public LTestFacade(IServiceProvider services, HttpClient httpClient)
+        public ServerScope(IServiceProvider services, HttpClient httpClient)
         {
             _serviceScope = services.CreateAsyncScope();
             _services = _serviceScope.ServiceProvider;
 
             DisposableCollertor = _services.GetRequiredService<DisposableCollertor>();
             Logger = _services.GetRequiredService<ITestLogger>();
-            LogSniffer = _services.GetRequiredService<ILogSnifferService>();
+            LogSniffer = _services.GetRequiredService<IServerLogsService>();
             HttpClient = httpClient;
             Configuration = _services.GetRequiredService<ServerConfigurator>();
         }
@@ -38,7 +38,7 @@ namespace LTest
         /// <summary>
         /// Gets log sniffer service.
         /// </summary>
-        public ILogSnifferService LogSniffer { get; }
+        public IServerLogsService LogSniffer { get; }
 
         /// <summary>
         /// Gets the http client.

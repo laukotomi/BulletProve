@@ -1,4 +1,5 @@
 using LTest.LogSniffer;
+using LTest.ServerLog;
 using LTest.TestServer;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -49,29 +50,23 @@ namespace LTest.Logging
             }
 
             var logEvent = new ServerLogEvent(_categoryName, logLevel, eventId, message, _logger.GetCurrentScope(), exception);
-
-            var expected = _serverLogInspectors.Any(x => x.IsServerLogEventAllowed(logEvent));
-            if (!expected)
-            {
-                logEvent.IsUnexpected = true;
-                message = "UNEXPECTED: " + message;
-            }
+            CheckExpected(logEvent);
 
             bool logged = false;
             if (_configurator.MinimumLogLevel <= logLevel)
             {
                 if (_configurator.LoggerCategoryNameInspector.IsAllowed(_categoryName))
                 {
-                    _logger.Log(logLevel, message);
+                    _logger.Log(logLevel, message, logEvent.IsUnexpected);
                     logged = true;
                 }
 
                 Debug.WriteLine(logEvent.ToString());
             }
 
-            if (!expected && !logged)
+            if (logEvent.IsUnexpected && !logged)
             {
-                _logger.Log(logLevel, message);
+                _logger.Log(logLevel, message, logEvent.IsUnexpected);
             }
         }
 
@@ -98,5 +93,18 @@ namespace LTest.Logging
         /// <param name="logLevel">level to be checked.</param>
         /// <returns>true if enabled.</returns>
         public bool IsEnabled(LogLevel logLevel) => true;
+
+        /// <summary>
+        /// Checks if the log event is expected.
+        /// </summary>
+        /// <param name="logEvent">The log event.</param>
+        private void CheckExpected(ServerLogEvent logEvent)
+        {
+            var expected = _serverLogInspectors.Any(x => x.IsServerLogEventAllowed(logEvent));
+            if (!expected)
+            {
+                logEvent.IsUnexpected = true;
+            }
+        }
     }
 }

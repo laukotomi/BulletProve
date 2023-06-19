@@ -1,4 +1,4 @@
-﻿using LTest.Logging;
+﻿using LTest.ServerLog;
 
 namespace LTest.LogSniffer
 {

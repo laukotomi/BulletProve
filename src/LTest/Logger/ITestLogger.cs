@@ -30,7 +30,7 @@ namespace LTest.Logging
         /// </summary>
         /// <param name="level">Log level.</param>
         /// <param name="message">Log message.</param>
-        void Log(LogLevel level, string message);
+        void Log(LogLevel level, string message, bool isUnexpected = false);
 
         /// <summary>
         /// Creates scope (indenting) in the logger.
@@ -41,6 +41,10 @@ namespace LTest.Logging
         /// Writes empty line.
         /// </summary>
         void LogEmptyLine();
+
+        /// <summary>
+        /// Gets the current scope.
+        /// </summary>
         Scope? GetCurrentScope();
     }
 }

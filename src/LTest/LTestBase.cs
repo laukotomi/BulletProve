@@ -9,7 +9,7 @@ namespace LTest
     /// Base class for integration tests.
     /// </summary>
     [Collection("Integration Tests")]
-    public abstract class LTestBase : IAsyncLifetime
+    public abstract class LTestBase : IDisposable
     {
         private readonly TestServerManager _serverManager;
         private readonly ITestOutputHelper _output;
@@ -33,7 +33,7 @@ namespace LTest
 
         public abstract void RegisterServers(IServerRegistrator serverRegistrator);
 
-        public async Task<LTestFacade> GetServerAsync(string serverName)
+        public async Task<ServerScope> GetServerAsync(string serverName)
         {
             if (!_serverManager.HasServers)
             {
@@ -43,24 +43,15 @@ namespace LTest
             var server = _serverManager.GetServer(serverName);
             _usedServers.Add(server);
 
-            var facade = await server.InitScopeAsync(serverName);
-            return facade;
+            var scope = await server.InitScopeAsync(serverName);
+            return scope;
         }
 
-        public virtual Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Disposes the framework.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        public virtual async Task DisposeAsync()
+        public void Dispose()
         {
             foreach (var server in _usedServers)
             {
-                await server.CleanUpAsync(_output);
+                server.CleanUpAsync(_output).GetAwaiter().GetResult();
             }
         }
     }

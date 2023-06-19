@@ -1,6 +1,7 @@
+using LTest.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace LTest.Logging
+namespace LTest.ServerLog
 {
     /// <summary>
     /// Class for a log event.

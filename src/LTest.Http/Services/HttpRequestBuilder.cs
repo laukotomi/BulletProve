@@ -1,5 +1,5 @@
 using LTest.Http.Models;
-using LTest.Logging;
+using LTest.ServerLog;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
@@ -15,7 +15,7 @@ namespace LTest.Http.Services
     public class HttpRequestBuilder
     {
         private readonly LinkGeneratorContext _linkGeneratorContext;
-        private readonly LTestFacade _facade;
+        private readonly ServerScope _facade;
         private readonly LinkGeneratorService _linkGeneratorService;
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace LTest.Http.Services
         /// <param name="actionName">Action name.</param>
         /// <param name="method">Http method.</param>
         /// <param name="facade"></param>
-        public HttpRequestBuilder(LinkGeneratorContext linkGeneratorContext, LTestFacade facade)
+        public HttpRequestBuilder(LinkGeneratorContext linkGeneratorContext, ServerScope facade)
         {
             _linkGeneratorContext = linkGeneratorContext;
             _facade = facade;

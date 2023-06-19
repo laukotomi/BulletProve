@@ -8,15 +8,16 @@ using LTest.Hooks;
 using LTest.TestServer;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Example.Api.IntegrationTests
 {
-    public abstract class TestBase : LTestBase
+    public abstract class TestBase : LTestBase, IAsyncLifetime
     {
         protected const string DefaultServer = "Default";
 
-        protected LTestFacade Server { get; private set; }
+        protected ServerScope Server { get; private set; }
 
         protected TestBase(TestServerManager serverManager, ITestOutputHelper output) : base(serverManager, output)
         {
@@ -42,9 +43,8 @@ namespace Example.Api.IntegrationTests
             });
         }
 
-        public override async Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            await base.InitializeAsync();
             Server = await GetServerAsync(DefaultServer);
         }
 
@@ -53,7 +53,7 @@ namespace Example.Api.IntegrationTests
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>A string.</returns>
-        protected async Task<string> LoginAsAdminAndGetTokenAsync(LTestFacade facade)
+        protected async Task<string> LoginAsAdminAndGetTokenAsync(ServerScope facade)
         {
             var token = await facade
                 .HttpRequestFor<AuthController>(x => x.LoginAsync)
@@ -68,6 +68,11 @@ namespace Example.Api.IntegrationTests
                 .ExecuteAsync();
 
             return token;
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

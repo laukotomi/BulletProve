@@ -1,4 +1,5 @@
-﻿using LTest.Http.Models;
+﻿using LTest.Exceptions;
+using LTest.Http.Models;
 using LTest.Http.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,7 @@ namespace LTest
     /// </summary>
     public static class LTestFacadeExtensions
     {
-        public static HttpRequestBuilder HttpRequestFor<TController>(this LTestFacade serviceProvider, Expression<Func<TController, Delegate>> actionSelector)
+        public static HttpRequestBuilder HttpRequestFor<TController>(this ServerScope serviceProvider, Expression<Func<TController, Delegate>> actionSelector)
             where TController : ControllerBase
         {
             var controllerType = typeof(TController);
@@ -21,7 +22,7 @@ namespace LTest
             var action = controllerType.GetMethod(actionName);
             if (action == null)
             {
-                throw new InvalidOperationException($"Action '{actionName}' in controller '{controllerType.Name}' can not be found!");
+                throw new BulletProveException($"Action '{actionName}' in controller '{controllerType.Name}' can not be found!");
             }
 
             var httpMethodService = serviceProvider.GetRequiredService<HttpMethodService>();
@@ -47,7 +48,7 @@ namespace LTest
                 return method.Name;
             }
 
-            throw new InvalidOperationException("Invalid action selector used. Use like this: x => x.Action");
+            throw new BulletProveException("Invalid action selector used. Use like this: x => x.Action");
         }
     }
 }

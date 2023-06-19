@@ -1,3 +1,4 @@
+using LTest.Exceptions;
 using LTest.TestServer;
 
 namespace LTest
@@ -15,10 +16,10 @@ namespace LTest
             where TStartup : class
         {
             if (string.IsNullOrWhiteSpace(serverName))
-                throw new InvalidOperationException($"Server name '{serverName}' is not valid");
+                throw new BulletProveException($"Server name '{serverName}' is not valid");
 
             if (_testServers.ContainsKey(serverName))
-                throw new InvalidOperationException($"Server '{serverName}' was already registered");
+                throw new BulletProveException($"Server '{serverName}' was already registered");
 
             var server = new TestServer<TStartup>(configAction);
             _testServers.Add(serverName, server);
@@ -27,7 +28,7 @@ namespace LTest
         public ITestServer GetServer(string serverName)
         {
             if (!_testServers.TryGetValue(serverName, out var server))
-                throw new InvalidOperationException($"Server '{serverName}' cannot be found");
+                throw new BulletProveException($"Server '{serverName}' cannot be found");
 
             return server;
         }

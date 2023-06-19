@@ -4,8 +4,8 @@ using LTest.Http.Configuration;
 using LTest.Http.Helpers;
 using LTest.Http.Interfaces;
 using LTest.Http.Models;
-using LTest.Logging;
 using LTest.LogSniffer;
+using LTest.ServerLog;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
 
@@ -21,7 +21,7 @@ namespace LTest.Http.Services
             _hookRunner = hookRunner;
         }
 
-        public async Task<HttpResponseMessage> ExecuteRequestAsync(HttpRequestContext context, LTestFacade facade)
+        public async Task<HttpResponseMessage> ExecuteRequestAsync(HttpRequestContext context, ServerScope facade)
         {
             var label = context.Label!;
             context.Request.Headers.TryAddWithoutValidation(Constants.BulletProveRequestID, label);

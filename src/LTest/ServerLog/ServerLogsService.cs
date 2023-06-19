@@ -1,4 +1,5 @@
-using LTest.Logging;
+using LTest.Hooks;
+using LTest.ServerLog;
 using LTest.Services;
 using LTest.TestServer;
 
@@ -7,7 +8,7 @@ namespace LTest.LogSniffer
     /// <summary>
     /// Log sniffer service implementation.
     /// </summary>
-    public class DefaultServerLogInspector : ILogSnifferService, IServerLogInspector
+    public class ServerLogsService : IServerLogsService, IServerLogInspector, ICleanUpHook
     {
         private readonly LinkedList<ServerLogEvent> _serverLogs = new();
         private readonly object _lock = new();
@@ -15,10 +16,10 @@ namespace LTest.LogSniffer
         public Inspector<ServerLogEvent> ServerLogInspector { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultServerLogInspector"/> class.
+        /// Initializes a new instance of the <see cref="ServerLogsService"/> class.
         /// </summary>
         /// <param name="configuration">Configuration.</param>
-        public DefaultServerLogInspector(ServerConfigurator configurator)
+        public ServerLogsService(ServerConfigurator configurator)
         {
             ServerLogInspector = configurator.ServerLogInspector;
         }
@@ -34,10 +35,16 @@ namespace LTest.LogSniffer
             }
         }
 
-        /// <summary>
-        /// Resets the service.
-        /// </summary>
-        public Task ResetAsync()
+        public bool IsServerLogEventAllowed(ServerLogEvent logEvent)
+        {
+            lock (_lock)
+            {
+                _serverLogs.AddLast(logEvent);
+                return ServerLogInspector.IsAllowed(logEvent);
+            }
+        }
+
+        public Task CleanUpAsync()
         {
             lock (_lock)
             {
@@ -46,15 +53,6 @@ namespace LTest.LogSniffer
             }
 
             return Task.CompletedTask;
-        }
-
-        public bool IsServerLogEventAllowed(ServerLogEvent logEvent)
-        {
-            lock (_lock)
-            {
-                _serverLogs.AddLast(logEvent);
-                return ServerLogInspector.IsAllowed(logEvent);
-            }
         }
     }
 }

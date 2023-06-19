@@ -1,7 +1,7 @@
 ﻿namespace LTest.Exceptions
 {
     /// <summary>
-    /// The log sniffer exception.
+    /// The bullet prove exception.
     /// </summary>
     public class BulletProveException : Exception
     {
@@ -9,8 +9,8 @@
         /// Initializes a new instance of the <see cref="BulletProveException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public BulletProveException(string? message) : base(message)
-        {
-        }
+        public BulletProveException(string? message) : base(message) { }
+
+        public BulletProveException(string? message, Exception inner) : base(message, inner) { }
     }
 }

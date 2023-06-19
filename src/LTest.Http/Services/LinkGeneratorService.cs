@@ -1,3 +1,4 @@
+using LTest.Exceptions;
 using LTest.ExtensionMethods;
 using Microsoft.AspNetCore.Routing;
 using System.Text.Json;
@@ -34,7 +35,7 @@ namespace LTest.Http.Services
 
             if (path == null)
             {
-                throw new InvalidOperationException($"Could not generate uri for {controllerName}/{actionName}. Did you fill all of the uri parts (values: {(values == null ? "null" : JsonSerializer.Serialize(values))})?");
+                throw new BulletProveException($"Could not generate uri for {controllerName}/{actionName}. Did you fill all of the uri parts (values: {(values == null ? "null" : JsonSerializer.Serialize(values))})?");
             }
 
             return new Uri(path, UriKind.RelativeOrAbsolute);

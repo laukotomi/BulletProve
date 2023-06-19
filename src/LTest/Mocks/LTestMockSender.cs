@@ -6,7 +6,7 @@ namespace LTest.Mocks
     /// Mock sender.
     /// </summary>
     /// <typeparam name="T">Model to store.</typeparam>
-    public abstract class LTestMockSender<T> : IResetSingletonHook
+    public abstract class LTestMockSender<T> : ICleanUpHook
     {
         /// <summary>
         /// Sent messages;
@@ -18,11 +18,7 @@ namespace LTest.Mocks
         /// </summary>
         public IReadOnlyList<T> SentMessages => Messages;
 
-        /// <summary>
-        /// Resets the class.
-        /// </summary>
-        /// <returns>A Task.</returns>
-        public Task ResetAsync()
+        public Task CleanUpAsync()
         {
             Messages.Clear();
             return Task.CompletedTask;

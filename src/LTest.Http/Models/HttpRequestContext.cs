@@ -1,4 +1,4 @@
-﻿using LTest.Logging;
+﻿using LTest.ServerLog;
 using LTest.Services;
 
 namespace LTest.Http.Models
