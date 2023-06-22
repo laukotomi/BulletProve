@@ -13,16 +13,31 @@ using Xunit.Abstractions;
 
 namespace Example.Api.IntegrationTests
 {
+    /// <summary>
+    /// The test base class.
+    /// </summary>
     public abstract class TestBase : TestClass, IAsyncLifetime
     {
+        /// <summary>
+        /// The default server name.
+        /// </summary>
         protected const string DefaultServer = "Default";
 
-        protected ServerScope Server { get; private set; }
+        /// <summary>
+        /// Gets the default server.
+        /// </summary>
+        protected ServerScope Server { get; private set; } = null!;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestBase"/> class.
+        /// </summary>
+        /// <param name="serverManager">The server manager.</param>
+        /// <param name="output">The output.</param>
         protected TestBase(TestServerManager serverManager, ITestOutputHelper output) : base(serverManager, output)
         {
         }
 
+        /// <inheritdoc />
         public override void RegisterServers(IServerRegistrator serverRegistrator)
         {
             serverRegistrator.RegisterServer<Startup>(DefaultServer, config =>
@@ -42,6 +57,7 @@ namespace Example.Api.IntegrationTests
             });
         }
 
+        /// <inheritdoc />
         public async Task InitializeAsync()
         {
             Server = await GetServerAsync(DefaultServer);
@@ -50,11 +66,10 @@ namespace Example.Api.IntegrationTests
         /// <summary>
         /// Logins the as admin and get token.
         /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>A string.</returns>
-        protected async Task<string> LoginAsAdminAndGetTokenAsync(ServerScope facade)
+        /// <param name="scope">Server scope.</param>
+        protected async Task<string> LoginAsAdminAndGetTokenAsync(ServerScope scope)
         {
-            var token = await facade
+            var token = await scope
                 .HttpRequestFor<AuthController>(x => x.LoginAsync)
                 .SetLabel("AdminLogin")
                 .SetJsonContent(new AuthController.LoginCommand
@@ -69,6 +84,7 @@ namespace Example.Api.IntegrationTests
             return token;
         }
 
+        /// <inheritdoc />
         public Task DisposeAsync()
         {
             return Task.CompletedTask;

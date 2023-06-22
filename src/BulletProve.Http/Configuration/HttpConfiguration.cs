@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace BulletProve.Http.Configuration
 {
     /// <summary>
@@ -5,17 +7,22 @@ namespace BulletProve.Http.Configuration
     /// </summary>
     public class HttpConfiguration
     {
-        private static readonly int _httpHeaderLogMaxLength = 50;
-        private static readonly int _httpContentLogMaxLength = 1000;
-
         /// <summary>
         /// The maximum length of a http header content to log. Default is 50.
         /// </summary>
-        public int HttpHeaderLogMaxLength { get; } = _httpHeaderLogMaxLength;
+        public int HttpHeaderLogMaxLength { get; set; } = 50;
 
         /// <summary>
         /// The maximum length of a http message content to log. Default is 1000.
         /// </summary>
-        public int HttpContentLogMaxLength { get; } = _httpContentLogMaxLength;
+        public int HttpContentLogMaxLength { get; set; } = 1000;
+
+        /// <summary>
+        /// Gets or sets the json serializer options.
+        /// </summary>
+        public JsonSerializerOptions JsonSerializerOptions { get; } = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
     }
 }

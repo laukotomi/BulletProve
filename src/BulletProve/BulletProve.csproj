@@ -4,14 +4,17 @@
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<Description>BulletProve is an extension to the Microsoft's ASP.NET Core integration test package with useful features.</Description>
 		<Authors>laukotomi</Authors>
-		<Copyright>Copyright (c) laukotomi 2022</Copyright>
+		<Copyright>Copyright (c) laukotomi 2023</Copyright>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<PackageProjectUrl>https://github.com/laukotomi/BulletProve</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/laukotomi/BulletProve</RepositoryUrl>
 		<PackageTags>aspnetcore;integrationtest</PackageTags>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<!--<PackageReadmeFile>README.md</PackageReadmeFile>-->
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageOutputPath>../../Build</PackageOutputPath>
+		<!--<NuspecFile>BulletProve.nuspec</NuspecFile>-->
 	</PropertyGroup>
 
 	<ItemGroup>

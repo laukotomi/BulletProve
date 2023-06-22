@@ -109,7 +109,7 @@ namespace BulletProve
             _configAction?.Invoke(_configurator);
 
             using var scope = _logger.Scope(serverName);
-            _logger.LogInformation($"Starting server '{GetType().Name}'");
+            _logger.LogInformation("Starting server");
             var result = StopwatchHelper.Measure(() => CreateClient(_configurator.HttpClientOptions));
             _logger.LogInformation($"Server started ({result.ElapsedMilliseconds} ms)");
 

@@ -1,7 +1,6 @@
-﻿using BulletProve;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
-namespace Example.Api.IntegrationTests
+namespace BulletProve
 {
     /// <summary>
     /// The theory attribute.
@@ -31,13 +30,5 @@ namespace Example.Api.IntegrationTests
         {
             DisplayName = memberName;
         }
-    }
-
-    /// <summary>
-    /// The integration test collection.
-    /// </summary>
-    [Xunit.CollectionDefinition("Integration Tests")]
-    public class IntegrationTestCollection : Xunit.ICollectionFixture<TestServerManager>
-    {
     }
 }

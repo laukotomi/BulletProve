@@ -1,11 +1,11 @@
-using BulletProve.Exceptions;
+using BulletProve.Http.Configuration;
 using BulletProve.Http.Models;
 using BulletProve.Logging;
 using BulletProve.ServerLog;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using System.Net;
+using System.Text.Json;
 
 namespace BulletProve.Http.Services
 {
@@ -18,6 +18,7 @@ namespace BulletProve.Http.Services
     {
         private readonly ServerScope _facade;
         private readonly HttpRequestManager _httpRequestManager;
+        private readonly HttpConfiguration _configuration;
         private readonly ITestLogger _logger;
 
         private readonly List<Action<TResponse>> _responseObjectAssertions = new();
@@ -35,14 +36,15 @@ namespace BulletProve.Http.Services
         /// Initializes a new instance of the <see cref="AssertBuilder{TResponse}"/> class.
         /// </summary>
         /// <param name="request">Http request message.</param>
-        /// <param name="facade">Service provider.</param>
+        /// <param name="scope">Service provider.</param>
         /// <param name="label">Label to be logged.</param>
-        public AssertBuilder(HttpRequestContext context, ServerScope facade)
+        public AssertBuilder(HttpRequestContext context, ServerScope scope)
         {
             Context = context;
-            _facade = facade;
-            _httpRequestManager = facade.GetRequiredService<HttpRequestManager>();
-            _logger = facade.Logger;
+            _facade = scope;
+            _httpRequestManager = scope.GetRequiredService<HttpRequestManager>();
+            _configuration = scope.GetRequiredService<HttpConfiguration>();
+            _logger = scope.Logger;
         }
 
         /// <summary>
@@ -147,7 +149,7 @@ namespace BulletProve.Http.Services
         /// </summary>
         /// <param name="response">The response.</param>
         /// <returns>A TResponse.</returns>
-        private static async Task<TResponse> GetResponseObjectAsync(HttpResponseMessage response)
+        private async Task<TResponse> GetResponseObjectAsync(HttpResponseMessage response)
         {
             var responseType = typeof(TResponse);
             if (responseType == typeof(HttpResponseMessage))
@@ -156,40 +158,30 @@ namespace BulletProve.Http.Services
             }
 
             var responseMessage = await response.Content.ReadAsStringAsync();
-            var responseObject = TryDeserializeReponseMessage(responseMessage, responseType);
+            var responseObject = DeserializeReponseMessage(responseMessage, responseType);
             response.Dispose();
 
             return responseObject;
         }
 
         /// <summary>
-        /// Tries the deserialize reponse message.
+        /// Deserialize reponse message.
         /// </summary>
         /// <param name="responseMessage">The response message.</param>
         /// <param name="responseType">The response type.</param>
         /// <returns>A TResponse.</returns>
-        private static TResponse TryDeserializeReponseMessage(string responseMessage, Type responseType)
+        private TResponse DeserializeReponseMessage(string responseMessage, Type responseType)
         {
             if (responseType == typeof(EmptyResponse) && string.IsNullOrWhiteSpace(responseMessage))
             {
-                return JsonConvert.DeserializeObject<TResponse>("{}")!;
+                return (EmptyResponse.Value as TResponse)!;
             }
             else if (responseType == typeof(string))
             {
                 return (responseMessage as TResponse)!;
             }
 
-            try
-            {
-                return JsonConvert.DeserializeObject<TResponse>(responseMessage, new JsonSerializerSettings
-                {
-                    MissingMemberHandling = MissingMemberHandling.Error
-                })!;
-            }
-            catch (Exception ex)
-            {
-                throw new BulletProveException($"Could not deserialize response message to '{typeof(TResponse).Name}'!", ex);
-            }
+            return JsonSerializer.Deserialize<TResponse>(responseMessage, _configuration.JsonSerializerOptions)!;
         }
 
         /// <summary>

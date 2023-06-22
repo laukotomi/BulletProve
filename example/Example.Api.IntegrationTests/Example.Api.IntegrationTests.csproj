@@ -10,6 +10,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="BulletProve" Version="1.0.0" />
+		<PackageReference Include="BulletProve.EfCore" Version="1.0.0" />
+		<PackageReference Include="BulletProve.Http" Version="1.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.7" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
 		<PackageReference Include="xunit" Version="2.4.2" />
@@ -20,9 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\BulletProve.EFCore\BulletProve.EFCore.csproj" />
-		<ProjectReference Include="..\..\src\BulletProve.Http\BulletProve.Http.csproj" />
-		<ProjectReference Include="..\Example.Api\Example.Api.csproj" />
+	  <ProjectReference Include="..\Example.Api\Example.Api.csproj" />
 	</ItemGroup>
 
 </Project>
