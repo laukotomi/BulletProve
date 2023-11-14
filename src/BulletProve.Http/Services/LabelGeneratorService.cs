@@ -13,7 +13,7 @@
         /// <returns>A string.</returns>
         public string GetLabel()
         {
-            return $"#{Interlocked.Increment(ref _counter)}";
+            return $"Request #{Interlocked.Increment(ref _counter)}";
         }
     }
 }

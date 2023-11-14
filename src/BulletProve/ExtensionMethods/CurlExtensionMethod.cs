@@ -7,7 +7,7 @@ using System.Web;
 namespace System.Net.Http
 {
     /// <summary>
-    /// Curl extension method for <see cref="HttpRequestMessage"/>.
+    /// Curl extension method for <see cref="HttpRequestMessage"/>. It is useful for moving a request parameters to Postman.
     /// </summary>
     public static class CurlExtensionMethod
     {

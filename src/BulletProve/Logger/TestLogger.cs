@@ -9,6 +9,11 @@ namespace BulletProve.Logging
     /// </summary>
     internal class TestLogger : ITestLogger, ICleanUpHook
     {
+        /// <summary>
+        /// Prefix for test logs.
+        /// </summary>
+        private const string Prefix = "T ";
+
         private readonly LinkedList<TestLogEvent> _logs = new();
         private readonly object _lock = new();
 
@@ -46,7 +51,7 @@ namespace BulletProve.Logging
         /// <inheritdoc />
         public void Log(LogLevel level, string message)
         {
-            Log(new TestLogEvent(level, message, false, CurrentScope.Value));
+            Log(new TestLogEvent(Prefix, level, message, CurrentScope.Value));
         }
 
         /// <inheritdoc />

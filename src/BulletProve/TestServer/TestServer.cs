@@ -143,9 +143,8 @@ namespace BulletProve
                     else
                     {
                         var indent = logEvent.Scope == null ? 0 : logEvent.Scope.Level * 2;
-                        var unexpected = logEvent.IsUnexpected ? "U" : string.Empty;
                         var level = logEvent.Level.ToString()[0];
-                        output.WriteLine($"{unexpected}{level}: {new string(' ', indent)}{logEvent.Message}");
+                        output.WriteLine($"{logEvent.Prefix}{level}: {new string(' ', indent)}{logEvent.Message}");
                     }
                 }
 

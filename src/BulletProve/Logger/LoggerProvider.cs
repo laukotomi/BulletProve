@@ -43,7 +43,8 @@ namespace BulletProve.Logging
             var serverLogEvent = new ServerLogEvent(_categoryName, logLevel, eventId, message, _logger.GetCurrentScope(), exception);
             CheckExpected(serverLogEvent);
 
-            var logEvent = new TestLogEvent(serverLogEvent.Level, serverLogEvent.Message, serverLogEvent.IsUnexpected, serverLogEvent.Scope);
+            var prefix = serverLogEvent.IsUnexpected ? "SU" : "S ";
+            var logEvent = new TestLogEvent(prefix, serverLogEvent.Level, serverLogEvent.Message, serverLogEvent.Scope);
             var logged = false;
 
             if (_configurator.MinimumLogLevel <= logLevel)
@@ -57,7 +58,7 @@ namespace BulletProve.Logging
                 Debug.WriteLine(serverLogEvent.ToString());
             }
 
-            if (logEvent.IsUnexpected && !logged)
+            if (serverLogEvent.IsUnexpected && !logged)
             {
                 _logger.Log(logEvent);
             }

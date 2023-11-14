@@ -13,14 +13,19 @@ namespace BulletProve.Logging
         /// <param name="level">The level.</param>
         /// <param name="message">The message.</param>
         /// <param name="scope">The scope.</param>
-        public TestLogEvent(LogLevel level, string message, bool isUnexpected, Scope? scope = null)
+        public TestLogEvent(string prefix, LogLevel level, string message, Scope? scope = null)
         {
+            Prefix = prefix;
             Level = level;
             Message = message;
-            IsUnexpected = isUnexpected;
             Scope = scope;
             CreatedAt = DateTime.Now;
         }
+
+        /// <summary>
+        /// Prefix to add.
+        /// </summary>
+        public string Prefix { get; }
 
         /// <summary>
         /// Log level.
@@ -31,11 +36,6 @@ namespace BulletProve.Logging
         /// Log message.
         /// </summary>
         public string Message { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether is unexpected event.
-        /// </summary>
-        public bool IsUnexpected { get; }
 
         /// <summary>
         /// Gets the scope.
