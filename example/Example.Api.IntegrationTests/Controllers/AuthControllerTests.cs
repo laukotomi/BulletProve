@@ -59,7 +59,7 @@ namespace Example.Api.IntegrationTests.Controllers
                     Username = TestConstants.AdminUsername,
                     Password = "Badadd",
                 })
-                .AddAllowedServerLogEventAction(x => x.Message == "Wrong username or password")
+                .AddAllowedServerLogEvent(x => x.Message == "Wrong username or password")
                 .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
 
             response.Should().NotBeNull();

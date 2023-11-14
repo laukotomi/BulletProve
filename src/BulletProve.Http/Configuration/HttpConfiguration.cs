@@ -1,3 +1,4 @@
+using BulletProve.Http.Services;
 using System.Text.Json;
 
 namespace BulletProve.Http.Configuration
@@ -18,11 +19,11 @@ namespace BulletProve.Http.Configuration
         public int HttpContentLogMaxLength { get; set; } = 1000;
 
         /// <summary>
-        /// Gets or sets the json serializer options.
+        /// Gets the response message deserializer.
         /// </summary>
-        public JsonSerializerOptions JsonSerializerOptions { get; } = new JsonSerializerOptions
+        public ResponseMessageDeserializer ResponseMessageDeserializer { get; } = new JsonResponseMessageDeserializer(new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
-        };
+        });
     }
 }

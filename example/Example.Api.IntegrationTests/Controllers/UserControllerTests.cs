@@ -57,7 +57,7 @@ namespace Example.Api.IntegrationTests.Controllers
                     Username = username,
                     Password = password
                 })
-                .AddAllowedServerLogEventAction(x => x.Message == "Wrong username or password")
+                .AddAllowedServerLogEvent(x => x.Message == "Wrong username or password")
                 .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
 
             using var response2 = await Server
