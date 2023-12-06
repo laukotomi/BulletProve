@@ -24,8 +24,8 @@ namespace BulletProve.Http.Filters
                         var logger = ctx.RequestServices.GetRequiredService<ILogger<HttpRequestFilter>>();
                         scope = logger.BeginScope(new List<KeyValuePair<string, object>>
                         {
-                            new KeyValuePair<string, object>(Constants.BulletProveRequestID, header)
-                        }.AsReadOnly());
+                            new(Constants.BulletProveRequestID, header)
+                        });
                     }
 
                     var result = nxt(ctx);

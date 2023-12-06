@@ -27,7 +27,7 @@ namespace BulletProve
             services.AddSingleton<LinkGeneratorService>();
             services.AddSingleton<HttpRequestManager>();
             services.AddScoped<LabelGeneratorService>();
-            services.AddSingleton<IServerLogInspector, HttpRequestManager>(sp => sp.GetRequiredService<HttpRequestManager>());
+            services.AddSingleton<IServerLogHandler, HttpRequestManager>(sp => sp.GetRequiredService<HttpRequestManager>());
 
             services.AddTransient<IStartupFilter, HttpRequestFilter>();
 

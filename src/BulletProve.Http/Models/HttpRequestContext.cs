@@ -30,7 +30,7 @@ namespace BulletProve.Http.Models
         /// <summary>
         /// Gets the logs.
         /// </summary>
-        public LinkedList<ServerLogEvent> Logs { get; } = new();
+        public IServerLogCollector Logs { get; } = new ServerLogCollector();
 
         /// <summary>
         /// Gets the server log inspector.

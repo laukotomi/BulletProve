@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<Description>BulletProve is an extension to the Microsoft's ASP.NET Core integration test package with useful features.</Description>
 		<Authors>laukotomi</Authors>
 		<Copyright>Copyright (c) laukotomi 2023</Copyright>
@@ -24,12 +24,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.7" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.14" Condition="'$(TargetFramework)' == 'net7.0'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.14" Condition="'$(TargetFramework)' == 'net6.0'" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\BulletProve\BulletProve.csproj" />
+		<ProjectReference Include="..\BulletProve.Base\BulletProve.Base.csproj" />
 	</ItemGroup>
 
 </Project>

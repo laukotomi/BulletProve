@@ -16,16 +16,9 @@ using System.Threading.Tasks;
 namespace Example.Api.Auth
 {
     /// <summary>
-    /// The auth options.
-    /// </summary>
-    public class AuthOptions : AuthenticationSchemeOptions
-    {
-    }
-
-    /// <summary>
     /// The auth handler.
     /// </summary>
-    public class AuthHandler : AuthenticationHandler<AuthOptions>
+    public class AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthHandler"/> class.
@@ -35,7 +28,7 @@ namespace Example.Api.Auth
         /// <param name="encoder">The encoder.</param>
         /// <param name="clock">The clock.</param>
         public AuthHandler(
-            IOptionsMonitor<AuthOptions> options,
+            IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock)

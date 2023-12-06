@@ -1,4 +1,5 @@
-﻿using BulletProve.Helpers;
+﻿using BulletProve.Exceptions;
+using BulletProve.Helpers;
 using BulletProve.Hooks;
 using BulletProve.Http.Configuration;
 using BulletProve.Http.Helpers;
@@ -13,7 +14,7 @@ namespace BulletProve.Http.Services
     /// <summary>
     /// The http request manager.
     /// </summary>
-    public class HttpRequestManager : IServerLogInspector
+    public class HttpRequestManager : IServerLogHandler
     {
         private readonly ConcurrentDictionary<string, HttpRequestContext> _activeRequests = new();
         private readonly HookRunner _hookRunner;
@@ -36,7 +37,8 @@ namespace BulletProve.Http.Services
         {
             var label = context.Label!;
             context.Request.Headers.TryAddWithoutValidation(Constants.BulletProveRequestID, label);
-            _activeRequests.TryAdd(label, context);
+            if (!_activeRequests.TryAdd(label, context))
+                throw new BulletProveException($"A request with label '{label}' has already been started");
 
             await _hookRunner.RunHooksAsync<IBeforeHttpRequestHook>(x => x.BeforeHttpRequestAsync(context));
 
@@ -48,7 +50,7 @@ namespace BulletProve.Http.Services
             var response = result.ResultObject;
 
             _activeRequests.TryRemove(label, out var _);
-            scope.DisposableCollertor.Add(response);
+            scope.DisposableCollector.Add(response);
 
             await _hookRunner.RunHooksAsync<IAfterHttpRequestHook>(x => x.AfterHttpRequestAsync(context));
 
@@ -59,14 +61,24 @@ namespace BulletProve.Http.Services
             return response;
         }
 
-        /// <inheritdoc />
-        public bool IsServerLogEventAllowed(ServerLogEvent logEvent)
+        /// <inheritdoc/>
+        public void HandleServerLog(ServerLogEvent serverLogEvent)
+        {
+            var requestId = serverLogEvent.Scope?.RequestId;
+
+            if (!string.IsNullOrEmpty(requestId) && _activeRequests.TryGetValue(requestId, out var context))
+            {
+                context.Logs.AddServerLog(serverLogEvent);
+            }
+        }
+
+        /// <inheritdoc/>
+        public bool IsAllowed(ServerLogEvent logEvent)
         {
             var requestId = logEvent.Scope?.RequestId;
 
             if (!string.IsNullOrEmpty(requestId) && _activeRequests.TryGetValue(requestId, out var context))
             {
-                context.Logs.AddLast(logEvent);
                 return context.ServerLogInspector.IsAllowed(logEvent);
             }
 

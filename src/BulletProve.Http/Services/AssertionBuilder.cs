@@ -83,7 +83,7 @@ namespace BulletProve.Http.Services
         /// </summary>
         /// <param name="scope">The scope.</param>
         /// <returns>An AssertionRunner.</returns>
-        public AssertionRunner<TResponse> BuildAssertionRunner(ServerScope scope, HttpResponseMessage response)
+        public AssertionRunner<TResponse> BuildAssertionRunner(ServerScope scope)
         {
             return new(scope.Logger, _statusCodeAssert, _responseMessageAssertions, _serverLogAssertions, _responseObjectAssertions);
         }

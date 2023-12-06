@@ -8,7 +8,6 @@ using Example.Api.IntegrationTests.Mocks;
 using Example.Api.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Example.Api.IntegrationTests
@@ -16,7 +15,7 @@ namespace Example.Api.IntegrationTests
     /// <summary>
     /// The test base class.
     /// </summary>
-    public abstract class TestBase : TestClass, IAsyncLifetime
+    public abstract class TestBase : TestClass
     {
         /// <summary>
         /// The default server name.
@@ -58,8 +57,9 @@ namespace Example.Api.IntegrationTests
         }
 
         /// <inheritdoc />
-        public async Task InitializeAsync()
+        public override async Task InitializeAsync()
         {
+            await base.InitializeAsync();
             Server = await GetServerAsync(DefaultServer);
         }
 
@@ -80,12 +80,6 @@ namespace Example.Api.IntegrationTests
                 .ExecuteSuccessAsync<string>();
 
             return token;
-        }
-
-        /// <inheritdoc />
-        public Task DisposeAsync()
-        {
-            return Task.CompletedTask;
         }
     }
 }

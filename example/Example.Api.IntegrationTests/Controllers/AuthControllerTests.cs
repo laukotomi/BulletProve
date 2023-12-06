@@ -11,17 +11,14 @@ namespace Example.Api.IntegrationTests.Controllers
     /// <summary>
     /// The auth controller tests.
     /// </summary>
-    public class AuthControllerTests : TestBase
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AuthControllerTests"/> class.
+    /// </remarks>
+    /// <param name="serverManager">The server manager.</param>
+    /// <param name="output">The output.</param>
+    public class AuthControllerTests(TestServerManager serverManager, ITestOutputHelper output)
+        : TestBase(serverManager, output)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthControllerTests"/> class.
-        /// </summary>
-        /// <param name="serverManager">The server manager.</param>
-        /// <param name="output">The output.</param>
-        public AuthControllerTests(TestServerManager serverManager, ITestOutputHelper output)
-            : base(serverManager, output)
-        {
-        }
 
         /// <summary>
         /// Whens the credentials are ok then token returned.

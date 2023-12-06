@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<Description>BulletProve is an extension to the Microsoft's ASP.NET Core integration test package with useful features.</Description>
+		<Authors>laukotomi</Authors>
+		<Copyright>Copyright (c) laukotomi 2023</Copyright>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<PackageProjectUrl>https://github.com/laukotomi/BulletProve</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/laukotomi/BulletProve</RepositoryUrl>
+		<PackageTags>aspnetcore;integrationtest</PackageTags>
+		<!--<PackageReadmeFile>README.md</PackageReadmeFile>-->
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageOutputPath>../../Build</PackageOutputPath>
+		<!--<NuspecFile>BulletProve.nuspec</NuspecFile>-->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.14" Condition="'$(TargetFramework)' == 'net7.0'" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.25" Condition="'$(TargetFramework)' == 'net6.0'" />
+	</ItemGroup>
+
+</Project>

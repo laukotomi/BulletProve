@@ -38,7 +38,7 @@ namespace BulletProve.Http.Services
 
             Context = new HttpRequestContext(scope.GetRequiredService<LabelGeneratorService>().GetLabel());
             Context.Request.Method = _linkGeneratorContext.Method;
-            _scope.DisposableCollertor.Add(Context);
+            _scope.DisposableCollector.Add(Context);
             _linkGeneratorService = _scope.GetRequiredService<LinkGeneratorService>();
             _httpRequestManager = _scope.GetRequiredService<HttpRequestManager>();
             _responseMessageDeserializer = _scope.GetRequiredService<HttpConfiguration>().ResponseMessageDeserializer;
@@ -73,7 +73,7 @@ namespace BulletProve.Http.Services
         {
             var json = JsonSerializer.Serialize(content);
             var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
-            _scope.DisposableCollertor.Add(stringContent);
+            _scope.DisposableCollector.Add(stringContent);
             Context.Request.Content = stringContent;
 
             return this;
@@ -164,9 +164,13 @@ namespace BulletProve.Http.Services
         /// Executes the request asserting success status code.
         /// </summary>
         /// <returns>An AssertBuilder.</returns>
-        public Task<HttpResponseMessage> ExecuteSuccessAsync()
+        public Task<HttpResponseMessage> ExecuteSuccessAsync(Action<AssertionBuilder<HttpResponseMessage>>? assertionAction = null)
         {
-            return ExecuteSuccessAsync<HttpResponseMessage>();
+            return ExecuteRequestAsync(assert =>
+            {
+                assert.EnsureSuccessStatusCode();
+                assertionAction?.Invoke(assert);
+            });
         }
 
         /// <summary>
@@ -188,9 +192,13 @@ namespace BulletProve.Http.Services
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public Task<HttpResponseMessage> ExecuteAssertingStatusAsync(HttpStatusCode statusCode)
+        public Task<HttpResponseMessage> ExecuteAssertingStatusAsync(HttpStatusCode statusCode, Action<AssertionBuilder<HttpResponseMessage>>? assertionAction = null)
         {
-            return ExecuteAssertingStatusAsync<HttpResponseMessage>(statusCode);
+            return ExecuteRequestAsync(assert =>
+            {
+                assert.AssertStatusCode(statusCode);
+                assertionAction?.Invoke(assert);
+            });
         }
 
         /// <summary>
@@ -213,9 +221,9 @@ namespace BulletProve.Http.Services
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public Task<TestProblemDetails> ExecuteAssertingProblemAndStatusAsync(HttpStatusCode statusCode)
+        public Task<TestProblemDetails> ExecuteAssertingProblemAndStatusAsync(HttpStatusCode statusCode, Action<AssertionBuilder<TestProblemDetails>>? assertionAction = null)
         {
-            return ExecuteAssertingStatusAsync<TestProblemDetails>(statusCode);
+            return ExecuteAssertingStatusAsync(statusCode, assertionAction);
         }
         #endregion
 
@@ -224,7 +232,7 @@ namespace BulletProve.Http.Services
         /// </summary>
         /// <param name="assertionAction">The assertion action.</param>
         /// <returns>A Task.</returns>
-        public Task<HttpResponseMessage> ExecuteRequestAsync(Action<AssertionBuilder<HttpResponseMessage>> assertionAction)
+        public Task<HttpResponseMessage> ExecuteRequestAsync(Action<AssertionBuilder<HttpResponseMessage>>? assertionAction = null)
         {
             return ExecuteRequestAsync<HttpResponseMessage>(assertionAction);
         }
@@ -234,7 +242,7 @@ namespace BulletProve.Http.Services
         /// </summary>
         /// <param name="assertionAction">The assertion action.</param>
         /// <returns>A Task.</returns>
-        public async Task<TResponse> ExecuteRequestAsync<TResponse>(Action<AssertionBuilder<TResponse>> assertionAction)
+        public async Task<TResponse> ExecuteRequestAsync<TResponse>(Action<AssertionBuilder<TResponse>>? assertionAction = null)
             where TResponse : class
         {
             using var loggerScope = _scope.Logger.Scope(Context.Label);
@@ -245,9 +253,9 @@ namespace BulletProve.Http.Services
             SetRequestUri();
             var response = await _httpRequestManager.ExecuteRequestAsync(Context, _scope);
 
-            var assertionRunner = assertBuilder.BuildAssertionRunner(_scope, response);
+            var assertionRunner = assertBuilder.BuildAssertionRunner(_scope);
             assertionRunner.RunResponseMessageAssertions(response);
-            assertionRunner.RunServerLogAssertions(_scope.LogSniffer.GetServerLogs());
+            assertionRunner.RunServerLogAssertions(Context.Logs.GetServerLogs());
 
             var responseObject = await _responseMessageDeserializer.GetResponseObjectAsync<TResponse>(response);
             assertionRunner.RunResponseObjectAssertions(responseObject);

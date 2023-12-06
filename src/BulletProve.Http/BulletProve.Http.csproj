@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<Description>BulletProve is an extension to the Microsoft's ASP.NET Core integration test package with useful features.</Description>
 		<Authors>laukotomi</Authors>
 		<Copyright>Copyright (c) laukotomi 2023</Copyright>
@@ -24,11 +24,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FluentAssertions" Version="6.11.0" />
+		<PackageReference Include="FluentAssertions" Version="6.12.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\BulletProve\BulletProve.csproj" />
+		<ProjectReference Include="..\BulletProve.Base\BulletProve.Base.csproj" />
 	</ItemGroup>
 
 </Project>

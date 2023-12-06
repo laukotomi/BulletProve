@@ -9,30 +9,21 @@ namespace Example.Api.IntegrationTests.Hooks
     /// <summary>
     /// The seed database hook.
     /// </summary>
-    public class SeedDatabaseHook : IBeforeTestHook
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="SeedDatabaseHook"/> class.
+    /// </remarks>
+    /// <param name="seeder">The service provider.</param>
+    /// <param name="testLogger">The test logger.</param>
+    public class SeedDatabaseHook(
+        Seeder seeder,
+        ITestLogger testLogger) : IBeforeTestHook
     {
-        private readonly Seeder _seeder;
-        private readonly ITestLogger _testLogger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SeedDatabaseHook"/> class.
-        /// </summary>
-        /// <param name="seeder">The service provider.</param>
-        /// <param name="testLogger">The test logger.</param>
-        public SeedDatabaseHook(
-            Seeder seeder,
-            ITestLogger testLogger)
-        {
-            _seeder = seeder;
-            _testLogger = testLogger;
-        }
-
         /// <inheritdoc/>
         public async Task BeforeTestAsync()
         {
-            var elapsedMs = await StopwatchHelper.MeasureAsync(_seeder.SeedAsync);
+            var elapsedMs = await StopwatchHelper.MeasureAsync(seeder.SeedAsync);
 
-            _testLogger.LogInformation($"Seed done ({elapsedMs} ms)");
+            testLogger.LogInformation($"Seed done ({elapsedMs} ms)");
         }
     }
 }

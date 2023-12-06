@@ -11,17 +11,14 @@ namespace Example.Api.IntegrationTests.Controllers
     /// <summary>
     /// The user controller tests.
     /// </summary>
-    public class UserControllerTests : TestBase
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="UserControllerTests"/> class.
+    /// </remarks>
+    /// <param name="serverManager">The server manager.</param>
+    /// <param name="output">The output.</param>
+    public class UserControllerTests(TestServerManager serverManager, ITestOutputHelper output)
+        : TestBase(serverManager, output)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserControllerTests"/> class.
-        /// </summary>
-        /// <param name="serverManager">The server manager.</param>
-        /// <param name="output">The output.</param>
-        public UserControllerTests(TestServerManager serverManager, ITestOutputHelper output)
-            : base(serverManager, output)
-        {
-        }
 
         /// <summary>
         /// Whens the user is logged in then its data returned.
