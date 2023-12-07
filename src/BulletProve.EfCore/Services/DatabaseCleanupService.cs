@@ -7,18 +7,25 @@ namespace BulletProve.EfCore.Services
     /// <summary>
     /// Cleans up database.
     /// </summary>
-    public class DatabaseCleanupService
+    public class DatabaseCleanupService : IDatabaseCleanupService
     {
         private readonly TopologicalSortService _topologicalSortService = new();
+        private readonly ISqlExecutor _sqlExecutor;
 
         /// <summary>
-        /// Cleans up database.
+        /// Initializes a new instance of the <see cref="DatabaseCleanupService"/> class.
         /// </summary>
-        /// <param name="context">DbContext.</param>
+        /// <param name="sqlExecutor">The sql executor.</param>
+        public DatabaseCleanupService(ISqlExecutor sqlExecutor)
+        {
+            _sqlExecutor = sqlExecutor;
+        }
+
+        /// <inheritdoc/>
         public Task CleanupAsync(DbContext context)
         {
             var sql = GenerateCleaningSql(context);
-            return context.Database.ExecuteSqlRawAsync(sql);
+            return _sqlExecutor.ExecuteAsync(context, sql);
         }
 
         /// <summary>
@@ -52,8 +59,7 @@ namespace BulletProve.EfCore.Services
         /// Gets the table name from entity type.
         /// </summary>
         /// <param name="entityType">The entity type.</param>
-        /// <returns>An object.</returns>
-        private static object GetTableNameFromEntityType(IEntityType entityType)
+        private static string GetTableNameFromEntityType(IEntityType entityType)
         {
             var schema = entityType.GetSchema();
             var tableName = entityType.GetTableName();

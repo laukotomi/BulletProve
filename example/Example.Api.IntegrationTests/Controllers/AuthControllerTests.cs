@@ -16,7 +16,7 @@ namespace Example.Api.IntegrationTests.Controllers
     /// </remarks>
     /// <param name="serverManager">The server manager.</param>
     /// <param name="output">The output.</param>
-    public class AuthControllerTests(TestServerManager serverManager, ITestOutputHelper output)
+    public class AuthControllerTests(ServerManager serverManager, ITestOutputHelper output)
         : TestBase(serverManager, output)
     {
 

@@ -12,9 +12,9 @@ namespace BulletProve.EfCore.Hooks
     public class CleanDatabaseHook<TDbContext> : IBeforeTestHook
         where TDbContext : DbContext
     {
-        private readonly DatabaseCleanupService _databaseCleanupService = new();
         private readonly TDbContext _dbContext;
         private readonly ITestLogger _testLogger;
+        private readonly IDatabaseCleanupService _databaseCleanupService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CleanDatabaseHook{TDbContext}"/> class.
@@ -23,16 +23,18 @@ namespace BulletProve.EfCore.Hooks
         /// <param name="testLogger">Logger.</param>
         public CleanDatabaseHook(
             TDbContext dbContext,
-            ITestLogger testLogger)
+            ITestLogger testLogger,
+            IDatabaseCleanupService databaseCleanupService)
         {
             _dbContext = dbContext;
             _testLogger = testLogger;
+            _databaseCleanupService = databaseCleanupService;
         }
 
         /// <inheritdoc/>
         public async Task BeforeTestAsync()
         {
-            var elapsedMs = await StopwatchHelper.MeasureAsync(() => _databaseCleanupService.CleanupAsync(_dbContext));
+            var elapsedMs = await StopwatchHelper.MeasureAsync(async () => await _databaseCleanupService.CleanupAsync(_dbContext));
 
             _testLogger.LogInformation($"DB cleaned ({elapsedMs} ms)");
         }

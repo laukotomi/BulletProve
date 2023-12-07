@@ -1,8 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("BulletProve.Base.Tests")]
-
-namespace BulletProve
+﻿namespace BulletProve
 {
     /// <summary>
     /// BulletProve constants.

@@ -11,10 +11,10 @@
         /// <typeparam name="T">Type of the objects.</typeparam>
         /// <param name="source">Source collection.</param>
         /// <param name="getDependencies">Function to get dependencies of an object.</param>
-        public IList<T> Sort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
-            where T : class
+        public IList<T> Sort<T>(ICollection<T> source, Func<T, IEnumerable<T>> getDependencies)
+            where T : notnull
         {
-            var sorted = new List<T>(source.Count());
+            var sorted = new List<T>(source.Count);
             var visited = new Dictionary<T, bool>();
 
             foreach (var item in source)
@@ -33,7 +33,7 @@
         /// <param name="sorted">The sorted.</param>
         /// <param name="visited">The visited.</param>
         private void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, List<T> sorted, Dictionary<T, bool> visited)
-            where T : class
+            where T : notnull
         {
             if (visited.TryGetValue(item, out var inProcess))
             {

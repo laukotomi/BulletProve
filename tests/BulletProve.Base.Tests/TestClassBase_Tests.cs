@@ -1,11 +1,6 @@
-﻿using BulletProve.Base.TestServer;
-using BulletProve.Exceptions;
-using BulletProve.Logging;
-using BulletProve.ServerLog;
-using BulletProve.Services;
+﻿using BulletProve.Exceptions;
 using BulletProve.TestServer;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
 namespace BulletProve.Base.Tests
@@ -19,15 +14,24 @@ namespace BulletProve.Base.Tests
         /// The server name.
         /// </summary>
         private const string ServerName = "server";
+        private readonly IOutput _output;
+        private readonly ITestServer _server;
+        private readonly TestClass _sut;
 
         /// <summary>
-        /// Tests the register servers called.
+        /// Initializes a new instance of the <see cref="TestClassBase_Tests"/> class.
         /// </summary>
-        [Fact]
-        public void TestRegisterServersCalled()
+        public TestClassBase_Tests()
         {
-            var sut = new EmptyTestClass(new TestServerManager());
-            sut.IsRegisterServersCalled.Should().BeTrue();
+            _output = Substitute.For<IOutput>();
+            _server = Substitute.For<ITestServer>();
+            var serverFactory = Substitute.For<ITestServerFactory>();
+            serverFactory
+                .CreateTestServer<ITestStartup>(Arg.Any<Action<ServerConfigurator>>())
+                .Returns(_server);
+
+            var manager = new ServerManager(serverFactory);
+            _sut = new TestClass(manager, _output);
         }
 
         /// <summary>
@@ -37,8 +41,7 @@ namespace BulletProve.Base.Tests
         [Fact]
         public async Task TestGetServerAsyncNoServers()
         {
-            var sut = new EmptyTestClass(new TestServerManager());
-            var act = () => sut.GetServerAsync("asd");
+            var act = () => _sut.GetServerAsync(ServerName);
             await act.Should().ThrowAsync<BulletProveException>();
         }
 
@@ -49,101 +52,50 @@ namespace BulletProve.Base.Tests
         [Fact]
         public async Task TestGetServerAsync()
         {
-            var manager = new ServerManager();
-            var sut = new TestClass(manager);
-            var scope = await sut.GetServerAsync(ServerName);
-            scope.Should().NotBeNull().And.Be(manager.ServerScope);
+            _sut.RegisterServers();
+            await _sut.GetServerAsync(ServerName);
 
-            await manager.Server.Received(1).StartSessionAsync(ServerName);
+            await _server.Received(1).StartSessionAsync(ServerName);
         }
 
+        /// <summary>
+        /// Tests the end sessions async.
+        /// </summary>
+        /// <returns>A Task.</returns>
         [Fact]
         public async Task TestEndSessionsAsync()
         {
-            var manager = new ServerManager();
-            var sut = new TestClass(manager);
-            await sut.GetServerAsync(ServerName);
-            await sut.EndSessionsAsync(null!);
-            await manager.Server.Received(1).EndSessionAsync(Arg.Any<IOutput>());
+            _sut.RegisterServers();
+            await _sut.GetServerAsync(ServerName);
+            await _sut.EndSessionsAsync();
+            await _server.Received(1).EndSessionAsync(_output);
+        }
+
+        /// <summary>
+        /// Tests the register servers.
+        /// </summary>
+        [Fact]
+        public void TestRegisterServers()
+        {
+            _sut.RegisterServers();
+            _sut.RegisterServers();
+            _sut.RegisterServersCalled.Should().Be(1);
         }
 
         /// <summary>
         /// The test class.
         /// </summary>
-        private class EmptyTestClass(IServerManager serverManager) : TestClassBase(serverManager)
+        private class TestClass(ServerManager serverManager, IOutput output) : TestClassBase(serverManager, output)
         {
             /// <summary>
-            /// Gets a value indicating whether register servers is called.
+            /// Gets a value indicating whether register servers called.
             /// </summary>
-            public bool IsRegisterServersCalled { get; private set; }
+            public int RegisterServersCalled { get; private set; }
 
             /// <inheritdoc/>
-            public override void RegisterServers(IServerRegistrator serverRegistrator)
+            protected override void RegisterServers(IServerRegistrator serverRegistrator)
             {
-                IsRegisterServersCalled = true;
-            }
-        }
-
-        /// <summary>
-        /// The server manager.
-        /// </summary>
-        private class ServerManager : IServerManager
-        {
-            private Dictionary<string, ITestServer> _servers = new();
-
-            /// <inheritdoc/>
-            public bool HasServers => _servers.Count > 0;
-
-            /// <summary>
-            /// Gets the server scope.
-            /// </summary>
-            public ServerScope ServerScope { get; }
-
-            /// <summary>
-            /// Gets the server.
-            /// </summary>
-            public ITestServer Server { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="ServerManager"/> class.
-            /// </summary>
-            public ServerManager()
-            {
-                var services = new ServiceCollection();
-                services.AddSingleton<ServerConfigurator>();
-                services.AddSingleton<IServerLogCollector, ServerLogCollector>();
-                services.AddSingleton<ScopeProvider>();
-                services.AddSingleton<DisposableCollector>();
-                services.AddSingleton<ITestLogger, TestLogger>();
-
-                var provider = services.BuildServiceProvider();
-
-                ServerScope = new ServerScope(provider, null!);
-                Server = Substitute.For<ITestServer>();
-                Server.StartSessionAsync(ServerName).Returns(ServerScope);
-            }
-
-            /// <inheritdoc/>
-            public ITestServer GetServer(string serverName)
-            {
-                return _servers[serverName];
-            }
-
-            /// <inheritdoc/>
-            public void RegisterServer<TStartup>(string serverName, Action<ServerConfigurator>? configAction = null) where TStartup : class
-            {
-                _servers.Add(serverName, Server);
-            }
-        }
-
-        /// <summary>
-        /// The test class.
-        /// </summary>
-        private class TestClass(IServerManager serverManager) : TestClassBase(serverManager)
-        {
-            /// <inheritdoc/>
-            public override void RegisterServers(IServerRegistrator serverRegistrator)
-            {
+                RegisterServersCalled++;
                 serverRegistrator.RegisterServer<ITestStartup>(ServerName);
             }
         }

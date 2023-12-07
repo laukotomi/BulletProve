@@ -1,4 +1,6 @@
-﻿namespace BulletProve.TestServer
+﻿using BulletProve.TestServer;
+
+namespace BulletProve
 {
     /// <summary>
     /// The server registrator interface.

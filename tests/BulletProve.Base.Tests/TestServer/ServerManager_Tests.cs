@@ -7,16 +7,16 @@ namespace BulletProve.Tests.TestServer
     /// <summary>
     /// The test server manager tests.
     /// </summary>
-    public class TestServerManager_Tests
+    public class ServerManager_Tests
     {
-        private readonly TestServerManager _sut;
+        private readonly ServerManager _sut;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestServerManager_Tests"/> class.
+        /// Initializes a new instance of the <see cref="ServerManager_Tests"/> class.
         /// </summary>
-        public TestServerManager_Tests()
+        public ServerManager_Tests()
         {
-            _sut = new TestServerManager();
+            _sut = new ServerManager();
         }
 
         /// <summary>

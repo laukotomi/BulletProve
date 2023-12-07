@@ -1,6 +1,5 @@
 ﻿using BulletProve;
 using BulletProve.Hooks;
-using BulletProve.TestServer;
 using Example.Api.Controllers;
 using Example.Api.Data;
 using Example.Api.IntegrationTests.Hooks;
@@ -32,12 +31,12 @@ namespace Example.Api.IntegrationTests
         /// </summary>
         /// <param name="serverManager">The server manager.</param>
         /// <param name="output">The output.</param>
-        protected TestBase(TestServerManager serverManager, ITestOutputHelper output) : base(serverManager, output)
+        protected TestBase(ServerManager serverManager, ITestOutputHelper output) : base(serverManager, output)
         {
         }
 
         /// <inheritdoc />
-        public override void RegisterServers(IServerRegistrator serverRegistrator)
+        protected override void RegisterServers(IServerRegistrator serverRegistrator)
         {
             serverRegistrator.RegisterServer<Startup>(DefaultServer, config =>
             {
