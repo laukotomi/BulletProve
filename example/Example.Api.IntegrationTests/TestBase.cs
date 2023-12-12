@@ -24,7 +24,7 @@ namespace Example.Api.IntegrationTests
         /// <summary>
         /// Gets the default server.
         /// </summary>
-        protected ServerScope Server { get; private set; } = null!;
+        protected IServerScope Server { get; private set; } = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestBase"/> class.
@@ -66,7 +66,7 @@ namespace Example.Api.IntegrationTests
         /// Logins the as admin and get token.
         /// </summary>
         /// <param name="scope">Server scope.</param>
-        protected async Task<string> LoginAsAdminAndGetTokenAsync(ServerScope scope)
+        protected async Task<string> LoginAsAdminAndGetTokenAsync(IServerScope scope)
         {
             var token = await scope
                 .HttpRequestFor<AuthController>(x => x.LoginAsync)

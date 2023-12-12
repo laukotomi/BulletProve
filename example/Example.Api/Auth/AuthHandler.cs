@@ -18,24 +18,14 @@ namespace Example.Api.Auth
     /// <summary>
     /// The auth handler.
     /// </summary>
-    public class AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AuthHandler"/> class.
+    /// </remarks>
+    /// <param name="options">The options.</param>
+    /// <param name="logger">The logger.</param>
+    /// <param name="encoder">The encoder.</param>
+    public class AuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthHandler"/> class.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <param name="logger">The logger.</param>
-        /// <param name="encoder">The encoder.</param>
-        /// <param name="clock">The clock.</param>
-        public AuthHandler(
-            IOptionsMonitor<AuthenticationSchemeOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock)
-        {
-        }
-
         /// <inheritdoc/>
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {

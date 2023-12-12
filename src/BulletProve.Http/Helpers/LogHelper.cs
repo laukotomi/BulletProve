@@ -53,7 +53,7 @@ namespace BulletProve.Http.Helpers
         /// <param name="configuration">The configuration.</param>
         private static void LogContent(StringBuilder builder, HttpContent content, HttpConfiguration configuration)
         {
-            if (content.Headers.ContentType != null && IsLoggableMediaType(content.Headers.ContentType?.MediaType))
+            if (IsLoggableMediaType(content.Headers.ContentType?.MediaType))
             {
                 var responseMessage = content.ReadAsStringAsync().GetAwaiter().GetResult();
 

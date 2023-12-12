@@ -32,7 +32,7 @@ namespace BulletProve
         private ServerConfigurator _configurator = null!;
         private HttpClient _httpClient = null!;
         private ServerScope _scope = null!;
-        private HookRunner _hookRunner = null!;
+        private IHookRunner _hookRunner = null!;
         private bool _isInitialized = false;
 
         /// <inheritdoc/>
@@ -50,12 +50,12 @@ namespace BulletProve
         }
 
         /// <inheritdoc />
-        public async Task<ServerScope> StartSessionAsync(string serverName)
+        public async Task<IServerScope> StartSessionAsync(string serverName)
         {
             var started = StartServer(serverName);
 
             _scope = new ServerScope(Services, _httpClient);
-            _hookRunner = _scope.GetRequiredService<HookRunner>();
+            _hookRunner = _scope.GetRequiredService<IHookRunner>();
 
             if (started)
             {
@@ -258,7 +258,7 @@ namespace BulletProve
             services.AddScoped<DisposableCollector>();
 
             // Hooks
-            services.AddTransient<HookRunner>();
+            services.AddTransient<IHookRunner, HookRunner>();
             services.AddSingleton<ICleanUpHook>(_configurator.ServerLogInspector);
         }
 

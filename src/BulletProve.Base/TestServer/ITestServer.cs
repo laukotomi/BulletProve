@@ -9,7 +9,7 @@
         /// Inits the test session.
         /// </summary>
         /// <param name="serverName">The server name.</param>
-        Task<ServerScope> StartSessionAsync(string serverName);
+        Task<IServerScope> StartSessionAsync(string serverName);
 
         /// <summary>
         /// Ends the test session.

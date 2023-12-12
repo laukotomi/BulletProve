@@ -7,7 +7,7 @@ namespace BulletProve.Http.Services
     /// <summary>
     /// The assertion runner.
     /// </summary>
-    public class AssertionRunner<TResponse>
+    public class AssertionRunner<TResponse> : IAssertionRunner<TResponse>
         where TResponse : class
     {
         private readonly ITestLogger _logger;
@@ -39,10 +39,7 @@ namespace BulletProve.Http.Services
             _responseObjectAssertions = responseObjectAssertions;
         }
 
-        /// <summary>
-        /// Runs the response message assertions.
-        /// </summary>
-        /// <param name="response"></param>
+        /// <inheritdoc/>
         public void RunResponseMessageAssertions(HttpResponseMessage response)
         {
             if (_statusCodeAssertion != null)
@@ -54,25 +51,19 @@ namespace BulletProve.Http.Services
                 _logger.LogWarning($"{(int)response.StatusCode} StatusCode was not checked");
             }
 
-            RunAssertions(_responseMessageAssertions, response, "reponse message");
+            RunAssertions(_responseMessageAssertions, response, "response message");
         }
 
-        /// <summary>
-        /// Runs the server log assertions.
-        /// </summary>
-        /// <param name="serverLogs">The server logs.</param>
+        /// <inheritdoc/>
         public void RunServerLogAssertions(IReadOnlyCollection<ServerLogEvent> serverLogs)
         {
             RunAssertions(_serverLogAssertions, serverLogs, "server log");
         }
 
-        /// <summary>
-        /// Runs the response object assertions.
-        /// </summary>
-        /// <param name="responseObject">The response object.</param>
+        /// <inheritdoc/>
         public void RunResponseObjectAssertions(TResponse responseObject)
         {
-            RunAssertions(_responseObjectAssertions, responseObject, "reponse object");
+            RunAssertions(_responseObjectAssertions, responseObject, "response object");
         }
 
         /// <summary>

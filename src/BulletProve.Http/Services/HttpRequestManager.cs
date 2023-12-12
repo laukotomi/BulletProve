@@ -14,26 +14,22 @@ namespace BulletProve.Http.Services
     /// <summary>
     /// The http request manager.
     /// </summary>
-    public class HttpRequestManager : IServerLogHandler
+    public class HttpRequestManager : IHttpRequestManager, IServerLogHandler
     {
         private readonly ConcurrentDictionary<string, HttpRequestContext> _activeRequests = new();
-        private readonly HookRunner _hookRunner;
+        private readonly IHookRunner _hookRunner;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpRequestManager"/> class.
         /// </summary>
         /// <param name="hookRunner">The hook runner.</param>
-        public HttpRequestManager(HookRunner hookRunner)
+        public HttpRequestManager(IHookRunner hookRunner)
         {
             _hookRunner = hookRunner;
         }
 
-        /// <summary>
-        /// Executes the request.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="scope">The server scope.</param>
-        public async Task<HttpResponseMessage> ExecuteRequestAsync(HttpRequestContext context, ServerScope scope)
+        /// <inheritdoc/>
+        public async Task<HttpResponseMessage> ExecuteRequestAsync(HttpRequestContext context, IServerScope scope)
         {
             var label = context.Label!;
             context.Request.Headers.TryAddWithoutValidation(Constants.BulletProveRequestID, label);
@@ -83,16 +79,6 @@ namespace BulletProve.Http.Services
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Tries the get http request context.
-        /// </summary>
-        /// <param name="requestId">The request id.</param>
-        /// <param name="context">The context.</param>
-        public bool TryGetHttpRequestContext(string requestId, out HttpRequestContext? context)
-        {
-            return _activeRequests.TryGetValue(requestId, out context);
         }
     }
 }

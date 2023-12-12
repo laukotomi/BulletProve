@@ -9,20 +9,6 @@ namespace BulletProve.Http.Models
     public sealed class HttpRequestContext : IDisposable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpRequestContext"/> class.
-        /// </summary>
-        /// <param name="label">The label.</param>
-        public HttpRequestContext(string label)
-        {
-            Label = label;
-        }
-
-        /// <summary>
-        /// Gets the request.
-        /// </summary>
-        public HttpRequestMessage Request { get; } = new();
-
-        /// <summary>
         /// Gets or sets the label.
         /// </summary>
         public string Label { get; set; }
@@ -37,10 +23,24 @@ namespace BulletProve.Http.Models
         /// </summary>
         public Inspector<ServerLogEvent> ServerLogInspector { get; } = new();
 
+        /// <summary>
+        /// Gets the request.
+        /// </summary>
+        public HttpRequestMessage Request { get; } = new();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpRequestContext"/> class.
+        /// </summary>
+        /// <param name="label">The label.</param>
+        public HttpRequestContext(string label)
+        {
+            Label = label;
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
-            Request?.Dispose();
+            Request.Dispose();
         }
     }
 }

@@ -24,12 +24,13 @@ namespace BulletProve
 
             services.AddSingleton(config);
             services.AddSingleton<HttpMethodService>();
-            services.AddSingleton<LinkGeneratorService>();
-            services.AddSingleton<HttpRequestManager>();
+            services.AddSingleton<ILinkGeneratorService, LinkGeneratorService>();
+            services.AddSingleton<IHttpRequestManager, HttpRequestManager>();
             services.AddScoped<LabelGeneratorService>();
-            services.AddSingleton<IServerLogHandler, HttpRequestManager>(sp => sp.GetRequiredService<HttpRequestManager>());
+            services.AddSingleton<IServerLogHandler, HttpRequestManager>(sp => (HttpRequestManager)sp.GetRequiredService<IHttpRequestManager>());
 
             services.AddTransient<IStartupFilter, HttpRequestFilter>();
+            services.AddTransient(typeof(IAssertionBuilder<>), typeof(AssertionBuilder<>));
 
             return services;
         }

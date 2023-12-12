@@ -1,4 +1,5 @@
-﻿using BulletProve.Logging;
+﻿using BulletProve.Base.TestServer;
+using BulletProve.Logging;
 using BulletProve.ServerLog;
 using BulletProve.Services;
 using BulletProve.TestServer;

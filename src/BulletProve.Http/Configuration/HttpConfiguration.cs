@@ -9,14 +9,14 @@ namespace BulletProve.Http.Configuration
     public class HttpConfiguration
     {
         /// <summary>
-        /// The maximum length of a http header content to log. Default is 50.
-        /// </summary>
-        public int HttpHeaderLogMaxLength { get; set; } = 50;
-
-        /// <summary>
         /// The maximum length of a http message content to log. Default is 1000.
         /// </summary>
         public int HttpContentLogMaxLength { get; set; } = 1000;
+
+        /// <summary>
+        /// The maximum length of a http header content to log. Default is 50.
+        /// </summary>
+        public int HttpHeaderLogMaxLength { get; set; } = 50;
 
         /// <summary>
         /// Gets the response message deserializer.
@@ -25,5 +25,10 @@ namespace BulletProve.Http.Configuration
         {
             PropertyNameCaseInsensitive = true
         });
+
+        /// <summary>
+        /// Gets the json serializer options.
+        /// </summary>
+        public JsonSerializerOptions JsonSerializerOptions { get; } = new();
     }
 }

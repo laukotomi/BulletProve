@@ -18,7 +18,7 @@ namespace BulletProve
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="actionSelector">The action selector.</param>
-        public static HttpRequestBuilder HttpRequestFor<TController>(this ServerScope serviceProvider, Expression<Func<TController, Delegate>> actionSelector)
+        public static HttpRequestBuilder HttpRequestFor<TController>(this IServerScope serviceProvider, Expression<Func<TController, Delegate>> actionSelector)
             where TController : ControllerBase
         {
             var controllerType = typeof(TController);

@@ -1,10 +1,12 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace BulletProve.Http.Models
 {
     /// <summary>
     /// The problem details. Basic implementation of Microsoft's ProblemDetails to deserialize.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class TestProblemDetails
     {
         /// <summary>

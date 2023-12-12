@@ -9,7 +9,7 @@ namespace BulletProve
     /// <summary>
     /// Service provider extensions for integration tests.
     /// </summary>
-    public sealed class ServerScope : IServiceProvider, IDisposable, IAsyncDisposable
+    public sealed class ServerScope : IServerScope, IDisposable, IAsyncDisposable
     {
         private readonly AsyncServiceScope _serviceScope;
         private readonly IServiceProvider _services;

@@ -6,14 +6,14 @@
     public class LinkGeneratorContext
     {
         /// <summary>
-        /// Gets the controller name.
-        /// </summary>
-        public string ControllerName { get; }
-
-        /// <summary>
         /// Gets the action name.
         /// </summary>
         public string ActionName { get; }
+
+        /// <summary>
+        /// Gets the controller name.
+        /// </summary>
+        public string ControllerName { get; }
 
         /// <summary>
         /// Gets the method.

@@ -42,7 +42,7 @@ namespace BulletProve
         /// Gets the server.
         /// </summary>
         /// <param name="serverName">The server name.</param>
-        public async Task<ServerScope> GetServerAsync(string serverName)
+        public async Task<IServerScope> GetServerAsync(string serverName)
         {
             if (!_serverManager.HasServers)
             {

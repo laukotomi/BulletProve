@@ -2,7 +2,6 @@ using BulletProve.Http.Configuration;
 using BulletProve.Http.Models;
 using BulletProve.ServerLog;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
@@ -16,10 +15,11 @@ namespace BulletProve.Http.Services
     public class HttpRequestBuilder
     {
         private readonly LinkGeneratorContext _linkGeneratorContext;
-        private readonly ServerScope _scope;
-        private readonly LinkGeneratorService _linkGeneratorService;
-        private readonly HttpRequestManager _httpRequestManager;
+        private readonly IServerScope _scope;
+        private readonly ILinkGeneratorService _linkGeneratorService;
+        private readonly IHttpRequestManager _httpRequestManager;
         private ResponseMessageDeserializer _responseMessageDeserializer;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         /// <summary>
         /// Gets the request context.
@@ -31,7 +31,9 @@ namespace BulletProve.Http.Services
         /// </summary>
         /// <param name="linkGeneratorContext">Link generator context.</param>
         /// <param name="scope">Server scope.</param>
-        public HttpRequestBuilder(LinkGeneratorContext linkGeneratorContext, ServerScope scope)
+        public HttpRequestBuilder(
+            LinkGeneratorContext linkGeneratorContext,
+            IServerScope scope)
         {
             _linkGeneratorContext = linkGeneratorContext;
             _scope = scope;
@@ -39,9 +41,12 @@ namespace BulletProve.Http.Services
             Context = new HttpRequestContext(scope.GetRequiredService<LabelGeneratorService>().GetLabel());
             Context.Request.Method = _linkGeneratorContext.Method;
             _scope.DisposableCollector.Add(Context);
-            _linkGeneratorService = _scope.GetRequiredService<LinkGeneratorService>();
-            _httpRequestManager = _scope.GetRequiredService<HttpRequestManager>();
-            _responseMessageDeserializer = _scope.GetRequiredService<HttpConfiguration>().ResponseMessageDeserializer;
+            _linkGeneratorService = _scope.GetRequiredService<ILinkGeneratorService>();
+            _httpRequestManager = _scope.GetRequiredService<IHttpRequestManager>();
+
+            var configuration = _scope.GetRequiredService<HttpConfiguration>();
+            _responseMessageDeserializer = configuration.ResponseMessageDeserializer;
+            _jsonSerializerOptions = configuration.JsonSerializerOptions;
         }
 
         /// <summary>
@@ -69,9 +74,9 @@ namespace BulletProve.Http.Services
         /// Helper method to set json HTTP content.
         /// </summary>
         /// <param name="content">The json object.</param>
-        public HttpRequestBuilder SetJsonContent(object content)
+        public HttpRequestBuilder SetJsonContent(object content, JsonSerializerOptions? options = null)
         {
-            var json = JsonSerializer.Serialize(content);
+            var json = JsonSerializer.Serialize(content, options ?? _jsonSerializerOptions);
             var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
             _scope.DisposableCollector.Add(stringContent);
             Context.Request.Content = stringContent;
@@ -95,8 +100,7 @@ namespace BulletProve.Http.Services
         /// <param name="action">Action to set uri values.</param>
         public HttpRequestBuilder SetQueryParameters(Action<Dictionary<string, string>> action)
         {
-            action?.Invoke(_linkGeneratorContext.UriValues);
-
+            action(_linkGeneratorContext.UriValues);
             return this;
         }
 
@@ -159,95 +163,17 @@ namespace BulletProve.Http.Services
             return this;
         }
 
-        #region Execute with status assertion methods
-        /// <summary>
-        /// Executes the request asserting success status code.
-        /// </summary>
-        /// <returns>An AssertBuilder.</returns>
-        public Task<HttpResponseMessage> ExecuteSuccessAsync(Action<AssertionBuilder<HttpResponseMessage>>? assertionAction = null)
-        {
-            return ExecuteRequestAsync(assert =>
-            {
-                assert.EnsureSuccessStatusCode();
-                assertionAction?.Invoke(assert);
-            });
-        }
-
-        /// <summary>
-        /// Executes the request asserting success status code.
-        /// </summary>
-        /// <returns>An AssertBuilder.</returns>
-        public Task<TResponse> ExecuteSuccessAsync<TResponse>(Action<AssertionBuilder<TResponse>>? assertionAction = null)
-            where TResponse : class
-        {
-            return ExecuteRequestAsync<TResponse>(assert =>
-            {
-                assert.EnsureSuccessStatusCode();
-                assertionAction?.Invoke(assert);
-            });
-        }
-
-        /// <summary>
-        /// Executes the request asserting specified status code.
-        /// </summary>
-        /// <param name="statusCode">The status code.</param>
-        /// <returns>An AssertBuilder.</returns>
-        public Task<HttpResponseMessage> ExecuteAssertingStatusAsync(HttpStatusCode statusCode, Action<AssertionBuilder<HttpResponseMessage>>? assertionAction = null)
-        {
-            return ExecuteRequestAsync(assert =>
-            {
-                assert.AssertStatusCode(statusCode);
-                assertionAction?.Invoke(assert);
-            });
-        }
-
-        /// <summary>
-        /// Executes the request asserting specified status code.
-        /// </summary>
-        /// <param name="statusCode">The status code.</param>
-        /// <returns>An AssertBuilder.</returns>
-        public Task<TResponse> ExecuteAssertingStatusAsync<TResponse>(HttpStatusCode statusCode, Action<AssertionBuilder<TResponse>>? assertionAction = null)
-            where TResponse : class
-        {
-            return ExecuteRequestAsync<TResponse>(assert =>
-            {
-                assert.AssertStatusCode(statusCode);
-                assertionAction?.Invoke(assert);
-            });
-        }
-
-        /// <summary>
-        /// Starts asserting problem details with specified status code.
-        /// </summary>
-        /// <param name="statusCode">The status code.</param>
-        /// <returns>An AssertBuilder.</returns>
-        public Task<TestProblemDetails> ExecuteAssertingProblemAndStatusAsync(HttpStatusCode statusCode, Action<AssertionBuilder<TestProblemDetails>>? assertionAction = null)
-        {
-            return ExecuteAssertingStatusAsync(statusCode, assertionAction);
-        }
-        #endregion
-
         /// <summary>
         /// Executes the request.
         /// </summary>
         /// <param name="assertionAction">The assertion action.</param>
         /// <returns>A Task.</returns>
-        public Task<HttpResponseMessage> ExecuteRequestAsync(Action<AssertionBuilder<HttpResponseMessage>>? assertionAction = null)
-        {
-            return ExecuteRequestAsync<HttpResponseMessage>(assertionAction);
-        }
-
-        /// <summary>
-        /// Executes the request.
-        /// </summary>
-        /// <param name="assertionAction">The assertion action.</param>
-        /// <returns>A Task.</returns>
-        public async Task<TResponse> ExecuteRequestAsync<TResponse>(Action<AssertionBuilder<TResponse>>? assertionAction = null)
+        public async Task<TResponse> ExecuteRequestAsync<TResponse>(Action<IAssertionBuilder<TResponse>>? assertionAction = null)
             where TResponse : class
         {
             using var loggerScope = _scope.Logger.Scope(Context.Label);
 
-            var assertBuilder = new AssertionBuilder<TResponse>();
+            var assertBuilder = _scope.GetRequiredService<IAssertionBuilder<TResponse>>();
             assertionAction?.Invoke(assertBuilder);
 
             SetRequestUri();

@@ -96,7 +96,7 @@ namespace BulletProve.Base.Tests.TestServer
             scope.GetService<IServerLogCollector>().Should().NotBeNull().And.BeOfType<ServerLogCollector>();
             scope.GetService<IServerLogHandler>().Should().NotBeNull().And.BeOfType<DefaultServerLogHandler>();
             scope.GetService<DisposableCollector>().Should().NotBeNull();
-            scope.GetService<HookRunner>().Should().NotBeNull();
+            scope.GetService<IHookRunner>().Should().NotBeNull();
 
             // Assert RegisterResetSingletonHooks
             scope.GetServices<ICleanUpHook>().Count().Should().Be(7);

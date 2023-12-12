@@ -35,7 +35,7 @@ namespace Example.Api.Services
         public ExternalService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _url = configuration.GetValue<string>("ExternalServiceUrl");
+            _url = configuration.GetValue<string>("ExternalServiceUrl")!;
         }
 
         /// <summary>

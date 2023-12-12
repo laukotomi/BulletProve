@@ -6,7 +6,7 @@ namespace BulletProve.Hooks
     /// <summary>
     /// Hook helper.
     /// </summary>
-    public class HookRunner
+    public class HookRunner : IHookRunner
     {
         private readonly IServiceProvider _services;
         private readonly ITestLogger _logger;
@@ -22,10 +22,7 @@ namespace BulletProve.Hooks
             _logger = logger;
         }
 
-        /// <summary>
-        /// Runs the hooks.
-        /// </summary>
-        /// <param name="methodToRun">The method to run.</param>
+        /// <inheritdoc/>
         public async Task RunHooksAsync<THook>(Func<THook, Task> methodToRun)
             where THook : IHook
         {
