@@ -25,7 +25,7 @@ namespace Example.Api.Services
         public Seeder(AppDbContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
-            _adminPassword = configuration.GetValue<string>("AdminPassword");
+            _adminPassword = configuration.GetValue<string>("AdminPassword")!;
         }
 
         /// <summary>

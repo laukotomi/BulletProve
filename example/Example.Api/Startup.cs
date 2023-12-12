@@ -2,6 +2,7 @@ using Example.Api.Auth;
 using Example.Api.Data;
 using Example.Api.Mapping;
 using Example.Api.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -44,7 +45,7 @@ namespace Example.Api
 
             services
                 .AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthOptions, AuthHandler>("BasicAuthentication", options => { });
+                .AddScheme<AuthenticationSchemeOptions, AuthHandler>("BasicAuthentication", options => { });
 
             services.AddAutoMapper(options =>
             {
