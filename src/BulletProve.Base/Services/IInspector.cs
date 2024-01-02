@@ -3,7 +3,7 @@
     /// <summary>
     /// The inspector.
     /// </summary>
-    public interface IInspector<TInput>
+    public interface IInspector<in TInput>
     {
         /// <summary>
         /// Is item allowed.

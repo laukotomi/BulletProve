@@ -30,13 +30,10 @@ namespace BulletProve.ServerLog
             var logEvent = new TestLogEvent(serverLogEvent.CategoryName, serverLogEvent.Level, serverLogEvent.Message, !serverLogEvent.IsUnexpected, serverLogEvent.Scope);
             var logged = false;
 
-            if (_configurator.MinimumLogLevel <= serverLogEvent.Level)
+            if (_configurator.MinimumLogLevel <= serverLogEvent.Level && IsCategoryAllowed(serverLogEvent))
             {
-                if (_configurator.LoggerCategoryNameInspector.IsAllowed(serverLogEvent.CategoryName))
-                {
-                    _logger.Log(logEvent);
-                    logged = true;
-                }
+                _logger.Log(logEvent);
+                logged = true;
             }
 
             if (serverLogEvent.IsUnexpected && !logged)
@@ -51,6 +48,15 @@ namespace BulletProve.ServerLog
         public bool IsAllowed(ServerLogEvent item)
         {
             return _configurator.ServerLogInspector.IsAllowed(item);
+        }
+
+        /// <summary>
+        /// Is the category allowed.
+        /// </summary>
+        /// <param name="serverLogEvent">The server log event.</param>
+        private bool IsCategoryAllowed(ServerLogEvent serverLogEvent)
+        {
+            return _configurator.LoggerCategoryNameInspector.IsAllowed(serverLogEvent.CategoryName);
         }
     }
 }
