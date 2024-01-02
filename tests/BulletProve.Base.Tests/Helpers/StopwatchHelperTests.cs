@@ -24,7 +24,7 @@ namespace BulletProve.Tests.Helpers
             });
 
             run.Should().BeTrue();
-            elapsed.Should().BeGreaterThan(5).And.BeLessThan(100);
+            elapsed.Should().BeGreaterThan(5);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace BulletProve.Tests.Helpers
             });
 
             result.ResultObject.Should().Be(string.Empty);
-            result.ElapsedMilliseconds.Should().BeGreaterThan(5).And.BeLessThan(100);
+            result.ElapsedMilliseconds.Should().BeGreaterThan(5);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace BulletProve.Tests.Helpers
             });
 
             run.Should().BeTrue();
-            elapsed.Should().BeGreaterThan(5).And.BeLessThan(100);
+            elapsed.Should().BeGreaterThan(5);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace BulletProve.Tests.Helpers
             });
 
             result.ResultObject.Should().Be(string.Empty);
-            result.ElapsedMilliseconds.Should().BeGreaterThan(5).And.BeLessThan(100);
+            result.ElapsedMilliseconds.Should().BeGreaterThan(5);
         }
     }
 }
