@@ -13,8 +13,9 @@ jobs:
 
       - name: Creating packages and uploading them to nuget.org
         run: |
-          dotnet pack .\src\LTest\LTest.csproj -c Release -o nupkgs -p:Version=${{ github.event.inputs.version }}
-          dotnet pack .\src\LTest.Http\LTest.Http.csproj -c Release -o nupkgs -p:Version=${{ github.event.inputs.version }}
-          dotnet pack .\src\LTest.EfCore\LTest.EfCore.csproj -c Release -o nupkgs -p:Version=${{ github.event.inputs.version }}
+          dotnet pack .\src\BulletProve.Base\BulletProve.Base.csproj -c Release -o nupkgs -p:Version=${{ github.event.inputs.version }}
+          dotnet pack .\src\BulletProve.EfCore\BulletProve.EfCore.csproj -c Release -o nupkgs -p:Version=${{ github.event.inputs.version }}
+          dotnet pack .\src\BulletProve.Http\BulletProve.Http.csproj -c Release -o nupkgs -p:Version=${{ github.event.inputs.version }}
+          dotnet pack .\src\BulletProve.XUnit\BulletProve.XUnit.csproj -c Release -o nupkgs -p:Version=${{ github.event.inputs.version }}
           cd nupkgs
           nuget push *.nupkg ${{ secrets.NUGET_KEY }} -Source https://api.nuget.org/v3/index.json
