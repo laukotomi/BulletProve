@@ -1,6 +1,6 @@
+using BulletProve.Base.Configuration;
 using BulletProve.Base.TestServer;
 using BulletProve.Exceptions;
-using BulletProve.TestServer;
 
 namespace BulletProve
 {
@@ -34,7 +34,7 @@ namespace BulletProve
         }
 
         /// <inheritdoc />
-        public void RegisterServer<TStartup>(string serverName, Action<ServerConfigurator>? configAction = null)
+        public void RegisterServer<TStartup>(string serverName, Action<IServerConfigurator>? configAction = null)
             where TStartup : class
         {
             if (string.IsNullOrWhiteSpace(serverName))

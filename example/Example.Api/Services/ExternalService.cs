@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,12 +48,8 @@ namespace Example.Api.Services
         public async Task<bool> IsUserCorrectAsync(string username, CancellationToken cancellationToken)
         {
             var result = await _httpClient.GetAsync(_url, cancellationToken);
-            if (result != null)
-            {
-                return true;
-            }
 
-            return false;
+            return result.StatusCode == HttpStatusCode.OK;
         }
     }
 }

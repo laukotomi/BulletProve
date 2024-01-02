@@ -1,6 +1,6 @@
-﻿using BulletProve.Logging;
+﻿using BulletProve.Base.Configuration;
+using BulletProve.Logging;
 using BulletProve.ServerLog;
-using BulletProve.TestServer;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -17,7 +17,7 @@ namespace BulletProve.Tests.ServerLog
         /// </summary>
         private const string Category = "Category";
 
-        private readonly ServerConfigurator _configurator;
+        private readonly LoggerConfigurator _configurator;
         private readonly ITestLogger _logger;
         private readonly IServerLogCollector _serverLogCollector;
         private readonly DefaultServerLogHandler _sut;
@@ -27,7 +27,7 @@ namespace BulletProve.Tests.ServerLog
         /// </summary>
         public DefaultServerLogHandler_Tests()
         {
-            _configurator = new ServerConfigurator();
+            _configurator = new LoggerConfigurator();
             _logger = Substitute.For<ITestLogger>();
             _serverLogCollector = Substitute.For<IServerLogCollector>();
             _sut = new DefaultServerLogHandler(_configurator, _logger, _serverLogCollector);
@@ -55,7 +55,7 @@ namespace BulletProve.Tests.ServerLog
         public void TestHandleServerLogMinimumLogLevel()
         {
             _configurator.LoggerCategoryNameInspector.AddDefaultAllowedAction(x => x == Category, string.Empty);
-            _configurator.MinimumLogLevel = LogLevel.Warning;
+            _configurator.SetMinimumLogLevel(LogLevel.Warning);
 
             var logEvent = new ServerLogEvent(Category, LogLevel.Warning, new EventId(), "Message", null, null);
             _sut.HandleServerLog(logEvent);
@@ -73,7 +73,7 @@ namespace BulletProve.Tests.ServerLog
         public void TestHandleServerLogCategoryName()
         {
             _configurator.LoggerCategoryNameInspector.AddDefaultAllowedAction(x => x == Category, string.Empty);
-            _configurator.MinimumLogLevel = LogLevel.Warning;
+            _configurator.SetMinimumLogLevel(LogLevel.Warning);
 
             var logEvent = new ServerLogEvent(Category, LogLevel.Warning, new EventId(), "Message", null, null);
             _sut.HandleServerLog(logEvent);
@@ -91,7 +91,7 @@ namespace BulletProve.Tests.ServerLog
         public void TestHandleServerLogUnexpected()
         {
             _configurator.LoggerCategoryNameInspector.AddDefaultAllowedAction(x => x == Category, string.Empty);
-            _configurator.MinimumLogLevel = LogLevel.Warning;
+            _configurator.SetMinimumLogLevel(LogLevel.Warning);
 
             var logEvent = new ServerLogEvent(Category + "A", LogLevel.Information, new EventId(), "Message", null, null)
             {
@@ -109,7 +109,7 @@ namespace BulletProve.Tests.ServerLog
         public void TestHandleServerLogAddServerLog()
         {
             _configurator.LoggerCategoryNameInspector.AddDefaultAllowedAction(x => x == Category, string.Empty);
-            _configurator.MinimumLogLevel = LogLevel.Warning;
+            _configurator.SetMinimumLogLevel(LogLevel.Warning);
 
             var logEvent = new ServerLogEvent(Category + "A", LogLevel.Information, new EventId(), "Message", null, null);
             _sut.HandleServerLog(logEvent);

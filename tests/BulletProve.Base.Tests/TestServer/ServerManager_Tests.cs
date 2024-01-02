@@ -1,6 +1,5 @@
 ﻿using BulletProve.Exceptions;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 
 namespace BulletProve.Tests.TestServer
 {
@@ -25,7 +24,7 @@ namespace BulletProve.Tests.TestServer
         [Fact]
         public void TestRegisterServer()
         {
-            _sut.RegisterServer<MyServer>("name", x => x.MinimumLogLevel = LogLevel.Error);
+            _sut.RegisterServer<MyServer>("name", x => { });
 
             var server = _sut.GetServer("name");
             server.Should().NotBeNull();

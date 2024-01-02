@@ -1,7 +1,6 @@
-﻿using BulletProve.EfCore.Hooks;
+﻿using BulletProve.Base.Configuration;
+using BulletProve.EfCore.Configuration;
 using BulletProve.EfCore.Services;
-using BulletProve.Hooks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BulletProve
@@ -11,33 +10,23 @@ namespace BulletProve
     /// </summary>
     public static class DependencyInjection
     {
-        private static bool _servicesRegistered;
-
         /// <summary>
-        /// Adds clean database hook for a DbContext.
+        /// Adds the BulletProve.EfCore package.
         /// </summary>
-        /// <param name="services">IServiceCollection.</param>
-        public static IServiceCollection AddCleanDatabaseHook<TDbContext>(this IServiceCollection services)
-            where TDbContext : DbContext
+        /// <param name="configurator">The configurator.</param>
+        /// <param name="configAction">The config action.</param>
+        public static IServerConfigurator AddBulletProveEfCore(this IServerConfigurator configurator, Action<EfCoreConfiguration> configAction)
         {
-            RegisterServices(services);
-            services.AddScoped<IBeforeTestHook, CleanDatabaseHook<TDbContext>>();
+            configurator.ConfigureTestServices(services =>
+            {
+                services.AddSingleton<IDatabaseCleanupService, DatabaseCleanupService>();
+                services.AddSingleton<ISqlExecutor, SqlExecutor>();
 
-            return services;
-        }
+                var configuration = new EfCoreConfiguration(services);
+                configAction(configuration);
+            });
 
-        /// <summary>
-        /// Registers the services.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        private static void RegisterServices(IServiceCollection services)
-        {
-            if (_servicesRegistered)
-                return;
-
-            services.AddSingleton<IDatabaseCleanupService, DatabaseCleanupService>();
-            services.AddSingleton<ISqlExecutor, SqlExecutor>();
-            _servicesRegistered = true;
+            return configurator;
         }
     }
 }

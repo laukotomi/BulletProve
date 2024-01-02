@@ -1,4 +1,4 @@
-using BulletProve.Hooks;
+using BulletProve.Base.Hooks;
 using Microsoft.Extensions.Logging;
 
 namespace BulletProve.Logging

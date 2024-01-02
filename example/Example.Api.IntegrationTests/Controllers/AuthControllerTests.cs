@@ -1,10 +1,4 @@
-﻿using BulletProve;
-using Example.Api.Controllers;
-using Example.Api.IntegrationTests.Extensions;
-using FluentAssertions;
-using System.Net;
-using System.Threading.Tasks;
-using Xunit.Abstractions;
+﻿using Example.Api.Controllers;
 
 namespace Example.Api.IntegrationTests.Controllers
 {
@@ -19,23 +13,13 @@ namespace Example.Api.IntegrationTests.Controllers
     public class AuthControllerTests(ServerManager serverManager, ITestOutputHelper output)
         : TestBase(serverManager, output)
     {
-
         /// <summary>
         /// Whens the credentials are ok then token returned.
         /// </summary>
         [Fact]
         public async Task WhenCredentialsAreOk_ThenTokenReturned()
         {
-            var token = await Server
-                .HttpRequestFor<AuthController>(x => x.LoginAsync)
-                .SetJsonContent(new AuthController.LoginCommand
-                {
-                    Username = TestConstants.AdminUsername,
-                    Password = TestConstants.AdminPassword,
-                })
-                .ExecuteSuccessAsync<string>();
-
-            token.Should().NotBeNullOrEmpty();
+            var token = await LoginAsAdminAndGetTokenAsync(Server);
 
             using var response = await Server
                 .HttpRequestFor<UserController>(x => x.GetUserDataAsync)
@@ -54,7 +38,7 @@ namespace Example.Api.IntegrationTests.Controllers
                 .SetJsonContent(new AuthController.LoginCommand
                 {
                     Username = TestConstants.AdminUsername,
-                    Password = "Badadd",
+                    Password = TestConstants.AdminBadPassword
                 })
                 .AddAllowedServerLogEvent(x => x.Message == "Wrong username or password")
                 .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);

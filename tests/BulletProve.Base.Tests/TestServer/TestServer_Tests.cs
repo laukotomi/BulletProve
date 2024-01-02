@@ -1,9 +1,9 @@
-﻿using BulletProve.Exceptions;
-using BulletProve.Hooks;
+﻿using BulletProve.Base.Configuration;
+using BulletProve.Base.Hooks;
+using BulletProve.Exceptions;
 using BulletProve.Logging;
 using BulletProve.ServerLog;
 using BulletProve.Services;
-using BulletProve.TestServer;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -37,9 +37,12 @@ namespace BulletProve.Base.Tests.TestServer
 
             _sut = new TestTestServer(x =>
             {
-                x.MinimumLogLevel = LogLevel.Error;
-                x.AddAppSetting("key", "value");
-                x.AddJsonConfigurationFile("AppConfig.json");
+                x.ConfigureLogger(logger =>
+                {
+                    logger.SetMinimumLogLevel(LogLevel.Error);
+                });
+                x.UseAppSetting("key", "value");
+                x.UseJsonConfigurationFile("AppConfig.json");
                 x.ConfigureTestServices(services =>
                 {
                     services.AddSingleton<IAfterServerStartedHook>(_hooks);
@@ -64,13 +67,13 @@ namespace BulletProve.Base.Tests.TestServer
             _configurator!.AppSettings.Should().ContainKey("https_port");
             _configurator.AppSettings["https_port"].Should().Be("443");
             _configurator.ServiceConfigurators.Count.Should().Be(2);
-            _configurator.LoggerCategoryNameInspector
+            _configurator.LoggerConfigurator.LoggerCategoryNameInspector
                 .IsAllowed(typeof(Startup).Namespace!)
                 .Should().BeTrue();
-            _configurator.ServerLogInspector
+            _configurator.LoggerConfigurator.ServerLogInspector
                 .IsAllowed(new ServerLogEvent("cat", LogLevel.Warning, new EventId(), "msg", null, null))
                 .Should().BeFalse();
-            _configurator.MinimumLogLevel.Should().Be(LogLevel.Error);
+            _configurator.LoggerConfigurator.MinimumLogLevel.Should().Be(LogLevel.Error);
 
             // Assert StartServer
             Startup.ConfigureCalled.Should().BeTrue();

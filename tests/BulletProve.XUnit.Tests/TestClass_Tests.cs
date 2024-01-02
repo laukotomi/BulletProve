@@ -1,4 +1,4 @@
-﻿using BulletProve.TestServer;
+﻿using BulletProve.Base.Configuration;
 using FluentAssertions;
 using NSubstitute;
 using Xunit.Abstractions;

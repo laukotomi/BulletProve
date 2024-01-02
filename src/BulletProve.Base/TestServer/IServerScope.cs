@@ -1,7 +1,7 @@
-﻿using BulletProve.Logging;
+﻿using BulletProve.Base.Configuration;
+using BulletProve.Logging;
 using BulletProve.ServerLog;
 using BulletProve.Services;
-using BulletProve.TestServer;
 
 namespace BulletProve
 {

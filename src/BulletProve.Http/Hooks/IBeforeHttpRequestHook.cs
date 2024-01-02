@@ -1,4 +1,4 @@
-﻿using BulletProve.Hooks;
+﻿using BulletProve.Base.Hooks;
 using BulletProve.Http.Models;
 
 namespace BulletProve.Http.Interfaces

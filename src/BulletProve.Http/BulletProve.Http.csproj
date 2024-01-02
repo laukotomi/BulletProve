@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
 		<Description>BulletProve is an extension to the Microsoft's ASP.NET Core integration test package with useful features.</Description>
 		<Authors>laukotomi</Authors>
 		<Copyright>Copyright (c) laukotomi 2023</Copyright>

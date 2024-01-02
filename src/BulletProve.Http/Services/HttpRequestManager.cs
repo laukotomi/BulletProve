@@ -1,6 +1,6 @@
-﻿using BulletProve.Exceptions;
+﻿using BulletProve.Base.Hooks;
+using BulletProve.Exceptions;
 using BulletProve.Helpers;
-using BulletProve.Hooks;
 using BulletProve.Http.Configuration;
 using BulletProve.Http.Helpers;
 using BulletProve.Http.Interfaces;
@@ -14,19 +14,13 @@ namespace BulletProve.Http.Services
     /// <summary>
     /// The http request manager.
     /// </summary>
-    public class HttpRequestManager : IHttpRequestManager, IServerLogHandler
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="HttpRequestManager"/> class.
+    /// </remarks>
+    /// <param name="hookRunner">The hook runner.</param>
+    public class HttpRequestManager(IHookRunner hookRunner) : IHttpRequestManager, IServerLogHandler
     {
-        private readonly ConcurrentDictionary<string, HttpRequestContext> _activeRequests = new();
-        private readonly IHookRunner _hookRunner;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HttpRequestManager"/> class.
-        /// </summary>
-        /// <param name="hookRunner">The hook runner.</param>
-        public HttpRequestManager(IHookRunner hookRunner)
-        {
-            _hookRunner = hookRunner;
-        }
+        private readonly ConcurrentDictionary<string, HttpRequestContext> _activeRequests = [];
 
         /// <inheritdoc/>
         public async Task<HttpResponseMessage> ExecuteRequestAsync(HttpRequestContext context, IServerScope scope)
@@ -36,19 +30,19 @@ namespace BulletProve.Http.Services
             if (!_activeRequests.TryAdd(label, context))
                 throw new BulletProveException($"A request with label '{label}' has already been started");
 
-            await _hookRunner.RunHooksAsync<IBeforeHttpRequestHook>(x => x.BeforeHttpRequestAsync(context));
+            await hookRunner.RunHooksAsync<IBeforeHttpRequestHook>(async x => await x.BeforeHttpRequestAsync(context));
 
             var httpClient = scope.HttpClient;
             var httpConfiguration = scope.GetRequiredService<HttpConfiguration>();
             scope.Logger.LogInformation(LogHelper.CreateRequestLog(context.Request, httpClient, httpConfiguration));
 
-            var result = await StopwatchHelper.MeasureAsync(() => httpClient.SendAsync(context.Request));
+            var result = await StopwatchHelper.MeasureAsync(async () => await httpClient.SendAsync(context.Request));
             var response = result.ResultObject;
 
             _activeRequests.TryRemove(label, out var _);
             scope.DisposableCollector.Add(response);
 
-            await _hookRunner.RunHooksAsync<IAfterHttpRequestHook>(x => x.AfterHttpRequestAsync(context));
+            await hookRunner.RunHooksAsync<IAfterHttpRequestHook>(async x => await x.AfterHttpRequestAsync(context, response));
 
             context.Request.Dispose();
 

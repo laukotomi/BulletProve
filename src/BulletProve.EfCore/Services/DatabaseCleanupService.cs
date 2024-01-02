@@ -7,25 +7,19 @@ namespace BulletProve.EfCore.Services
     /// <summary>
     /// Cleans up database.
     /// </summary>
-    public class DatabaseCleanupService : IDatabaseCleanupService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="DatabaseCleanupService"/> class.
+    /// </remarks>
+    /// <param name="sqlExecutor">The sql executor.</param>
+    public class DatabaseCleanupService(ISqlExecutor sqlExecutor) : IDatabaseCleanupService
     {
         private readonly TopologicalSortService _topologicalSortService = new();
-        private readonly ISqlExecutor _sqlExecutor;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DatabaseCleanupService"/> class.
-        /// </summary>
-        /// <param name="sqlExecutor">The sql executor.</param>
-        public DatabaseCleanupService(ISqlExecutor sqlExecutor)
-        {
-            _sqlExecutor = sqlExecutor;
-        }
 
         /// <inheritdoc/>
         public Task CleanupAsync(DbContext context)
         {
             var sql = GenerateCleaningSql(context);
-            return _sqlExecutor.ExecuteAsync(context, sql);
+            return sqlExecutor.ExecuteAsync(context, sql);
         }
 
         /// <summary>

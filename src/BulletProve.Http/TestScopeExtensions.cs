@@ -24,11 +24,7 @@ namespace BulletProve
             var controllerType = typeof(TController);
             var actionName = GetActionName(actionSelector);
 
-            var action = controllerType.GetMethod(actionName);
-            if (action == null)
-            {
-                throw new BulletProveException($"Action '{actionName}' in controller '{controllerType.Name}' can not be found!");
-            }
+            var action = controllerType.GetMethod(actionName) ?? throw new BulletProveException($"Action '{actionName}' in controller '{controllerType.Name}' can not be found!");
 
             var httpMethodService = serviceProvider.GetRequiredService<HttpMethodService>();
             var method = httpMethodService.GetHttpMethodForAction(action);

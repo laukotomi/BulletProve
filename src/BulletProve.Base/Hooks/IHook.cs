@@ -1,4 +1,4 @@
-﻿namespace BulletProve.Hooks
+﻿namespace BulletProve.Base.Hooks
 {
     /// <summary>
     /// Base interface for hooks.

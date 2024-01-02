@@ -1,7 +1,7 @@
 ﻿using BulletProve.Http.Services;
 using Microsoft.Net.Http.Headers;
 
-namespace Example.Api.IntegrationTests.Extensions
+namespace Example.Api.IntegrationTests
 {
     /// <summary>
     /// The http request builder extensions.

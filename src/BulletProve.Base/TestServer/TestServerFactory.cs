@@ -1,4 +1,4 @@
-﻿using BulletProve.TestServer;
+﻿using BulletProve.Base.Configuration;
 
 namespace BulletProve.Base.TestServer
 {

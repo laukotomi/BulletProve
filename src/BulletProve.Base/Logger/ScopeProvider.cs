@@ -1,4 +1,4 @@
-﻿using BulletProve.Hooks;
+﻿using BulletProve.Base.Hooks;
 using System.Collections.Concurrent;
 
 namespace BulletProve.Logging

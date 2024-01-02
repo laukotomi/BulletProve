@@ -1,8 +1,7 @@
-﻿using BulletProve.Base.TestServer;
+﻿using BulletProve.Base.Configuration;
 using BulletProve.Logging;
 using BulletProve.ServerLog;
 using BulletProve.Services;
-using BulletProve.TestServer;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 

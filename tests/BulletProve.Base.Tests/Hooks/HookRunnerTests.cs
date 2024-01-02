@@ -1,4 +1,4 @@
-﻿using BulletProve.Hooks;
+﻿using BulletProve.Base.Hooks;
 using BulletProve.Logging;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +26,7 @@ namespace BulletProve.Tests.Hooks
             var sp = collection.BuildServiceProvider();
 
             var sut = new HookRunner(sp, Substitute.For<ITestLogger>());
-            await sut.RunHooksAsync<TestHook>(x => x.RunMethod());
+            await sut.RunHooksAsync<TestHook>(async x => await x.RunMethod());
 
             hooks.Should().AllSatisfy(x => x.Run.Should().BeTrue());
         }

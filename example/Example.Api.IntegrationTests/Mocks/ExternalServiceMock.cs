@@ -1,6 +1,5 @@
 ﻿using Example.Api.Services;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Example.Api.IntegrationTests.Mocks
 {

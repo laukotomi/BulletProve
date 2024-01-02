@@ -1,3 +1,4 @@
+using BulletProve.Base.Configuration;
 using BulletProve.Http.Configuration;
 using BulletProve.Http.Filters;
 using BulletProve.Http.Services;
@@ -13,26 +14,30 @@ namespace BulletProve
     public static class DependencyInjection
     {
         /// <summary>
-        /// Adds services for Http testing.
+        /// Adds the BulletProve.HTTP services.
         /// </summary>
-        /// <param name="services">IServiceCollection.</param>
-        /// <param name="configAction">Configuration action.</param>
-        public static IServiceCollection AddTestHttp(this IServiceCollection services, Action<HttpConfiguration>? configAction = null)
+        /// <param name="configurator">The configurator.</param>
+        /// <param name="configAction">The config action.</param>
+        /// <returns>An IServerConfigurator.</returns>
+        public static IServerConfigurator AddBulletProveHttp(this IServerConfigurator configurator, Action<HttpConfiguration>? configAction = null)
         {
             var config = new HttpConfiguration();
             configAction?.Invoke(config);
 
-            services.AddSingleton(config);
-            services.AddSingleton<HttpMethodService>();
-            services.AddSingleton<ILinkGeneratorService, LinkGeneratorService>();
-            services.AddSingleton<IHttpRequestManager, HttpRequestManager>();
-            services.AddScoped<LabelGeneratorService>();
-            services.AddSingleton<IServerLogHandler, HttpRequestManager>(sp => (HttpRequestManager)sp.GetRequiredService<IHttpRequestManager>());
+            configurator.ConfigureTestServices(services =>
+            {
+                services.AddSingleton(config);
+                services.AddSingleton<HttpMethodService>();
+                services.AddSingleton<ILinkGeneratorService, LinkGeneratorService>();
+                services.AddSingleton<IHttpRequestManager, HttpRequestManager>();
+                services.AddScoped<LabelGeneratorService>();
+                services.AddSingleton<IServerLogHandler, HttpRequestManager>(sp => (HttpRequestManager)sp.GetRequiredService<IHttpRequestManager>());
 
-            services.AddTransient<IStartupFilter, HttpRequestFilter>();
-            services.AddTransient(typeof(IAssertionBuilder<>), typeof(AssertionBuilder<>));
+                services.AddTransient<IStartupFilter, HttpRequestFilter>();
+                services.AddTransient(typeof(IAssertionBuilder<>), typeof(AssertionBuilder<>));
+            });
 
-            return services;
+            return configurator;
         }
     }
 }

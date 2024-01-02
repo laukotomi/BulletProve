@@ -1,9 +1,8 @@
-﻿using BulletProve.TestServer;
+﻿using BulletProve.Base.Configuration;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
-namespace BulletProve.Tests.TestServer
+namespace BulletProve.Base.Tests.Configuration
 {
     /// <summary>
     /// The server configurator tests.
@@ -29,9 +28,7 @@ namespace BulletProve.Tests.TestServer
             _sut.AppSettings.Should().NotBeNull().And.HaveCount(0);
             _sut.HttpClientOptions.BaseAddress.ToString().Should().Be("https://localhost/");
             _sut.JsonConfigurationFiles.Should().NotBeNull().And.HaveCount(0);
-            _sut.LoggerCategoryNameInspector.Should().NotBeNull();
-            _sut.MinimumLogLevel.Should().Be(LogLevel.Information);
-            _sut.ServerLogInspector.Should().NotBeNull();
+            _sut.LoggerConfigurator.Should().NotBeNull();
             _sut.ServiceConfigurators.Should().NotBeNull().And.HaveCount(0);
         }
 
@@ -41,7 +38,7 @@ namespace BulletProve.Tests.TestServer
         [Fact]
         public void TestAddAppSetting()
         {
-            _sut.AddAppSetting("key", "value");
+            _sut.UseAppSetting("key", "value");
 
             _sut.AppSettings.Should().HaveCount(1);
             _sut.AppSettings.Should().ContainKey("key");
@@ -54,22 +51,10 @@ namespace BulletProve.Tests.TestServer
         [Fact]
         public void TestAddJsonConfigurationFile()
         {
-            _sut.AddJsonConfigurationFile("file.json");
+            _sut.UseJsonConfigurationFile("file.json");
 
             _sut.JsonConfigurationFiles.Should().HaveCount(1);
             _sut.JsonConfigurationFiles[0].Should().Be("file.json");
-        }
-
-        /// <summary>
-        /// Tests the configure server log inspector.
-        /// </summary>
-        [Fact]
-        public void TestConfigureServerLogInspector()
-        {
-            _sut.ConfigureServerLogInspector(x => x.AddAllowedAction(le => le.CategoryName == "aaa"));
-
-            var isAllowed = _sut.ServerLogInspector.IsAllowed(new BulletProve.ServerLog.ServerLogEvent("aaa", LogLevel.Information, new EventId(), string.Empty, null, null));
-            isAllowed.Should().BeTrue();
         }
 
         /// <summary>
@@ -81,28 +66,6 @@ namespace BulletProve.Tests.TestServer
             _sut.ConfigureTestServices(x => x.AddSingleton<string>());
 
             _sut.ServiceConfigurators.Should().HaveCount(1);
-        }
-
-        /// <summary>
-        /// Tests the configure logger category name inspector.
-        /// </summary>
-        [Fact]
-        public void TestConfigureLoggerCategoryNameInspector()
-        {
-            _sut.ConfigureLoggerCategoryNameInspector(x => x.AddAllowedAction(cn => cn == "aaa"));
-
-            var isAllowed = _sut.LoggerCategoryNameInspector.IsAllowed("aaa");
-            isAllowed.Should().BeTrue();
-        }
-
-        /// <summary>
-        /// Tests the set minimum log level.
-        /// </summary>
-        [Fact]
-        public void TestSetMinimumLogLevel()
-        {
-            _sut.SetMinimumLogLevel(LogLevel.Error);
-            _sut.MinimumLogLevel.Should().Be(LogLevel.Error);
         }
 
         /// <summary>

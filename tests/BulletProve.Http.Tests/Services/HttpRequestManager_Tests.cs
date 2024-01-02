@@ -1,4 +1,5 @@
-﻿using BulletProve.Hooks;
+﻿using BulletProve.Base.Configuration;
+using BulletProve.Base.Hooks;
 using BulletProve.Http.Configuration;
 using BulletProve.Http.Interfaces;
 using BulletProve.Http.Models;
@@ -6,7 +7,6 @@ using BulletProve.Http.Services;
 using BulletProve.Logging;
 using BulletProve.ServerLog;
 using BulletProve.Services;
-using BulletProve.TestServer;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

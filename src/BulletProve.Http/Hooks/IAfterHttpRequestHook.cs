@@ -1,4 +1,4 @@
-﻿using BulletProve.Hooks;
+﻿using BulletProve.Base.Hooks;
 using BulletProve.Http.Models;
 
 namespace BulletProve.Http.Interfaces
@@ -12,6 +12,7 @@ namespace BulletProve.Http.Interfaces
         /// Will be run after server Http request was sent.
         /// </summary>
         /// <param name="context">Http request context.</param>
-        Task AfterHttpRequestAsync(HttpRequestContext context);
+        /// <param name="response">The HTTP response object.</param>
+        Task AfterHttpRequestAsync(HttpRequestContext context, HttpResponseMessage response);
     }
 }

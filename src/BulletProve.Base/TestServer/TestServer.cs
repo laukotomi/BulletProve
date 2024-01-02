@@ -1,10 +1,10 @@
+using BulletProve.Base.Configuration;
+using BulletProve.Base.Hooks;
 using BulletProve.Exceptions;
 using BulletProve.Helpers;
-using BulletProve.Hooks;
 using BulletProve.Logging;
 using BulletProve.ServerLog;
 using BulletProve.Services;
-using BulletProve.TestServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -29,7 +29,8 @@ namespace BulletProve
         private readonly TestLogger _logger;
 
         private string? _serverName;
-        private ServerConfigurator _configurator = null!;
+        private LoggerConfigurator _loggerConfigurator = null!;
+        private ServerConfigurator _serverConfigurator = null!;
         private HttpClient _httpClient = null!;
         private ServerScope _scope = null!;
         private IHookRunner _hookRunner = null!;
@@ -59,7 +60,7 @@ namespace BulletProve
 
             if (started)
             {
-                await _hookRunner.RunHooksAsync<IAfterServerStartedHook>(x => x.AfterServerStartedAsync());
+                await _hookRunner.RunHooksAsync<IAfterServerStartedHook>(async x => await x.AfterServerStartedAsync());
             }
             else
             {
@@ -67,7 +68,7 @@ namespace BulletProve
                 _logger.LogInformation("Server is already running");
             }
 
-            await _hookRunner.RunHooksAsync<IBeforeTestHook>(x => x.BeforeTestAsync());
+            await _hookRunner.RunHooksAsync<IBeforeTestHook>(async x => await x.BeforeTestAsync());
 
             _isInitialized = true;
             return _scope;
@@ -81,7 +82,7 @@ namespace BulletProve
 
             try
             {
-                await _hookRunner.RunHooksAsync<IAfterTestHook>(x => x.AfterTestAsync());
+                await _hookRunner.RunHooksAsync<IAfterTestHook>(async x => await x.AfterTestAsync());
 
                 FlushLogger(output);
 
@@ -97,7 +98,7 @@ namespace BulletProve
                     throw new BulletProveException("Unexpected log occured on server side. Check the logs!");
                 }
 
-                await _hookRunner.RunHooksAsync<ICleanUpHook>(x => x.CleanUpAsync());
+                await _hookRunner.RunHooksAsync<ICleanUpHook>(async x => await x.CleanUpAsync());
             }
             finally
             {
@@ -115,12 +116,13 @@ namespace BulletProve
                 return false;
 
             _serverName = serverName;
-            _configurator = InitConfigurator();
-            _configAction?.Invoke(_configurator);
+            _serverConfigurator = InitConfigurator();
+            _loggerConfigurator = _serverConfigurator.LoggerConfigurator;
+            _configAction?.Invoke(_serverConfigurator);
 
             using var scope = _logger.Scope(serverName);
             _logger.LogInformation("Starting server");
-            var result = StopwatchHelper.Measure(() => CreateClient(_configurator.HttpClientOptions));
+            var result = StopwatchHelper.Measure(() => CreateClient(_serverConfigurator.HttpClientOptions));
             _logger.LogInformation($"Server started ({result.ElapsedMilliseconds} ms)");
 
             _httpClient = result.ResultObject;
@@ -165,8 +167,12 @@ namespace BulletProve
                     var unexpected = logEvent.IsExpected ? ' ' : 'U';
                     var level = logEvent.Level.ToString()[0];
                     var indent = new string(' ', logEvent.Scope == null ? 0 : logEvent.Scope.Level * 2);
+                    var message = logEvent.Message.Replace(Environment.NewLine, $"{Environment.NewLine}     {indent}");
 
-                    output.WriteLine($"{prefix}{unexpected}{level}: {indent}{logEvent.Message}");
+                    if (_loggerConfigurator.LogCategoryNames)
+                        output.WriteLine($"{prefix}{unexpected}{level}: {indent}{message} - {logEvent.Category}");
+                    else
+                        output.WriteLine($"{prefix}{unexpected}{level}: {indent}{message}");
                 }
 
                 output.WriteLine(string.Empty);
@@ -190,10 +196,13 @@ namespace BulletProve
             if (scope.IsHelperScope)
                 return;
 
-            if (_configurator.LoggerCategoryNameInspector.IsAllowed(scope.Category))
+            if (_loggerConfigurator.LoggerCategoryNameInspector.IsAllowed(scope.Category))
             {
                 var indent = new string(' ', scope.Level * 2);
-                output.WriteLine($"SCO: {indent}{scope}");
+                if (_loggerConfigurator.LogCategoryNames)
+                    output.WriteLine($"SCO: {indent}{scope} - {scope.Category}");
+                else
+                    output.WriteLine($"SCO: {indent}{scope}");
             }
 
             checkedScopes.Add(scope);
@@ -202,19 +211,19 @@ namespace BulletProve
         /// <inheritdoc />
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            foreach (var (key, value) in _configurator.AppSettings)
+            foreach (var (key, value) in _serverConfigurator.AppSettings)
             {
                 builder.UseSetting(key, value);
             }
 
-            if (_configurator.JsonConfigurationFiles.Count > 0)
+            if (_serverConfigurator.JsonConfigurationFiles.Count > 0)
             {
                 builder.ConfigureAppConfiguration((_, config) =>
                 {
                     var root = Directory.GetCurrentDirectory();
                     var fileProvider = new PhysicalFileProvider(root);
 
-                    foreach (var file in _configurator.JsonConfigurationFiles)
+                    foreach (var file in _serverConfigurator.JsonConfigurationFiles)
                     {
                         config.AddJsonFile(fileProvider, file, false, false);
                     }
@@ -230,7 +239,7 @@ namespace BulletProve
 
             builder.ConfigureTestServices(services =>
             {
-                foreach (var serviceConfigurator in _configurator.ServiceConfigurators)
+                foreach (var serviceConfigurator in _serverConfigurator.ServiceConfigurators)
                 {
                     serviceConfigurator(services);
                 }
@@ -245,8 +254,11 @@ namespace BulletProve
         /// <param name="services">The services.</param>
         private void RegisterTestServices(IServiceCollection services)
         {
+            var loggerConfigurator = _serverConfigurator.LoggerConfigurator;
+
             // Configuration
-            services.AddSingleton(_configurator);
+            services.AddSingleton(_serverConfigurator);
+            services.AddSingleton(loggerConfigurator);
 
             // Logger
             services.AddSingleton(_scopeProvider);
@@ -259,7 +271,6 @@ namespace BulletProve
 
             // Hooks
             services.AddTransient<IHookRunner, HookRunner>();
-            services.AddSingleton<ICleanUpHook>(_configurator.ServerLogInspector);
         }
 
         /// <summary>
@@ -293,27 +304,31 @@ namespace BulletProve
         /// </summary>
         private ServerConfigurator InitConfigurator()
         {
-            var configurator = new ServerConfigurator()
-                .AddAppSetting("https_port", "443")
+            var configurator = new ServerConfigurator();
+
+            configurator
+                .UseAppSetting("https_port", "443")
                 .ConfigureTestServices(services =>
                 {
                     RegisterTestServices(services);
-                });
-
-            var appName = GetAppName();
-            if (!string.IsNullOrWhiteSpace(appName))
-            {
-                configurator.ConfigureLoggerCategoryNameInspector(inspector =>
+                })
+                .ConfigureLogger(logger =>
                 {
-                    inspector.AddDefaultAllowedAction(x => x.StartsWith(appName, StringComparison.OrdinalIgnoreCase), "AppName");
-                    inspector.AddDefaultAllowedAction(x => x == TestLogger.Category, "TestLogger");
-                });
-            }
+                    var appName = GetAppName();
+                    if (!string.IsNullOrWhiteSpace(appName))
+                    {
+                        logger.ConfigureAllowedLoggerCategoryNames(inspector =>
+                        {
+                            inspector.AddDefaultAllowedAction(x => x.StartsWith(appName, StringComparison.OrdinalIgnoreCase), "AppName");
+                            inspector.AddDefaultAllowedAction(x => x == TestLogger.Category, "TestLogger");
+                        });
+                    }
 
-            configurator.ConfigureServerLogInspector(inspector =>
-            {
-                inspector.AddDefaultAllowedAction(logEvent => logEvent.Level < LogLevel.Warning, "LogLevelBelowWarning");
-            });
+                    logger.ConfigureServerLogInspector(inspector =>
+                    {
+                        inspector.AddDefaultAllowedAction(logEvent => logEvent.Level < LogLevel.Warning, "LogLevelBelowWarning");
+                    });
+                });
 
             return configurator;
         }

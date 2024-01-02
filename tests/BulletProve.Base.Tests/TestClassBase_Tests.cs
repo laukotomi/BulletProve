@@ -1,5 +1,5 @@
-﻿using BulletProve.Exceptions;
-using BulletProve.TestServer;
+﻿using BulletProve.Base.Configuration;
+using BulletProve.Exceptions;
 using FluentAssertions;
 using NSubstitute;
 

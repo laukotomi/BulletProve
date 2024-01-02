@@ -14,5 +14,10 @@
         /// The admin password.
         /// </summary>
         public const string AdminPassword = "Admin";
+
+        /// <summary>
+        /// The bad admin password.
+        /// </summary>
+        public const string AdminBadPassword = "BadPwd";
     }
 }

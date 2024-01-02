@@ -1,13 +1,9 @@
-﻿using BulletProve;
-using BulletProve.Hooks;
-using Example.Api.Controllers;
+﻿using Example.Api.Controllers;
 using Example.Api.Data;
 using Example.Api.IntegrationTests.Hooks;
 using Example.Api.IntegrationTests.Mocks;
 using Example.Api.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
-using Xunit.Abstractions;
 
 namespace Example.Api.IntegrationTests
 {
@@ -40,17 +36,21 @@ namespace Example.Api.IntegrationTests
         {
             serverRegistrator.RegisterServer<Startup>(DefaultServer, config =>
             {
+                config.AddBulletProveHttp();
+
+                config.AddBulletProveEfCore(efCore => efCore.CleanDatabase<AppDbContext, SeedDatabase>());
+
+                config.ConfigureLogger(logger =>
+                {
+                    logger.ConfigureAllowedLoggerCategoryNames(inspector =>
+                    {
+                        inspector.AddDefaultAllowedAction(x => x.StartsWith("Microsoft.EntityFrameworkCore"), "EfCore");
+                    });
+                });
+
                 config.ConfigureTestServices(services =>
                 {
-                    // Hooks
-                    services.AddCleanDatabaseHook<AppDbContext>();
-                    services.AddScoped<IBeforeTestHook, SeedDatabaseHook>();
-
-                    // Mocks
                     services.AddTransient<IExternalService, ExternalServiceMock>();
-
-                    // Packages
-                    services.AddTestHttp();
                 });
             });
         }
@@ -76,7 +76,10 @@ namespace Example.Api.IntegrationTests
                     Username = TestConstants.AdminUsername,
                     Password = TestConstants.AdminPassword
                 })
-                .ExecuteSuccessAsync<string>();
+                .ExecuteSuccessAsync<string>(assert =>
+                {
+                    assert.AssertResponseObject(token => token.Should().NotBeNullOrEmpty());
+                });
 
             return token;
         }

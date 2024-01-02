@@ -1,38 +1,30 @@
 using BulletProve.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BulletProve.Hooks
+namespace BulletProve.Base.Hooks
 {
     /// <summary>
     /// Hook helper.
     /// </summary>
-    public class HookRunner : IHookRunner
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="HookRunner"/> class.
+    /// </remarks>
+    /// <param name="services">The services.</param>
+    /// <param name="logger">The logger.</param>
+    public class HookRunner(IServiceProvider services, ITestLogger logger) : IHookRunner
     {
-        private readonly IServiceProvider _services;
-        private readonly ITestLogger _logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HookRunner"/> class.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <param name="logger">The logger.</param>
-        public HookRunner(IServiceProvider services, ITestLogger logger)
-        {
-            _services = services;
-            _logger = logger;
-        }
-
         /// <inheritdoc/>
         public async Task RunHooksAsync<THook>(Func<THook, Task> methodToRun)
             where THook : IHook
         {
-            using var scope = _logger.Scope(typeof(THook).Name);
-            var hooks = _services.GetServices<THook>();
+            var hookName = typeof(THook).Name;
+            var hooks = services.GetServices<THook>();
 
             if (hooks != null)
             {
                 foreach (var hook in hooks.Distinct())
                 {
+                    using var scope = logger.Scope($"{hook.GetType().Name} ({hookName})");
                     await methodToRun(hook);
                 }
             }

@@ -1,10 +1,4 @@
-﻿using BulletProve;
-using Example.Api.Controllers;
-using Example.Api.IntegrationTests.Extensions;
-using FluentAssertions;
-using System.Net;
-using System.Threading.Tasks;
-using Xunit.Abstractions;
+﻿using Example.Api.Controllers;
 
 namespace Example.Api.IntegrationTests.Controllers
 {
@@ -19,7 +13,6 @@ namespace Example.Api.IntegrationTests.Controllers
     public class UserControllerTests(ServerManager serverManager, ITestOutputHelper output)
         : TestBase(serverManager, output)
     {
-
         /// <summary>
         /// Whens the user is logged in then its data returned.
         /// </summary>

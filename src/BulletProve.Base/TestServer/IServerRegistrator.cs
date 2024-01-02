@@ -1,4 +1,4 @@
-﻿using BulletProve.TestServer;
+﻿using BulletProve.Base.Configuration;
 
 namespace BulletProve
 {
@@ -13,7 +13,7 @@ namespace BulletProve
         /// <typeparam name="TStartup">The startup class.</typeparam>
         /// <param name="serverName">The server name.</param>
         /// <param name="configAction">The config action.</param>
-        public void RegisterServer<TStartup>(string serverName, Action<ServerConfigurator>? configAction = null)
+        public void RegisterServer<TStartup>(string serverName, Action<IServerConfigurator>? configAction = null)
             where TStartup : class;
     }
 }

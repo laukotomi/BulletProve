@@ -1,5 +1,5 @@
-﻿using BulletProve.Logging;
-using BulletProve.TestServer;
+﻿using BulletProve.Base.Configuration;
+using BulletProve.Logging;
 
 namespace BulletProve.ServerLog
 {
@@ -8,7 +8,7 @@ namespace BulletProve.ServerLog
     /// </summary>
     public class DefaultServerLogHandler : IServerLogHandler
     {
-        private readonly ServerConfigurator _configurator;
+        private readonly LoggerConfigurator _configurator;
         private readonly ITestLogger _logger;
         private readonly IServerLogCollector _serverLogCollector;
 
@@ -17,7 +17,7 @@ namespace BulletProve.ServerLog
         /// </summary>
         /// <param name="configurator">The configurator.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultServerLogHandler(ServerConfigurator configurator, ITestLogger logger, IServerLogCollector serverLogCollector)
+        public DefaultServerLogHandler(LoggerConfigurator configurator, ITestLogger logger, IServerLogCollector serverLogCollector)
         {
             _configurator = configurator;
             _logger = logger;
