@@ -7,26 +7,20 @@ namespace Example.Api.Data
     /// <summary>
     /// The app db context.
     /// </summary>
-    public class AppDbContext : DbContext
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AppDbContext"/> class.
+    /// </remarks>
+    /// <param name="options">The options.</param>
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AppDbContext"/> class.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
-        {
-
-        }
-
         /// <summary>
         /// Gets or sets the users.
         /// </summary>
-        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<User> Users { get; set; }
         /// <summary>
         /// Gets or sets the posts.
         /// </summary>
-        public DbSet<Post> Posts { get; set; } = null!;
+        public DbSet<Post> Posts { get; set; }
 
         /// <summary>
         /// Starts the update.

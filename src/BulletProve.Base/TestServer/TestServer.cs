@@ -156,27 +156,36 @@ namespace BulletProve
                         continue;
                     }
 
-
                     if (scope != logEvent.Scope)
                     {
                         LogScope(logEvent.Scope, checkedScopes, output);
                         scope = logEvent.Scope;
                     }
 
-                    var prefix = logEvent.Category == TestLogger.Category ? 'T' : 'S';
-                    var unexpected = logEvent.IsExpected ? ' ' : 'U';
-                    var level = logEvent.Level.ToString()[0];
-                    var indent = new string(' ', logEvent.Scope == null ? 0 : logEvent.Scope.Level * 2);
-                    var message = logEvent.Message.Replace(Environment.NewLine, $"{Environment.NewLine}     {indent}");
-
-                    if (_loggerConfigurator.LogCategoryNames)
-                        output.WriteLine($"{prefix}{unexpected}{level}: {indent}{message} - {logEvent.Category}");
-                    else
-                        output.WriteLine($"{prefix}{unexpected}{level}: {indent}{message}");
+                    WriteLog(output, logEvent);
                 }
 
                 output.WriteLine(string.Empty);
             }
+        }
+
+        /// <summary>
+        /// Writes the log.
+        /// </summary>
+        /// <param name="output">The output.</param>
+        /// <param name="logEvent">The log event.</param>
+        private void WriteLog(IOutput output, TestLogEvent logEvent)
+        {
+            var prefix = logEvent.Category == TestLogger.Category ? 'T' : 'S';
+            var unexpected = logEvent.IsExpected ? ' ' : 'U';
+            var level = logEvent.Level.ToString()[0];
+            var indent = new string(' ', logEvent.Scope == null ? 0 : logEvent.Scope.Level * 2);
+            var message = logEvent.Message.Replace(Environment.NewLine, $"{Environment.NewLine}     {indent}");
+
+            if (_loggerConfigurator.LogCategoryNames)
+                output.WriteLine($"{prefix}{unexpected}{level}: {indent}{message} - {logEvent.Category}");
+            else
+                output.WriteLine($"{prefix}{unexpected}{level}: {indent}{message}");
         }
 
         /// <summary>

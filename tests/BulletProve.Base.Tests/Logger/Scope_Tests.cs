@@ -18,6 +18,7 @@ namespace BulletProve.Tests.Logger
            new(Constants.BulletProveRequestID, "Value")
         ];
         private readonly ScopeProvider _provider;
+        private static readonly int[] state = [3];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Scope_Tests"/> class.
@@ -105,7 +106,7 @@ namespace BulletProve.Tests.Logger
         [Fact]
         public void TestToStringWithObject()
         {
-            using var scope = new Scope(_provider, new[] { 3 }, Category, null);
+            using var scope = new Scope(_provider, state, Category, null);
             scope.ToString().Should().Be("[3]");
         }
     }

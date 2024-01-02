@@ -44,8 +44,6 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"laukotomi_BulletProve" /o:"laukotomi" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build src/BulletProve.Base/BulletProve.Base.csproj -p GeneratePackageOnBuild=False
-          dotnet build src/BulletProve.EfCore/BulletProve.EfCore.csproj -p GeneratePackageOnBuild=False
-          dotnet build src/BulletProve.Http/BulletProve.Http.csproj -p GeneratePackageOnBuild=False
-          dotnet build src/BulletProve.XUnit/BulletProve.XUnit.csproj -p GeneratePackageOnBuild=False
+          dotnet build -p GeneratePackageOnBuild=False
+          dotnet test --no-build --verbosity normal --filter "FullyQualifiedName!~IntegrationTests"
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
