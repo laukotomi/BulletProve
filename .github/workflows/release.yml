@@ -1,4 +1,4 @@
-name: Release nuget
+name: Release NuGet
 on:
   workflow_dispatch:
     inputs:
@@ -6,7 +6,7 @@ on:
         required: true
 jobs:
   deployment:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     environment: nuget.org
     steps:      
       - uses: actions/checkout@v3
