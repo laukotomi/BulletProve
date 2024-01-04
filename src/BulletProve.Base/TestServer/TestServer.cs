@@ -87,18 +87,19 @@ namespace BulletProve
                 FlushLogger(output);
 
                 var openScopes = _scopeProvider.GetOpenScopes();
+                var serverLogs = _scope.ServerLogCollector.GetServerLogs();
+
+                await _hookRunner.RunHooksAsync<ICleanUpHook>(async x => await x.CleanUpAsync());
+                
                 if (openScopes.Count != 0)
                 {
                     throw new BulletProveException($"These logger scopes were not disposed: {string.Join(", ", openScopes.Select(x => JsonSerializer.Serialize(x.State)))}");
                 }
 
-                var serverLogs = _scope.ServerLogCollector.GetServerLogs();
                 if (serverLogs.Any(x => x.IsUnexpected))
                 {
                     throw new BulletProveException("Unexpected log occured on server side. Check the logs!");
                 }
-
-                await _hookRunner.RunHooksAsync<ICleanUpHook>(async x => await x.CleanUpAsync());
             }
             finally
             {

@@ -8,6 +8,16 @@ namespace BulletProve.Http.Configuration
     /// </summary>
     public class HttpConfiguration
     {
+        public HttpConfiguration()
+        {
+            JsonSerializerOptions = new()
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            ResponseMessageDeserializer = new JsonResponseMessageDeserializer(JsonSerializerOptions);
+        }
+
         /// <summary>
         /// The maximum length of a http message content to log. Default is 1000.
         /// </summary>
@@ -21,14 +31,11 @@ namespace BulletProve.Http.Configuration
         /// <summary>
         /// Gets the response message deserializer.
         /// </summary>
-        public ResponseMessageDeserializer ResponseMessageDeserializer { get; } = new JsonResponseMessageDeserializer(new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        public ResponseMessageDeserializer ResponseMessageDeserializer { get; }
 
         /// <summary>
         /// Gets the json serializer options.
         /// </summary>
-        public JsonSerializerOptions JsonSerializerOptions { get; } = new();
+        public JsonSerializerOptions JsonSerializerOptions { get; }
     }
 }

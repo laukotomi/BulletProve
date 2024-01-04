@@ -27,7 +27,8 @@ namespace Example.Api.IntegrationTests
         /// </summary>
         /// <param name="serverManager">The server manager.</param>
         /// <param name="output">The output.</param>
-        protected TestBase(ServerManager serverManager, ITestOutputHelper output) : base(serverManager, output)
+        protected TestBase(ServerManager serverManager, ITestOutputHelper output)
+            : base(serverManager, output)
         {
         }
 
