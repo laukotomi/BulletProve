@@ -6,7 +6,7 @@ on:
         required: true
 jobs:
   deployment:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     environment: nuget.org
     permissions: write-all
     steps:      
