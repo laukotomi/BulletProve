@@ -11,6 +11,17 @@ jobs:
     steps:      
       - uses: actions/checkout@v3
 
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ github.event.inputs.version }}',
+              sha: context.sha
+            })
+
       - name: Creating packages and uploading them to nuget.org
         run: |
           dotnet pack .\src\BulletProve.Base\BulletProve.Base.csproj -c Release -o nupkgs -p:Version=${{ github.event.inputs.version }}
