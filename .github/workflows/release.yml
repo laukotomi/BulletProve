@@ -8,13 +8,20 @@ jobs:
   deployment:
     runs-on: ubuntu-latest
     environment: nuget.org
+    permissions: write-all
     steps:      
       - uses: actions/checkout@v3
 
-      - name: Create/Update tag
-        uses: rickstaa/action-create-tag@v1.7.2
+      - name: Create tag
+        uses: actions/github-script@v5
         with:
-          tag: ${{ github.event.inputs.version }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ github.event.inputs.version }}',
+              sha: context.sha
+            })
 
       - name: Creating packages and uploading them to nuget.org
         run: |
