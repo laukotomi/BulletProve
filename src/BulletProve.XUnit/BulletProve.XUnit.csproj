@@ -13,8 +13,6 @@
 	  <PackageTags>aspnetcore;integrationtest</PackageTags>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	  <PackageOutputPath>../../Build</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
