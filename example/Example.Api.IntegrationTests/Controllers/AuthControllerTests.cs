@@ -52,11 +52,9 @@ namespace Example.Api.IntegrationTests.Controllers
         [Fact]
         public async Task WhenUserIsNotLoggedIn_ThenUnauthorizedReturned()
         {
-            using var response = await Server
+            await Server
                 .HttpRequestFor<UserController>(x => x.GetUserDataAsync)
                 .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
-
-            response.Should().NotBeNull();
         }
     }
 }
