@@ -53,7 +53,7 @@ namespace BulletProve.Http.Tests.Services
         {
             bool invoked = false;
 
-            await _sut.ExecuteRequestAsync(x =>
+            await _sut.ShouldExecuteAsync(x =>
             {
                 x.Should().Be(_assertionBuilder2);
                 invoked = true;
@@ -76,7 +76,7 @@ namespace BulletProve.Http.Tests.Services
         {
             bool invoked = false;
 
-            await _sut.ExecuteSuccessAsync(x =>
+            await _sut.ShouldExecuteSuccessfullyAsync(x =>
             {
                 x.Should().Be(_assertionBuilder2);
                 invoked = true;
@@ -95,7 +95,7 @@ namespace BulletProve.Http.Tests.Services
         {
             bool invoked = false;
 
-            await _sut.ExecuteSuccessAsync<MyContent>(x =>
+            await _sut.ShouldExecuteSuccessfullyAsync<MyContent>(x =>
             {
                 x.Should().Be(_assertionBuilder);
                 invoked = true;
@@ -114,7 +114,7 @@ namespace BulletProve.Http.Tests.Services
         {
             bool invoked = false;
 
-            await _sut.ExecuteAssertingStatusAsync(HttpStatusCode.OK, x =>
+            await _sut.ShouldExecuteWithStatusAsync(HttpStatusCode.OK, x =>
             {
                 x.Should().Be(_assertionBuilder2);
                 invoked = true;
@@ -133,7 +133,7 @@ namespace BulletProve.Http.Tests.Services
         {
             bool invoked = false;
 
-            await _sut.ExecuteAssertingStatusAsync<MyContent>(HttpStatusCode.OK, x =>
+            await _sut.ShouldExecuteWithStatusAsync<MyContent>(HttpStatusCode.OK, x =>
             {
                 x.Should().Be(_assertionBuilder);
                 invoked = true;
@@ -152,7 +152,7 @@ namespace BulletProve.Http.Tests.Services
         {
             bool invoked = false;
 
-            await _sut.ExecuteAssertingProblemAndStatusAsync(HttpStatusCode.OK, x =>
+            await _sut.ShouldExecuteWithProblemAndStatusAsync(HttpStatusCode.OK, x =>
             {
                 x.Should().Be(_assertionBuilder3);
                 invoked = true;

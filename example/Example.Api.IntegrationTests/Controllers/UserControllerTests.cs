@@ -24,7 +24,7 @@ namespace Example.Api.IntegrationTests.Controllers
             var userData = await Server
                 .HttpRequestFor<UserController>(x => x.GetUserDataAsync)
                 .WithToken(token)
-                .ExecuteSuccessAsync<UserController.UserDto>();
+                .ShouldExecuteSuccessfullyAsync<UserController.UserDto>();
 
             userData.Username.Should().Be(TestConstants.AdminUsername);
         }
@@ -48,7 +48,7 @@ namespace Example.Api.IntegrationTests.Controllers
                     Password = password
                 })
                 .AddAllowedServerLogEvent(x => x.Message == "Wrong username or password")
-                .ExecuteAssertingStatusAsync(HttpStatusCode.Unauthorized);
+                .ShouldExecuteWithStatusAsync(HttpStatusCode.Unauthorized);
 
             using var response2 = await Server
                 .HttpRequestFor<UserController>(x => x.RegisterUserAsync)
@@ -58,7 +58,7 @@ namespace Example.Api.IntegrationTests.Controllers
                     UserName = username,
                     Password = password
                 })
-                .ExecuteSuccessAsync();
+                .ShouldExecuteSuccessfullyAsync();
 
             var token = await Server
                 .HttpRequestFor<AuthController>(x => x.LoginAsync)
@@ -67,7 +67,7 @@ namespace Example.Api.IntegrationTests.Controllers
                     Username = username,
                     Password = password
                 })
-                .ExecuteSuccessAsync<string>();
+                .ShouldExecuteSuccessfullyAsync<string>();
 
             token.Should().NotBeNullOrEmpty();
         }
