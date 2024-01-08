@@ -168,13 +168,16 @@ namespace BulletProve.Http.Services
         /// </summary>
         /// <param name="assertionAction">The assertion action.</param>
         /// <returns>A Task.</returns>
-        public async Task<TResponse> ExecuteRequestAsync<TResponse>(Action<IAssertionBuilder<TResponse>>? assertionAction = null)
+        public async Task<TResponse> ShouldExecuteAsync<TResponse>(Action<IAssertionBuilder<TResponse>> assertionAction)
             where TResponse : class
         {
             using var loggerScope = _scope.Logger.Scope(Context.Label);
 
             var assertBuilder = _scope.GetRequiredService<IAssertionBuilder<TResponse>>();
-            assertionAction?.Invoke(assertBuilder);
+            if (assertionAction == null)
+                _scope.Logger.LogWarning("No assertion action was provided!");
+            else
+                assertionAction.Invoke(assertBuilder);
 
             SetRequestUri();
             var response = await _httpRequestManager.ExecuteRequestAsync(Context, _scope);

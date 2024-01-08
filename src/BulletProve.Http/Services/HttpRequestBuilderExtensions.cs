@@ -14,18 +14,18 @@ namespace BulletProve
         /// </summary>
         /// <param name="assertionAction">The assertion action.</param>
         /// <returns>A Task.</returns>
-        public static Task<HttpResponseMessage> ExecuteRequestAsync(this HttpRequestBuilder builder, Action<IAssertionBuilder<HttpResponseMessage>>? assertionAction = null)
+        public static Task<HttpResponseMessage> ShouldExecuteAsync(this HttpRequestBuilder builder, Action<IAssertionBuilder<HttpResponseMessage>> assertionAction)
         {
-            return builder.ExecuteRequestAsync(assertionAction);
+            return builder.ShouldExecuteAsync(assertionAction);
         }
 
         /// <summary>
         /// Executes the request asserting success status code.
         /// </summary>
         /// <returns>An AssertBuilder.</returns>
-        public static Task<HttpResponseMessage> ExecuteSuccessAsync(this HttpRequestBuilder builder, Action<IAssertionBuilder<HttpResponseMessage>>? assertionAction = null)
+        public static Task<HttpResponseMessage> ShouldExecuteSuccessfullyAsync(this HttpRequestBuilder builder, Action<IAssertionBuilder<HttpResponseMessage>>? assertionAction = null)
         {
-            return builder.ExecuteRequestAsync(assert =>
+            return builder.ShouldExecuteAsync(assert =>
             {
                 assert.EnsureSuccessStatusCode();
                 assertionAction?.Invoke(assert);
@@ -36,10 +36,10 @@ namespace BulletProve
         /// Executes the request asserting success status code.
         /// </summary>
         /// <returns>An AssertBuilder.</returns>
-        public static Task<TResponse> ExecuteSuccessAsync<TResponse>(this HttpRequestBuilder builder, Action<IAssertionBuilder<TResponse>>? assertionAction = null)
+        public static Task<TResponse> ShouldExecuteSuccessfullyAsync<TResponse>(this HttpRequestBuilder builder, Action<IAssertionBuilder<TResponse>>? assertionAction = null)
             where TResponse : class
         {
-            return builder.ExecuteRequestAsync<TResponse>(assert =>
+            return builder.ShouldExecuteAsync<TResponse>(assert =>
             {
                 assert.EnsureSuccessStatusCode();
                 assertionAction?.Invoke(assert);
@@ -51,9 +51,9 @@ namespace BulletProve
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public static Task<HttpResponseMessage> ExecuteAssertingStatusAsync(this HttpRequestBuilder builder, HttpStatusCode statusCode, Action<IAssertionBuilder<HttpResponseMessage>>? assertionAction = null)
+        public static Task<HttpResponseMessage> ShouldExecuteWithStatusAsync(this HttpRequestBuilder builder, HttpStatusCode statusCode, Action<IAssertionBuilder<HttpResponseMessage>>? assertionAction = null)
         {
-            return builder.ExecuteRequestAsync(assert =>
+            return builder.ShouldExecuteAsync(assert =>
             {
                 assert.AssertStatusCode(statusCode);
                 assertionAction?.Invoke(assert);
@@ -65,10 +65,10 @@ namespace BulletProve
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public static Task<TResponse> ExecuteAssertingStatusAsync<TResponse>(this HttpRequestBuilder builder, HttpStatusCode statusCode, Action<IAssertionBuilder<TResponse>>? assertionAction = null)
+        public static Task<TResponse> ShouldExecuteWithStatusAsync<TResponse>(this HttpRequestBuilder builder, HttpStatusCode statusCode, Action<IAssertionBuilder<TResponse>>? assertionAction = null)
             where TResponse : class
         {
-            return builder.ExecuteRequestAsync<TResponse>(assert =>
+            return builder.ShouldExecuteAsync<TResponse>(assert =>
             {
                 assert.AssertStatusCode(statusCode);
                 assertionAction?.Invoke(assert);
@@ -80,9 +80,9 @@ namespace BulletProve
         /// </summary>
         /// <param name="statusCode">The status code.</param>
         /// <returns>An AssertBuilder.</returns>
-        public static Task<TestProblemDetails> ExecuteAssertingProblemAndStatusAsync(this HttpRequestBuilder builder, HttpStatusCode statusCode, Action<IAssertionBuilder<TestProblemDetails>>? assertionAction = null)
+        public static Task<TestProblemDetails> ShouldExecuteWithProblemAndStatusAsync(this HttpRequestBuilder builder, HttpStatusCode statusCode, Action<IAssertionBuilder<TestProblemDetails>>? assertionAction = null)
         {
-            return ExecuteAssertingStatusAsync(builder, statusCode, assertionAction);
+            return ShouldExecuteWithStatusAsync(builder, statusCode, assertionAction);
         }
     }
 }

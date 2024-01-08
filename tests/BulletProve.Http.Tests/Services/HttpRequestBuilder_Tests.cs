@@ -206,7 +206,7 @@ namespace BulletProve.Http.Tests.Services
         {
             bool invoked = false;
 
-            await _sut.ExecuteRequestAsync<MyContent>(x =>
+            await _sut.ShouldExecuteAsync<MyContent>(x =>
             {
                 x.Should().Be(_assertionBuilder);
                 invoked = true;

@@ -77,7 +77,7 @@ namespace Example.Api.IntegrationTests
                     Username = TestConstants.AdminUsername,
                     Password = TestConstants.AdminPassword
                 })
-                .ExecuteSuccessAsync<string>(assert =>
+                .ShouldExecuteSuccessfullyAsync<string>(assert =>
                 {
                     assert.AssertResponseObject(token => token.Should().NotBeNullOrEmpty());
                 });
